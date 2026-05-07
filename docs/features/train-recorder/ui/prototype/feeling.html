@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>训练感受 - Train Recorder</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* ---------- Completion Header ---------- */
+    .completion-header {
+      text-align: center;
+      padding: 24px 0 8px;
+    }
+    .completion-header .completion-check {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 16px;
+      background: rgba(48,209,88,0.12);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .completion-header .completion-check svg {
+      width: 32px;
+      height: 32px;
+      color: var(--success);
+    }
+    .completion-header h1 {
+      margin-bottom: 6px;
+    }
+    .completion-header .completion-summary {
+      font-size: 17px;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    /* ---------- Feeling Slider Overrides ---------- */
+    .feeling-section {
+      margin-bottom: 28px;
+    }
+    .feeling-section .feeling-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .feeling-section .feeling-label {
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    .feeling-section .feeling-value-display {
+      font-family: var(--font-display);
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--text-primary);
+      min-width: 36px;
+      text-align: right;
+    }
+    .feeling-section .slider-labels {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 6px;
+    }
+    .feeling-section .slider-labels span {
+      font-size: 12px;
+      color: var(--text-tertiary);
+    }
+    .feeling-section input[type="range"] {
+      height: 6px;
+    }
+    /* Colored slider track via background gradient */
+    .feeling-section input[type="range"].slider-fatigue::-webkit-slider-runnable-track {
+      background: linear-gradient(to right, var(--success) 0%, var(--warning) 50%, var(--error) 100%);
+      border-radius: 3px;
+      height: 6px;
+    }
+    .feeling-section input[type="range"].slider-satisfaction::-webkit-slider-runnable-track {
+      background: linear-gradient(to right, var(--error) 0%, var(--warning) 50%, var(--success) 100%);
+      border-radius: 3px;
+      height: 6px;
+    }
+
+    /* ---------- Exercise Feeling Card ---------- */
+    .exercise-feeling-card {
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      padding: 14px 16px;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 10px;
+    }
+    .exercise-feeling-card .ef-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+    .exercise-feeling-card .ef-title .ef-weight {
+      font-weight: 400;
+      color: var(--text-secondary);
+      margin-left: 4px;
+    }
+    .exercise-feeling-card textarea {
+      width: 100%;
+      min-height: 48px;
+      background: var(--bg-alt);
+      border: none;
+      border-radius: var(--radius-md);
+      padding: 10px 14px;
+      font-size: 15px;
+      color: var(--text-primary);
+      outline: none;
+      resize: vertical;
+      line-height: 1.4;
+    }
+    .exercise-feeling-card textarea::placeholder {
+      color: var(--text-tertiary);
+    }
+    .exercise-feeling-card textarea:focus {
+      box-shadow: 0 0 0 3px rgba(0,113,227,0.15);
+      background: var(--bg);
+    }
+
+    /* ---------- Overall Notes ---------- */
+    .overall-notes textarea {
+      width: 100%;
+      min-height: 64px;
+      background: var(--bg-alt);
+      border: none;
+      border-radius: var(--radius-md);
+      padding: 12px 16px;
+      font-size: 17px;
+      color: var(--text-primary);
+      outline: none;
+      resize: vertical;
+      line-height: 1.4;
+    }
+    .overall-notes textarea::placeholder { color: var(--text-tertiary); }
+    .overall-notes textarea:focus {
+      box-shadow: 0 0 0 4px rgba(0,113,227,0.2);
+      background: var(--bg);
+    }
+  </style>
+</head>
+<body>
+<div class="phone-frame">
+  <div class="app-container">
+
+    <!-- Status Bar -->
+    <div class="status-bar">
+      <span class="time">9:41</span>
+      <span class="icons">
+        <svg width="16" height="12" viewBox="0 0 16 12" fill="none">
+          <rect x="0" y="5" width="3" height="7" rx="0.5" fill="#1d1d1f"/>
+          <rect x="4.5" y="3" width="3" height="9" rx="0.5" fill="#1d1d1f"/>
+          <rect x="9" y="1" width="3" height="11" rx="0.5" fill="#1d1d1f"/>
+          <rect x="13.5" y="0" width="3" height="12" rx="0.5" fill="#1d1d1f"/>
+        </svg>
+        <svg width="15" height="12" viewBox="0 0 15 12" fill="none">
+          <path d="M7.5 3.6C9.32 3.6 10.97 4.32 12.18 5.5L13.6 4.08C12.02 2.54 9.88 1.6 7.5 1.6C5.12 1.6 2.98 2.54 1.4 4.08L2.82 5.5C4.03 4.32 5.68 3.6 7.5 3.6Z" fill="#1d1d1f"/>
+          <path d="M7.5 6.8C8.62 6.8 9.63 7.22 10.38 7.9L11.8 6.48C10.68 5.44 9.17 4.8 7.5 4.8C5.83 4.8 4.32 5.44 3.2 6.48L4.62 7.9C5.37 7.22 6.38 6.8 7.5 6.8Z" fill="#1d1d1f"/>
+          <circle cx="7.5" cy="10.5" r="1.5" fill="#1d1d1f"/>
+        </svg>
+        <svg width="25" height="12" viewBox="0 0 25 12" fill="none">
+          <rect x="0.5" y="0.5" width="21" height="11" rx="2" stroke="#1d1d1f" stroke-opacity="0.35"/>
+          <rect x="22" y="4" width="2" height="4" rx="0.5" fill="#1d1d1f" fill-opacity="0.35"/>
+          <rect x="2" y="2" width="15" height="8" rx="1" fill="#1d1d1f"/>
+        </svg>
+      </span>
+    </div>
+
+    <!-- Navigation Bar (no back button -- auto-enters after workout) -->
+    <div class="nav-bar">
+      <div style="width:60px"></div>
+      <span class="nav-title">训练感受</span>
+      <button class="nav-action" style="font-size:15px;font-weight:500;" onclick="showToast('已跳过')">跳过</button>
+    </div>
+
+    <!-- Page Content -->
+    <div class="page-content" style="padding-top:0;">
+
+      <!-- Completion Header -->
+      <div class="completion-header fade-in">
+        <div class="completion-check">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+        </div>
+        <h1>训练完成！</h1>
+        <p class="completion-summary">推日 · 总容量 8,400kg</p>
+      </div>
+
+      <!-- Fatigue Slider -->
+      <div class="feeling-section mt-24">
+        <div class="feeling-header">
+          <span class="feeling-label">疲劳程度</span>
+          <span class="feeling-value-display" id="fatigueValue">6</span>
+        </div>
+        <input type="range" min="1" max="10" value="6" class="slider-fatigue"
+               data-display="fatigueValue"
+               oninput="document.getElementById('fatigueValue').textContent=this.value">
+        <div class="slider-labels">
+          <span>轻松</span>
+          <span>筋疲力尽</span>
+        </div>
+      </div>
+
+      <!-- Satisfaction Slider -->
+      <div class="feeling-section">
+        <div class="feeling-header">
+          <span class="feeling-label">满意程度</span>
+          <span class="feeling-value-display" id="satisfactionValue">7</span>
+        </div>
+        <input type="range" min="1" max="10" value="7" class="slider-satisfaction"
+               data-display="satisfactionValue"
+               oninput="document.getElementById('satisfactionValue').textContent=this.value">
+        <div class="slider-labels">
+          <span>很差</span>
+          <span>完美</span>
+        </div>
+      </div>
+
+      <!-- Per-Exercise Feeling Section Title -->
+      <div class="section-title" style="margin-top:8px;">各动作感受</div>
+
+      <!-- Exercise 1: 卧推 -->
+      <div class="exercise-feeling-card">
+        <div class="ef-title">
+          卧推
+          <span class="ef-weight">60kg x 5x5</span>
+        </div>
+        <textarea placeholder="这组感觉怎么样？（可选）" rows="2"></textarea>
+      </div>
+
+      <!-- Exercise 2: 推举 -->
+      <div class="exercise-feeling-card">
+        <div class="ef-title">
+          推举
+          <span class="ef-weight">35kg x 3x10</span>
+        </div>
+        <textarea placeholder="这组感觉怎么样？（可选）" rows="2"></textarea>
+      </div>
+
+      <!-- Exercise 3: 三头下压 -->
+      <div class="exercise-feeling-card">
+        <div class="ef-title">
+          三头下压
+          <span class="ef-weight">25kg x 3x12</span>
+        </div>
+        <textarea placeholder="这组感觉怎么样？（可选）" rows="2"></textarea>
+      </div>
+
+      <!-- Overall Notes -->
+      <div class="section-title">总体备注</div>
+      <div class="overall-notes">
+        <textarea placeholder="今天训练的整体感受..." rows="3"></textarea>
+      </div>
+
+      <!-- Save Button -->
+      <button class="btn-primary mt-16" onclick="showToast('感受已保存')">保存</button>
+
+      <div style="height: 16px;"></div>
+    </div><!-- /page-content -->
+
+    <!-- NO Tab Bar - this is a push page (auto-enters after workout) -->
+
+  </div><!-- /app-container -->
+</div><!-- /phone-frame -->
+
+<script src="app.js"></script>
+</body>
+</html>

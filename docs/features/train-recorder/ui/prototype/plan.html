@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>训练计划 — Train Recorder</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* Plan-specific styles */
+    .mode-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: var(--bg-alt);
+      border-radius: var(--radius-md);
+      margin-bottom: 16px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .mode-toggle:active { background: var(--border); }
+    .mode-toggle .toggle-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+    .mode-toggle .toggle-switch {
+      position: relative;
+      width: 44px;
+      height: 26px;
+      background: var(--border);
+      border-radius: 13px;
+      transition: background 0.3s;
+    }
+    .mode-toggle .toggle-switch.active {
+      background: var(--accent);
+    }
+    .mode-toggle .toggle-switch::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 22px;
+      height: 22px;
+      background: white;
+      border-radius: 50%;
+      transition: transform 0.3s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+    }
+    .mode-toggle .toggle-switch.active::after {
+      transform: translateX(18px);
+    }
+
+    /* Active plan card */
+    .active-plan-card {
+      background: linear-gradient(135deg, #1d1d1f 0%, #3a3a3c 100%);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      color: white;
+      margin-bottom: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+    .active-plan-card::before {
+      content: '';
+      position: absolute;
+      top: -30px;
+      right: -30px;
+      width: 100px;
+      height: 100px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 50%;
+    }
+    .active-plan-card .plan-name {
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 20px;
+      margin-bottom: 8px;
+    }
+    .active-plan-card .plan-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 13px;
+      color: rgba(255,255,255,0.6);
+    }
+    .active-plan-card .plan-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 10px;
+      border-radius: 100px;
+      font-size: 12px;
+      font-weight: 600;
+      background: rgba(48,209,88,0.2);
+      color: #30d158;
+    }
+    .active-plan-card .plan-tag .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #30d158;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    /* Training day card */
+    .day-card {
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 12px;
+    }
+    .day-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .day-card-header .day-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .day-card-header .day-number {
+      font-weight: 600;
+      font-size: 17px;
+      color: var(--text-primary);
+    }
+    .day-card-header .day-label {
+      font-size: 15px;
+      color: var(--text-secondary);
+    }
+    .day-card-header .edit-btn {
+      color: var(--accent);
+      font-size: 15px;
+      font-weight: 500;
+      padding: 4px 8px;
+    }
+    .exercise-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .exercise-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 0;
+    }
+    .exercise-row .exercise-name-text {
+      font-size: 15px;
+      color: var(--text-primary);
+    }
+    .exercise-row .exercise-volume {
+      font-size: 13px;
+      color: var(--text-tertiary);
+      font-weight: 500;
+    }
+
+    /* Edit mode styles */
+    .edit-form { display: none; }
+    .edit-form.visible { display: block; }
+    .view-mode { display: block; }
+    .view-mode.hidden { display: none; }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+    .form-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+      margin-bottom: 8px;
+    }
+
+    /* Edit mode day card */
+    .edit-day-card {
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 12px;
+      border: 1.5px solid transparent;
+      transition: border-color 0.2s;
+    }
+    .edit-day-card:focus-within {
+      border-color: var(--accent);
+    }
+    .edit-exercise-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .edit-exercise-row .exercise-field {
+      flex: 1;
+      height: 36px;
+      background: var(--bg-alt);
+      border: none;
+      border-radius: var(--radius-sm);
+      padding: 0 10px;
+      font-size: 14px;
+      color: var(--text-primary);
+      outline: none;
+    }
+    .edit-exercise-row .exercise-field:focus {
+      box-shadow: 0 0 0 3px rgba(0,113,227,0.15);
+      background: var(--bg);
+    }
+    .edit-exercise-row .volume-field {
+      width: 72px;
+      height: 36px;
+      background: var(--bg-alt);
+      border: none;
+      border-radius: var(--radius-sm);
+      padding: 0 8px;
+      font-size: 14px;
+      color: var(--text-primary);
+      text-align: center;
+      outline: none;
+    }
+    .edit-exercise-row .volume-field:focus {
+      box-shadow: 0 0 0 3px rgba(0,113,227,0.15);
+      background: var(--bg);
+    }
+    .delete-exercise-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: rgba(255,59,48,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: background 0.2s;
+    }
+    .delete-exercise-btn:hover {
+      background: rgba(255,59,48,0.2);
+    }
+    .delete-exercise-btn svg {
+      width: 14px;
+      height: 14px;
+      color: var(--error);
+    }
+    .add-exercise-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      width: 100%;
+      padding: 8px;
+      border: 1.5px dashed var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text-tertiary);
+      font-size: 13px;
+      font-weight: 500;
+      transition: all 0.2s;
+      margin-top: 4px;
+    }
+    .add-exercise-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--accent-light);
+    }
+    .add-exercise-btn svg {
+      width: 16px;
+      height: 16px;
+    }
+    .delete-day-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      width: 100%;
+      padding: 10px;
+      border-radius: var(--radius-sm);
+      color: var(--error);
+      font-size: 14px;
+      font-weight: 500;
+      background: rgba(255,59,48,0.06);
+      margin-top: 12px;
+      transition: background 0.2s;
+    }
+    .delete-day-btn:hover {
+      background: rgba(255,59,48,0.12);
+    }
+    .add-day-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      width: 100%;
+      height: 52px;
+      border: 2px dashed var(--border);
+      border-radius: var(--radius-lg);
+      color: var(--accent);
+      font-size: 15px;
+      font-weight: 600;
+      transition: all 0.2s;
+      margin-top: 12px;
+    }
+    .add-day-btn:hover {
+      border-color: var(--accent);
+      background: var(--accent-light);
+    }
+    .add-day-btn svg {
+      width: 20px;
+      height: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="phone-frame">
+  <div class="app-container">
+
+    <!-- Status Bar -->
+    <div class="status-bar">
+      <span class="time">9:41</span>
+      <div class="icons">
+        <svg width="17" height="12" viewBox="0 0 17 12" fill="none"><path d="M1 8.5C3.5 4 6 2 8.5 2s5 2 7.5 6.5" stroke="#1d1d1f" stroke-width="1.5" stroke-linecap="round"/><path d="M4 10c1.5-2.5 3-3.5 4.5-3.5S11.5 7.5 13 10" stroke="#1d1d1f" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <svg width="16" height="12" viewBox="0 0 16 12" fill="none"><rect x=".5" y="3" width="3" height="9" rx="1" fill="#1d1d1f"/><rect x="4.5" y="1" width="3" height="11" rx="1" fill="#1d1d1f"/><rect x="8.5" y="4" width="3" height="8" rx="1" fill="#1d1d1f"/><rect x="12.5" y="0" width="3" height="12" rx="1" fill="#1d1d1f"/></svg>
+        <svg width="27" height="13" viewBox="0 0 27 13" fill="none"><rect x=".5" y=".5" width="22" height="12" rx="3.5" stroke="#1d1d1f"/><rect x="2" y="2" width="16" height="9" rx="2" fill="#1d1d1f"/><path d="M24 4.5v4a2.5 2.5 0 000-4z" fill="#1d1d1f"/></svg>
+      </div>
+    </div>
+
+    <!-- Nav Bar -->
+    <div class="nav-bar">
+      <div style="width:60px"></div>
+      <span class="nav-title">训练计划</span>
+      <div style="width:60px"></div>
+    </div>
+
+    <!-- Scrollable Content -->
+    <div class="page-content" style="padding-top: 8px;">
+
+      <!-- Mode Toggle -->
+      <div class="mode-toggle" onclick="toggleEditMode()">
+        <span class="toggle-label">编辑模式</span>
+        <div class="toggle-switch" id="editToggle"></div>
+      </div>
+
+      <!-- ============ VIEW MODE ============ -->
+      <div class="view-mode" id="viewMode">
+
+        <!-- Active Plan Card -->
+        <div class="active-plan-card fade-in">
+          <div class="plan-name">推/拉/蹲 3日循环</div>
+          <div class="plan-meta">
+            <span>3 天 / 循环</span>
+            <span>&#183;</span>
+            <span>已使用 28 天</span>
+          </div>
+          <div style="margin-top:12px;">
+            <span class="plan-tag">
+              <span class="dot"></span>
+              活跃中
+            </span>
+          </div>
+        </div>
+
+        <!-- New Plan Link -->
+        <div style="margin-bottom:16px;">
+          <a href="#" class="btn-secondary" onclick="event.preventDefault(); toggleEditMode();">+ 新建计划</a>
+        </div>
+
+        <!-- Section Title -->
+        <div class="section-title">训练日安排</div>
+
+        <!-- Day 1 - Push -->
+        <div class="day-card card-interactive fade-in">
+          <div class="day-card-header">
+            <div class="day-info">
+              <span class="day-number">Day 1</span>
+              <span class="tag tag-push">推日</span>
+            </div>
+            <button class="edit-btn" onclick="event.stopPropagation(); toggleEditMode();">编辑</button>
+          </div>
+          <div class="exercise-list">
+            <div class="exercise-row">
+              <span class="exercise-name-text">卧推</span>
+              <span class="exercise-volume">4 x 8</span>
+            </div>
+            <div class="exercise-row">
+              <span class="exercise-name-text">推举</span>
+              <span class="exercise-volume">3 x 10</span>
+            </div>
+            <div class="exercise-row">
+              <span class="exercise-name-text">三头下压</span>
+              <span class="exercise-volume">3 x 12</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Day 2 - Pull -->
+        <div class="day-card card-interactive fade-in">
+          <div class="day-card-header">
+            <div class="day-info">
+              <span class="day-number">Day 2</span>
+              <span class="tag tag-pull">拉日</span>
+            </div>
+            <button class="edit-btn" onclick="event.stopPropagation(); toggleEditMode();">编辑</button>
+          </div>
+          <div class="exercise-list">
+            <div class="exercise-row">
+              <span class="exercise-name-text">划船</span>
+              <span class="exercise-volume">4 x 8</span>
+            </div>
+            <div class="exercise-row">
+              <span class="exercise-name-text">引体向上</span>
+              <span class="exercise-volume">3 x 10</span>
+            </div>
+            <div class="exercise-row">
+              <span class="exercise-name-text">二头弯举</span>
+              <span class="exercise-volume">3 x 12</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Day 3 - Leg -->
+        <div class="day-card card-interactive fade-in">
+          <div class="day-card-header">
+            <div class="day-info">
+              <span class="day-number">Day 3</span>
+              <span class="tag tag-leg">蹲日</span>
+            </div>
+            <button class="edit-btn" onclick="event.stopPropagation(); toggleEditMode();">编辑</button>
+          </div>
+          <div class="exercise-list">
+            <div class="exercise-row">
+              <span class="exercise-name-text">深蹲</span>
+              <span class="exercise-volume">5 x 5</span>
+            </div>
+            <div class="exercise-row">
+              <span class="exercise-name-text">腿举</span>
+              <span class="exercise-volume">3 x 10</span>
+            </div>
+            <div class="exercise-row">
+              <span class="exercise-name-text">罗马尼亚硬拉</span>
+              <span class="exercise-volume">3 x 8</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <!-- /VIEW MODE -->
+
+      <!-- ============ EDIT MODE ============ -->
+      <div class="edit-form" id="editMode">
+
+        <!-- Plan Name -->
+        <div class="form-group">
+          <label class="form-label">计划名称</label>
+          <input type="text" class="input-field" value="推/拉/蹲 3日循环" placeholder="输入计划名称">
+        </div>
+
+        <!-- Cycle Mode Selector -->
+        <div class="form-group">
+          <label class="form-label">循环模式</label>
+          <div class="segmented">
+            <div class="seg-option active" data-target="panel-infinite">无限循环</div>
+            <div class="seg-option" data-target="panel-fixed">固定周期</div>
+          </div>
+          <div id="panel-infinite" class="tab-panel" style="font-size:13px; color:var(--text-tertiary); margin-top:4px;">
+            计划将按照训练日顺序无限循环执行
+          </div>
+          <div id="panel-fixed" class="tab-panel hidden" style="margin-top:4px;">
+            <div class="flex items-center gap-8">
+              <input type="number" class="input-field" style="width:80px; text-align:center;" value="4" min="1" max="52">
+              <span style="font-size:15px; color:var(--text-secondary);">周</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section Title -->
+        <div class="section-title" style="margin-top:8px;">训练日</div>
+
+        <!-- Edit Day 1 - Push -->
+        <div class="edit-day-card">
+          <div class="day-card-header" style="margin-bottom:12px;">
+            <div class="day-info">
+              <span class="day-number">Day 1</span>
+              <span class="tag tag-push">推日</span>
+            </div>
+          </div>
+          <div class="edit-exercise-row">
+            <input type="text" class="exercise-field" value="卧推">
+            <input type="text" class="volume-field" value="4x8">
+            <button class="delete-exercise-btn" title="删除动作">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+          <div class="edit-exercise-row">
+            <input type="text" class="exercise-field" value="推举">
+            <input type="text" class="volume-field" value="3x10">
+            <button class="delete-exercise-btn" title="删除动作">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+          <div class="edit-exercise-row">
+            <input type="text" class="exercise-field" value="三头下压">
+            <input type="text" class="volume-field" value="3x12">
+            <button class="delete-exercise-btn" title="删除动作">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+          <button class="add-exercise-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            添加动作
+          </button>
+        </div>
+
+        <!-- Edit Day 2 - Pull -->
+        <div class="edit-day-card">
+          <div class="day-card-header" style="margin-bottom:12px;">
+            <div class="day-info">
+              <span class="day-number">Day 2</span>
+              <span class="tag tag-pull">拉日</span>
+            </div>
+          </div>
+          <div class="edit-exercise-row">
+            <input type="text" class="exercise-field" value="划船">
+            <input type="text" class="volume-field" value="4x8">
+            <button class="delete-exercise-btn" title="删除动作">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+          <div class="edit-exercise-row">
+            <input type="text" class="exercise-field" value="引体向上">
+            <input type="text" class="volume-field" value="3x10">
+            <button class="delete-exercise-btn" title="删除动作">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+          <div class="edit-exercise-row">
+            <input type="text" class="exercise-field" value="二头弯举">
+            <input type="text" class="volume-field" value="3x12">
+            <button class="delete-exercise-btn" title="删除动作">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+          <button class="add-exercise-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            添加动作
+          </button>
+        </div>
+
+        <!-- Edit Day 3 - Leg -->
+        <div class="edit-day-card">
+          <div class="day-card-header" style="margin-bottom:12px;">
+            <div class="day-info">
+              <span class="day-number">Day 3</span>
+              <span class="tag tag-leg">蹲日</span>
+            </div>
+          </div>
+          <div class="edit-exercise-row">
+            <input type="text" class="exercise-field" value="深蹲">
+            <input type="text" class="volume-field" value="5x5">
+            <button class="delete-exercise-btn" title="删除动作">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+          <div class="edit-exercise-row">
+            <input type="text" class="exercise-field" value="腿举">
+            <input type="text" class="volume-field" value="3x10">
+            <button class="delete-exercise-btn" title="删除动作">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+          <div class="edit-exercise-row">
+            <input type="text" class="exercise-field" value="罗马尼亚硬拉">
+            <input type="text" class="volume-field" value="3x8">
+            <button class="delete-exercise-btn" title="删除动作">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+          <button class="add-exercise-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            添加动作
+          </button>
+          <button class="delete-day-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="flex-shrink:0"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+            删除此训练日
+          </button>
+        </div>
+
+        <!-- Add Day Button -->
+        <button class="add-day-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          添加训练日
+        </button>
+
+        <!-- Save Button -->
+        <div style="margin-top:24px; margin-bottom:24px;">
+          <button class="btn-primary" onclick="toggleEditMode(); showToast('计划已保存');">保存计划</button>
+        </div>
+
+      </div>
+      <!-- /EDIT MODE -->
+
+    </div>
+
+    <!-- Tab Bar -->
+    <div class="tab-bar">
+      <a class="tab-item" href="index.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        <span>记录</span>
+      </a>
+      <a class="tab-item" href="history.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        <span>历史</span>
+      </a>
+      <a class="tab-item active" href="plan.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        <span>计划</span>
+      </a>
+      <a class="tab-item" href="stats.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        <span>统计</span>
+      </a>
+      <a class="tab-item" href="settings.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        <span>设置</span>
+      </a>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // Toggle between view and edit mode
+  let isEditMode = false;
+
+  function toggleEditMode() {
+    isEditMode = !isEditMode;
+    const viewMode = document.getElementById('viewMode');
+    const editMode = document.getElementById('editMode');
+    const toggle = document.getElementById('editToggle');
+
+    if (isEditMode) {
+      viewMode.classList.add('hidden');
+      editMode.classList.add('visible');
+      toggle.classList.add('active');
+    } else {
+      viewMode.classList.remove('hidden');
+      editMode.classList.remove('visible');
+      toggle.classList.remove('active');
+    }
+  }
+</script>
+<script src="app.js"></script>
+
+</body>
+</html>

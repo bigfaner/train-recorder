@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>记录其他运动 - Train Recorder</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* ---------- Sport Type Grid ---------- */
+    .sport-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .sport-card {
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      padding: 20px 12px;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s, border-color 0.2s;
+      border: 2px solid transparent;
+    }
+    .sport-card:active { transform: scale(0.97); }
+    .sport-card.selected {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(0,113,227,0.15), var(--shadow-sm);
+    }
+    .sport-card .sport-icon {
+      width: 48px;
+      height: 48px;
+      margin: 0 auto 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      font-size: 24px;
+    }
+    .sport-card .sport-name {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    .sport-icon-swim { background: rgba(0,113,227,0.1); color: var(--push-color); }
+    .sport-icon-run  { background: rgba(255,149,0,0.1); color: var(--leg-color); }
+    .sport-icon-bike { background: rgba(48,209,88,0.1); color: var(--pull-color); }
+    .sport-icon-yoga { background: rgba(175,82,222,0.1); color: var(--sport-color); }
+
+    .custom-sport-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      width: 100%;
+      height: 48px;
+      background: var(--bg-alt);
+      border: 2px dashed var(--border);
+      border-radius: var(--radius-lg);
+      color: var(--accent);
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+      margin-bottom: 24px;
+    }
+    .custom-sport-btn:hover {
+      background: var(--accent-light);
+      border-color: var(--accent);
+    }
+    .custom-sport-btn svg { width: 18px; height: 18px; }
+
+    /* ---------- Sport Input Form ---------- */
+    .sport-form { display: none; }
+    .sport-form.visible { display: block; }
+
+    .input-group {
+      margin-bottom: 16px;
+    }
+    .input-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+      margin-bottom: 6px;
+    }
+    .input-group .input-field {
+      height: 48px;
+      font-size: 17px;
+    }
+    .input-row {
+      display: flex;
+      gap: 12px;
+    }
+    .input-row .input-group { flex: 1; }
+
+    .input-field-prefixed {
+      position: relative;
+    }
+    .input-field-prefixed .input-field {
+      padding-right: 48px;
+    }
+    .input-field-prefixed .input-suffix {
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text-tertiary);
+      pointer-events: none;
+    }
+
+    .time-input-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .time-input-row input {
+      flex: 1;
+      height: 48px;
+      background: var(--bg-alt);
+      border: none;
+      border-radius: var(--radius-md);
+      padding: 0 12px;
+      font-size: 24px;
+      font-weight: 600;
+      text-align: center;
+      outline: none;
+      color: var(--text-primary);
+    }
+    .time-input-row input:focus {
+      box-shadow: 0 0 0 3px rgba(0,113,227,0.2);
+      background: var(--bg);
+    }
+    .time-input-row .time-sep {
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--text-tertiary);
+    }
+    .time-input-row .time-label {
+      font-size: 13px;
+      color: var(--text-tertiary);
+    }
+
+    /* Section divider */
+    .form-divider {
+      height: 1px;
+      background: rgba(0,0,0,0.06);
+      margin: 20px 0;
+    }
+  </style>
+</head>
+<body>
+<div class="phone-frame">
+  <div class="app-container">
+
+    <!-- Status Bar -->
+    <div class="status-bar">
+      <span class="time">9:41</span>
+      <span class="icons">
+        <svg width="16" height="12" viewBox="0 0 16 12" fill="none">
+          <rect x="0" y="5" width="3" height="7" rx="0.5" fill="#1d1d1f"/>
+          <rect x="4.5" y="3" width="3" height="9" rx="0.5" fill="#1d1d1f"/>
+          <rect x="9" y="1" width="3" height="11" rx="0.5" fill="#1d1d1f"/>
+          <rect x="13.5" y="0" width="3" height="12" rx="0.5" fill="#1d1d1f"/>
+        </svg>
+        <svg width="15" height="12" viewBox="0 0 15 12" fill="none">
+          <path d="M7.5 3.6C9.32 3.6 10.97 4.32 12.18 5.5L13.6 4.08C12.02 2.54 9.88 1.6 7.5 1.6C5.12 1.6 2.98 2.54 1.4 4.08L2.82 5.5C4.03 4.32 5.68 3.6 7.5 3.6Z" fill="#1d1d1f"/>
+          <path d="M7.5 6.8C8.62 6.8 9.63 7.22 10.38 7.9L11.8 6.48C10.68 5.44 9.17 4.8 7.5 4.8C5.83 4.8 4.32 5.44 3.2 6.48L4.62 7.9C5.37 7.22 6.38 6.8 7.5 6.8Z" fill="#1d1d1f"/>
+          <circle cx="7.5" cy="10.5" r="1.5" fill="#1d1d1f"/>
+        </svg>
+        <svg width="25" height="12" viewBox="0 0 25 12" fill="none">
+          <rect x="0.5" y="0.5" width="21" height="11" rx="2" stroke="#1d1d1f" stroke-opacity="0.35"/>
+          <rect x="22" y="4" width="2" height="4" rx="0.5" fill="#1d1d1f" fill-opacity="0.35"/>
+          <rect x="2" y="2" width="15" height="8" rx="1" fill="#1d1d1f"/>
+        </svg>
+      </span>
+    </div>
+
+    <!-- Navigation Bar (push page with back button) -->
+    <div class="nav-bar">
+      <a class="nav-back" href="calendar.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        返回
+      </a>
+      <span class="nav-title">记录其他运动</span>
+      <span class="nav-action" style="visibility:hidden;">占位</span>
+    </div>
+
+    <!-- Page Content -->
+    <div class="page-content" style="padding-top:12px;">
+
+      <!-- Sport Type Selection -->
+      <div class="section-title">选择运动类型</div>
+      <div class="sport-grid">
+        <div class="sport-card selected" data-sport="swim" onclick="selectSport(this)">
+          <div class="sport-icon sport-icon-swim">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2 20c2-1 4-1 6 0s4 1 6 0 4-1 6 0"/>
+              <path d="M2 16c2-1 4-1 6 0s4 1 6 0 4-1 6 0"/>
+              <path d="M12 14V4l-3 3"/>
+              <path d="M12 4l3 3"/>
+            </svg>
+          </div>
+          <span class="sport-name">游泳</span>
+        </div>
+        <div class="sport-card" data-sport="run" onclick="selectSport(this)">
+          <div class="sport-icon sport-icon-run">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="5" r="2"/>
+              <path d="M7 21l3-7 3 2 3-5"/>
+              <path d="M9 14l-2 4"/>
+              <path d="M15 11l2 4"/>
+            </svg>
+          </div>
+          <span class="sport-name">跑步</span>
+        </div>
+        <div class="sport-card" data-sport="bike" onclick="selectSport(this)">
+          <div class="sport-icon sport-icon-bike">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="6" cy="17" r="4"/>
+              <circle cx="18" cy="17" r="4"/>
+              <path d="M6 17l4-8h4l2 4"/>
+              <path d="M14 9l2-4"/>
+            </svg>
+          </div>
+          <span class="sport-name">骑行</span>
+        </div>
+        <div class="sport-card" data-sport="yoga" onclick="selectSport(this)">
+          <div class="sport-icon sport-icon-yoga">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="4" r="2"/>
+              <path d="M12 8v5"/>
+              <path d="M8 18l4-5 4 5"/>
+              <path d="M6 13h12"/>
+            </svg>
+          </div>
+          <span class="sport-name">瑜伽</span>
+        </div>
+      </div>
+
+      <!-- Custom Sport Button -->
+      <button class="custom-sport-btn" onclick="showToast('自定义运动（原型演示）')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        自定义运动
+      </button>
+
+      <!-- Sport Detail Form (游泳 selected by default) -->
+      <div class="sport-form visible" id="sportForm">
+
+        <div class="form-divider"></div>
+
+        <!-- Distance -->
+        <div class="input-group">
+          <label>距离</label>
+          <div class="input-field-prefixed">
+            <input type="number" class="input-field" value="1500" placeholder="0">
+            <span class="input-suffix">m</span>
+          </div>
+        </div>
+
+        <!-- Time -->
+        <div class="input-group">
+          <label>时间</label>
+          <div class="time-input-row">
+            <input type="number" value="45" placeholder="0" min="0" max="999">
+            <span class="time-sep">:</span>
+            <input type="number" value="00" placeholder="00" min="0" max="59">
+          </div>
+        </div>
+
+        <!-- Laps -->
+        <div class="input-group">
+          <label>趟数</label>
+          <div class="input-field-prefixed">
+            <input type="number" class="input-field" value="30" placeholder="0">
+            <span class="input-suffix">趟</span>
+          </div>
+        </div>
+
+        <!-- Notes -->
+        <div class="input-group">
+          <label>备注</label>
+          <textarea class="input-field" rows="3" placeholder="记录今天的训练感受..."></textarea>
+        </div>
+
+        <!-- Save Button -->
+        <button class="btn-primary" onclick="showToast('运动记录已保存')">保存</button>
+
+        <div style="height: 16px;"></div>
+      </div>
+
+    </div><!-- /page-content -->
+
+    <!-- NO Tab Bar - this is a push page -->
+
+  </div><!-- /app-container -->
+</div><!-- /phone-frame -->
+
+<script>
+/**
+ * Select a sport card and update the form title.
+ */
+function selectSport(el) {
+  document.querySelectorAll('.sport-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  // Show the form if it was hidden
+  const form = document.getElementById('sportForm');
+  form.classList.add('visible');
+}
+</script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -272,6 +272,7 @@ textarea.input-field { height: auto; min-height: 80px; padding: 12px 16px; resiz
   cursor: pointer;
   display: flex;
   align-items: center;
+  justify-content: center;
   transition: box-shadow 0.2s, background 0.2s;
 }
 .custom-select .select-trigger::after {
@@ -312,6 +313,7 @@ textarea.input-field { height: auto; min-height: 80px; padding: 12px 16px; resiz
   color: var(--text-primary);
   cursor: pointer;
   transition: background 0.1s;
+  text-align: center;
 }
 .custom-select .select-option:hover { background: var(--bg-alt); }
 .custom-select .select-option.selected {

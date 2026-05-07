@@ -84,6 +84,12 @@
       gap: 12px;
       font-size: 13px;
       color: rgba(255,255,255,0.6);
+      flex-wrap: wrap;
+    }
+    .active-plan-card .plan-meta .meta-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
     }
     .active-plan-card .plan-tag {
       display: inline-flex;
@@ -316,6 +322,38 @@
       width: 20px;
       height: 20px;
     }
+
+    /* Weekday selector buttons */
+    .weekday-btn {
+      padding: 8px 14px;
+      border-radius: var(--radius-md);
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      background: var(--bg-alt);
+      transition: all 0.15s;
+    }
+    .weekday-btn.active {
+      background: var(--accent);
+      color: white;
+    }
+    .weekday-btn:active { transform: scale(0.95); }
+
+    /* Interval stepper buttons */
+    .interval-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--bg-alt);
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s;
+    }
+    .interval-btn:active { background: var(--border); }
   </style>
 </head>
 <body>
@@ -356,9 +394,11 @@
         <div class="active-plan-card fade-in">
           <div class="plan-name">推/拉/蹲 3日循环</div>
           <div class="plan-meta">
-            <span>3 天 / 循环</span>
+            <span class="meta-item">每周固定日</span>
             <span>&#183;</span>
-            <span>已使用 28 天</span>
+            <span class="meta-item">周一/三/五</span>
+            <span>&#183;</span>
+            <span class="meta-item">已使用 28 天</span>
           </div>
           <div style="margin-top:12px;">
             <span class="plan-tag">
@@ -477,6 +517,58 @@
             <div class="flex items-center gap-8">
               <input type="number" class="input-field" style="width:80px; text-align:center;" value="4" min="1" max="52">
               <span style="font-size:15px; color:var(--text-secondary);">周</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Schedule Type Selector -->
+        <div class="form-group">
+          <label class="form-label">排期方式</label>
+          <div class="segmented">
+            <div class="seg-option active" data-target="panel-weekly" onclick="switchSchedule('weekly')">每周固定日</div>
+            <div class="seg-option" data-target="panel-interval" onclick="switchSchedule('interval')">固定间隔</div>
+          </div>
+
+          <!-- Weekly schedule: pick weekdays -->
+          <div id="panel-weekly" class="tab-panel" style="margin-top:12px;">
+            <div style="font-size:13px; color:var(--text-secondary); margin-bottom:8px;">选择每周训练日</div>
+            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+              <button class="weekday-btn active" onclick="toggleWeekday(this)" data-day="1">周一</button>
+              <button class="weekday-btn" onclick="toggleWeekday(this)" data-day="2">周二</button>
+              <button class="weekday-btn active" onclick="toggleWeekday(this)" data-day="3">周三</button>
+              <button class="weekday-btn" onclick="toggleWeekday(this)" data-day="4">周四</button>
+              <button class="weekday-btn active" onclick="toggleWeekday(this)" data-day="5">周五</button>
+              <button class="weekday-btn" onclick="toggleWeekday(this)" data-day="6">周六</button>
+              <button class="weekday-btn" onclick="toggleWeekday(this)" data-day="0">周日</button>
+            </div>
+            <div style="margin-top:12px;">
+              <div class="flex items-center gap-8 mb-8">
+                <span class="tag tag-push" style="width:40px; justify-content:center">周一</span>
+                <span style="font-size:15px">→ 推日</span>
+              </div>
+              <div class="flex items-center gap-8 mb-8">
+                <span class="tag tag-pull" style="width:40px; justify-content:center">周三</span>
+                <span style="font-size:15px">→ 拉日</span>
+              </div>
+              <div class="flex items-center gap-8">
+                <span class="tag tag-leg" style="width:40px; justify-content:center">周五</span>
+                <span style="font-size:15px">→ 蹲日</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Interval schedule: rest N days between sessions -->
+          <div id="panel-interval" class="tab-panel hidden" style="margin-top:12px;">
+            <div style="font-size:13px; color:var(--text-secondary); margin-bottom:8px;">每次训练后休息天数</div>
+            <div class="flex items-center gap-12" style="margin-bottom:16px;">
+              <button class="interval-btn" onclick="adjustInterval(-1)">−</button>
+              <span id="intervalValue" style="font-size:28px; font-weight:700; min-width:30px; text-align:center">1</span>
+              <button class="interval-btn" onclick="adjustInterval(1)">+</button>
+              <span style="font-size:15px; color:var(--text-secondary)">天</span>
+            </div>
+            <div style="font-size:13px; color:var(--text-secondary); margin-bottom:8px;">预览排期</div>
+            <div style="background:var(--bg-alt); border-radius:var(--radius-md); padding:12px; font-size:13px; line-height:1.8; color:var(--text-secondary)">
+              <span style="color:var(--text-primary)">Day1 推日</span> → 休 → <span style="color:var(--text-primary)">Day2 拉日</span> → 休 → <span style="color:var(--text-primary)">Day3 蹲日</span> → 休 → <span style="color:var(--text-primary)">Day1 推日</span> → ...
             </div>
           </div>
         </div>
@@ -655,6 +747,24 @@
       editMode.classList.remove('visible');
       toggle.classList.remove('active');
     }
+  }
+
+  // Schedule type switching
+  let currentSchedule = 'weekly';
+  function switchSchedule(type) {
+    currentSchedule = type;
+  }
+
+  // Weekday toggle
+  function toggleWeekday(btn) {
+    btn.classList.toggle('active');
+  }
+
+  // Interval adjuster
+  let intervalDays = 1;
+  function adjustInterval(delta) {
+    intervalDays = Math.max(0, Math.min(6, intervalDays + delta));
+    document.getElementById('intervalValue').textContent = intervalDays;
   }
 </script>
 <script src="app.js"></script>

@@ -14,11 +14,21 @@
       padding: 20px 16px 24px;
       flex-shrink: 0;
       transition: transform 0.3s ease, opacity 0.3s ease;
+      margin-top: auto;
+      z-index: 10;
     }
     .day-detail-card.hidden-card {
-      transform: translateY(20px);
+      transform: translateY(100%);
       opacity: 0;
       pointer-events: none;
+      max-height: 0;
+      padding-top: 0;
+      padding-bottom: 0;
+      overflow: hidden;
+      box-shadow: none;
+    }
+    .day-detail-card:not(.hidden-card) {
+      max-height: 300px;
     }
     .day-detail-card .card-handle {
       width: 36px;
@@ -323,23 +333,23 @@
         </div>
       </div>
 
-      <!-- Spacer -->
-      <div style="height:16px;"></div>
-
-      <!-- Day Detail Card -->
-      <div class="day-detail-card hidden-card" id="dayDetailCard">
-        <div class="card-handle"></div>
-        <div class="detail-header">
-          <div class="detail-title">
-            <span class="tag tag-pull" id="detailTag">拉日</span>
-            <span class="detail-date" id="detailDate">5月7日 周四</span>
-          </div>
-        </div>
-        <div class="detail-exercises" id="detailExercises">引体向上/杠铃划船/二头</div>
-        <button class="btn-primary" id="detailBtn" onclick="navigateTo('workout.html')">开始训练</button>
-      </div>
+      <!-- Spacer for bottom card -->
+      <div style="height:140px;"></div>
 
     </div><!-- /page-content -->
+
+    <!-- Day Detail Card (fixed above tab bar) -->
+    <div class="day-detail-card hidden-card" id="dayDetailCard">
+      <div class="card-handle"></div>
+      <div class="detail-header">
+        <div class="detail-title">
+          <span class="tag tag-pull" id="detailTag">拉日</span>
+          <span class="detail-date" id="detailDate">5月7日 周四</span>
+        </div>
+      </div>
+      <div class="detail-exercises" id="detailExercises">引体向上/杠铃划船/二头</div>
+      <button class="btn-primary" id="detailBtn" onclick="location.href='workout.html'">开始训练</button>
+    </div>
 
     <!-- Tab Bar -->
     <div class="tab-bar">

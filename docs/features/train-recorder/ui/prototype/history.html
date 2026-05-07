@@ -72,36 +72,9 @@
     }
     .chart-container svg { width: 100%; height: auto; }
 
-    /* Exercise selector */
-    .exercise-selector {
-      width: 100%;
-      height: 44px;
-      background: var(--bg-alt);
-      border: none;
-      border-radius: var(--radius-md);
-      padding: 0 40px 0 16px;
-      font-size: 17px;
-      font-weight: 500;
-      color: var(--text-primary);
-      outline: none;
-      appearance: none;
-      -webkit-appearance: none;
-      -moz-appearance: none;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%2386868b' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: right 16px center;
-      margin-bottom: 16px;
-      cursor: pointer;
-    }
-    .exercise-selector:focus {
-      box-shadow: 0 0 0 4px rgba(0,113,227,0.2);
-      background-color: var(--bg);
-    }
-    .exercise-selector option {
-      background: var(--bg);
-      color: var(--text-primary);
-      border: none;
-    }
+    /* Exercise selector — uses custom-select from shared styles */
+    .exercise-selector-wrapper { margin-bottom: 16px; }
+
 
     /* Volume bar chart */
     .bar-chart-container {
@@ -311,13 +284,16 @@
         <div id="panel-progress" class="tab-panel hidden">
 
           <!-- Exercise selector -->
-          <select class="exercise-selector">
-            <option value="squat" selected>深蹲</option>
-            <option value="bench">卧推</option>
-            <option value="deadlift">硬拉</option>
-            <option value="ohp">推举</option>
-            <option value="row">划船</option>
-          </select>
+          <div class="custom-select exercise-selector-wrapper" id="exercise-select">
+            <div class="select-trigger" onclick="toggleSelect(this)">深蹲</div>
+            <div class="select-options">
+              <div class="select-option selected" onclick="pickOption(this, '深蹲')">深蹲</div>
+              <div class="select-option" onclick="pickOption(this, '卧推')">卧推</div>
+              <div class="select-option" onclick="pickOption(this, '硬拉')">硬拉</div>
+              <div class="select-option" onclick="pickOption(this, '推举')">推举</div>
+              <div class="select-option" onclick="pickOption(this, '划船')">划船</div>
+            </div>
+          </div>
 
           <!-- Progress Line Chart -->
           <div class="chart-container">
@@ -545,5 +521,24 @@
   </div><!-- /phone-frame -->
 
   <script src="app.js"></script>
+  <script>
+    function toggleSelect(trigger) {
+      const cs = trigger.closest('.custom-select');
+      cs.classList.toggle('open');
+    }
+    function pickOption(opt, label) {
+      const cs = opt.closest('.custom-select');
+      cs.querySelectorAll('.select-option').forEach(o => o.classList.remove('selected'));
+      opt.classList.add('selected');
+      cs.querySelector('.select-trigger').textContent = label;
+      cs.classList.remove('open');
+    }
+    // Close on outside click
+    document.addEventListener('click', e => {
+      if (!e.target.closest('.custom-select')) {
+        document.querySelectorAll('.custom-select.open').forEach(s => s.classList.remove('open'));
+      }
+    });
+  </script>
 </body>
 </html>

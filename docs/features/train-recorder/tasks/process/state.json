@@ -1,14 +1,15 @@
 {
-  "task_id": "4.6",
-  "key": "4.6-onboarding-page",
-  "title": "Onboarding Page",
-  "priority": "P2",
-  "estimatedTime": "3h",
+  "task_id": "4.gate",
+  "key": "4-gate",
+  "title": "Phase 4 Exit Gate",
+  "priority": "P0",
+  "estimatedTime": "1h",
   "dependencies": [
-    "3.gate"
+    "4.summary"
   ],
-  "file": "4.6-onboarding-page.md",
-  "record": "records/4.6-onboarding-page.md",
-  "startedTime": "2026-05-09 04:46",
+  "file": "4-gate.md",
+  "record": "records/4-gate.md",
+  "startedTime": "2026-05-09 04:55",
+  "breaking": true,
   "scope": "all"
 }

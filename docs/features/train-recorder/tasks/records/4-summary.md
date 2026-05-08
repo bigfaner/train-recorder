@@ -8,7 +8,9 @@ time_spent: "~2m"
 # Task Record: 4.summary Phase 4 Summary
 
 ## Summary
+
 ## Tasks Completed
+
 - 4.1: Implemented history page (Tab 3) with 4-segment control, history cards with PR badges, progress/volume/PR panels, training type filter, empty state, delete confirmation, and pure history-helpers module with 48 tests
 - 4.2: Implemented stats page (Tab 4) with HeroCard, FourGridSummary, WeeklyVolumeChart, PRList, TrainingHeatmap, EmptyStatsState, and StatsService for computing all statistics from repos (41 tests)
 - 4.3: Implemented settings page (Tab 5) with grouped settings list, weight unit toggle, rest time picker, notification toggles, data management (export/import/clear), navigation rows, reusable settings components, and BottomSheet (879 total suite tests)
@@ -17,8 +19,9 @@ time_spent: "~2m"
 - 4.6: Implemented first-time onboarding flow with welcome steps (4 intro screens), template selection (PPL/Upper/Lower/Full Body), plan configuration review, skip button, and props-based dependency injection (982 total suite tests)
 
 ## Key Decisions
+
 - 4.1: Follow injected-props pattern - HistoryScreen receives all data via props for testability and DI
-- 4.1: Extracted all pure logic into history-helpers.ts (17 exported functions) matching *-helpers.ts convention
+- 4.1: Extracted all pure logic into history-helpers.ts (17 exported functions) matching \*-helpers.ts convention
 - 4.1: Charts use View-based bar rendering instead of victory-native for React Native compatibility
 - 4.1: Training type filter reuses CalendarFilterTabs component from calendar module
 - 4.1: Progress panel uses horizontal ScrollView for exercise selector instead of dropdown
@@ -42,26 +45,28 @@ time_spent: "~2m"
 - 4.6: PlanConfig shows review-only view of template exercises - no weight editing since templates have null weights
 
 ## Types & Interfaces Changed
-| Name | Change | Affects |
-|------|--------|---------|
-| HistoryScreen (props) | added | 4.1, future integration |
-| history-helpers functions | added | 4.1 |
-| StatsService | added | 4.2, future integration |
-| HeroCard/FourGridSummary/WeeklyVolumeChart/PRList/TrainingHeatmap | added | 4.2 |
-| SettingsScreen (props) | added | 4.3, future integration |
-| SettingsComponents (SettingsGroup/SettingsRow/ToggleRow/etc.) | added | 4.3 |
-| UserPreferences | modified (added vibrationEnabled, soundEnabled) | 4.3, settings store |
-| BottomSheet | added | 4.3 |
-| BodyDataScreen (props) | added | 4.4, future integration |
-| body-helpers functions | added | 4.4 |
-| OtherSportScreen (props) | added | 4.5, future integration |
-| sport-helpers functions | added | 4.5 |
-| OnboardingScreen (props) | added | 4.6, future integration |
-| OnboardingComponents | added | 4.6 |
+
+| Name                                                              | Change                                          | Affects                 |
+| ----------------------------------------------------------------- | ----------------------------------------------- | ----------------------- |
+| HistoryScreen (props)                                             | added                                           | 4.1, future integration |
+| history-helpers functions                                         | added                                           | 4.1                     |
+| StatsService                                                      | added                                           | 4.2, future integration |
+| HeroCard/FourGridSummary/WeeklyVolumeChart/PRList/TrainingHeatmap | added                                           | 4.2                     |
+| SettingsScreen (props)                                            | added                                           | 4.3, future integration |
+| SettingsComponents (SettingsGroup/SettingsRow/ToggleRow/etc.)     | added                                           | 4.3                     |
+| UserPreferences                                                   | modified (added vibrationEnabled, soundEnabled) | 4.3, settings store     |
+| BottomSheet                                                       | added                                           | 4.3                     |
+| BodyDataScreen (props)                                            | added                                           | 4.4, future integration |
+| body-helpers functions                                            | added                                           | 4.4                     |
+| OtherSportScreen (props)                                          | added                                           | 4.5, future integration |
+| sport-helpers functions                                           | added                                           | 4.5                     |
+| OnboardingScreen (props)                                          | added                                           | 4.6, future integration |
+| OnboardingComponents                                              | added                                           | 4.6                     |
 
 ## Conventions Established
+
 - 4.1: Injected-props pattern for all screen components - screens receive data via props for testability, route files wire to store
-- 4.1: *-helpers.ts convention for pure logic modules co-located with components
+- 4.1: \*-helpers.ts convention for pure logic modules co-located with components
 - 4.1: View-based chart rendering instead of native chart libraries for testability
 - 4.2: StatsService pure computation pattern with repo injection
 - 4.3: Settings helpers as pure functions exported separately for testability
@@ -70,6 +75,7 @@ time_spent: "~2m"
 - 4.6: Multi-step onboarding flow with useState for step management
 
 ## Deviations from Design
+
 - Charts use View-based rendering instead of victory-native throughout (consistent with Phase 3 deviation) - native chart library integration deferred
 - Left-swipe uses onPress handlers instead of full gesture UI - react-native-gesture-handler integration deferred
 - Stats screen shows empty state placeholder - database integration deferred to store/hook layer
@@ -79,23 +85,29 @@ time_spent: "~2m"
 ## Changes
 
 ### Files Created
+
 无
 
 ### Files Modified
+
 无
 
 ### Key Decisions
+
 无
 
 ## Test Results
+
 - **Passed**: 0
 - **Failed**: 0
 - **Coverage**: N/A (task has no tests)
 
 ## Acceptance Criteria
+
 - [x] All phase task records read and analyzed
 - [x] Summary follows the exact template with all 5 sections
 - [x] Types & Interfaces table lists every changed type
 
 ## Notes
+
 无

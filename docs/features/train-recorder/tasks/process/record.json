@@ -1,36 +1,38 @@
 {
-  "taskId": "2.4",
+  "taskId": "2.5",
   "status": "completed",
-  "summary": "Implemented PR Tracker service (pr-tracker.ts) and Exercise History service (exercise-history.ts). PR Tracker detects weight and volume PRs, supports recalculation for rollback on workout deletion, and provides Epley 1RM estimation. Exercise History provides recent session summaries, exercise detail summaries with PRs, and total session counts.",
+  "summary": "Implemented three utility services: UnitConversion (kg/lbs conversion with barbell plate rounding), DataExport (JSON export of all training data with date range filtering), and DataImport (schema validation, conflict detection, and merge with skip/overwrite strategies). All services use dependency injection for testability.",
   "filesCreated": [
-    "src/services/pr-tracker.ts",
-    "src/services/exercise-history.ts",
-    "__tests__/services/pr-tracker.test.ts",
-    "__tests__/services/exercise-history.test.ts"
+    "src/services/unit-conversion.ts",
+    "src/services/data-export.ts",
+    "src/services/data-import.ts",
+    "__tests__/services/unit-conversion.test.ts",
+    "__tests__/services/data-export.test.ts"
   ],
   "filesModified": [],
   "keyDecisions": [
-    "PR types: 'weight' (max single-set weight) and 'volume' (max weight*reps per set) tracked independently",
-    "checkAndRecordPR returns the first PR type detected (weight checked before volume), but both are recorded in DB if both thresholds exceeded",
-    "recalculatePR deletes all existing PRs for an exercise then rescans all workout_sets via workout_exercises to rebuild from scratch",
-    "getEstimated1RM uses Epley formula: weight * (1 + reps/30)",
-    "Exercise History uses per-WorkoutExercise grouping to handle same-exercise-multiple-times (US-17)",
-    "Skipped exercises are excluded from both PR calculations and session counts",
-    "Used type aliases instead of empty interfaces for service type exports to satisfy @typescript-eslint/no-empty-object-type"
+    "roundToPlate generates all achievable sums from standard plates (each 0-2 copies) rather than requiring a barbell, making it work for dumbbells and lighter weights too",
+    "DataExport and DataImport use adapter interfaces (FileSystemAdapter, ShareAdapter, FileReaderAdapter) for dependency injection, enabling testing without native expo modules",
+    "Import wraps all database writes in a transaction with rollback on error",
+    "Export converts bigint biz_key values to number for JSON serialization",
+    "Conflict detection checks biz_key existence before import, supporting both skip and overwrite strategies"
   ],
-  "testsPassed": 45,
+  "testsPassed": 56,
   "testsFailed": 0,
-  "coverage": 96.8,
+  "coverage": 94.16,
   "acceptanceCriteria": [
-    { "criterion": "checkAndRecordPR detects new PR and creates PersonalRecord", "met": true },
-    { "criterion": "PR types: weight (max single-set weight) and volume (max weight*reps)", "met": true },
-    { "criterion": "recalculatePR scans all WorkoutSets and rebuilds PR records from scratch", "met": true },
-    { "criterion": "getPRList() returns all PR records grouped by exercise", "met": true },
-    { "criterion": "getEstimated1RM uses formula: weight * (1 + reps / 30)", "met": true },
-    { "criterion": "getExerciseSummary returns ExerciseDetailSummary with recent 5 sessions + PRs + total count", "met": true },
-    { "criterion": "getRecentSessions returns session summaries with set details", "met": true },
-    { "criterion": "Deleting a workout with PR triggers recalculatePR and PR rolls back to previous max", "met": true },
-    { "criterion": "Unit tests: PR detection, rollback, 1RM estimation, session aggregation", "met": true }
+    { "criterion": "kgToLbs(kg) and lbsToKg(lbs) with conversion factor 2.20462", "met": true },
+    { "criterion": "displayWeight(kg, unit) formats weight with unit label", "met": true },
+    { "criterion": "storeWeight(input, unit) converts to kg for storage (always stores as kg)", "met": true },
+    { "criterion": "roundToPlate(kg) rounds to nearest achievable barbell plate combination", "met": true },
+    { "criterion": "exportData(range) generates JSON file with all entity arrays filtered by date range", "met": true },
+    { "criterion": "Export format: { training_plans, workout_sessions, ..., user_settings } arrays", "met": true },
+    { "criterion": "shareFile(filePath) triggers system share sheet (email/cloud/local)", "met": true },
+    { "criterion": "getEstimatedSize(range) returns approximate file size in KB", "met": true },
+    { "criterion": "validateFile(filePath) checks JSON schema, required fields, detects conflicts", "met": true },
+    { "criterion": "importData(filePath, conflictStrategy) merges data with conflict resolution (skip/overwrite)", "met": true },
+    { "criterion": "Import wrapped in transaction; rolled back on error", "met": true },
+    { "criterion": "Unit tests for conversion accuracy, export format, import validation", "met": true }
   ],
-  "notes": "All 362 project tests pass (including 45 new tests). PR tracker coverage: 96.77% statements. Exercise history coverage: 97.05% statements. Services use existing repository pattern with sql.js in-memory testing."
+  "notes": "56 new tests added (30 unit-conversion + 26 export/import). Full suite passes with 418 tests total. Pre-existing lint errors in other files are unrelated."
 }

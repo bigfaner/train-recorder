@@ -1,14 +1,14 @@
 {
-  "task_id": "2.4",
-  "key": "2.4-pr-and-history",
-  "title": "PR Tracker + Exercise History Services",
-  "priority": "P0",
+  "task_id": "2.5",
+  "key": "2.5-utility-services",
+  "title": "Unit Conversion + Data Export/Import Services",
+  "priority": "P1",
   "estimatedTime": "3h",
   "dependencies": [
     "1.gate"
   ],
-  "file": "2.4-pr-and-history.md",
-  "record": "records/2.4-pr-and-history.md",
-  "startedTime": "2026-05-09 00:56",
+  "file": "2.5-utility-services.md",
+  "record": "records/2.5-utility-services.md",
+  "startedTime": "2026-05-09 01:06",
   "scope": "all"
 }

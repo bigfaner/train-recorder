@@ -1,15 +1,14 @@
 {
-  "task_id": "1.3",
-  "key": "1.3-database-schema",
-  "title": "Database Schema + Migration Manager",
+  "task_id": "1.4",
+  "key": "1.4-core-repos",
+  "title": "Core Repositories (Plan, Day, Exercise, PlanExercise)",
   "priority": "P0",
-  "estimatedTime": "2h",
+  "estimatedTime": "3h",
   "dependencies": [
-    "1.1",
-    "1.2"
+    "1.3"
   ],
-  "file": "1.3-database-schema.md",
-  "record": "records/1.3-database-schema.md",
-  "startedTime": "2026-05-08 23:33",
+  "file": "1.4-core-repos.md",
+  "record": "records/1.4-core-repos.md",
+  "startedTime": "2026-05-08 23:45",
   "scope": "all"
 }

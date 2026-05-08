@@ -1,35 +1,38 @@
 {
-  "taskId": "1.3",
+  "taskId": "1.4",
   "status": "completed",
-  "summary": "Implemented database initialization module with all 16 CREATE TABLE statements, 15 CREATE INDEX statements matching schema.sql exactly, a migration manager for schema version management, and built-in exercise seed data per PRD 5.5.",
+  "summary": "Implemented BaseRepository<T> generic CRUD class and four concrete repositories (TrainingPlan, TrainingDay, Exercise, PlanExercise) with full integration tests using sql.js in-memory SQLite. Created DatabaseAdapter interface to abstract expo-sqlite from test backends.",
   "filesCreated": [
-    "src/db/schema.ts",
-    "src/db/database.ts",
-    "src/db/migrations/migration-manager.ts",
-    "src/db/migrations/index.ts",
-    "__tests__/db/schema.test.ts",
-    "__tests__/db/migrations.test.ts"
+    "src/db/database-adapter.ts",
+    "src/db/repositories/base.repository.ts",
+    "src/db/repositories/training-plan.repo.ts",
+    "src/db/repositories/training-day.repo.ts",
+    "src/db/repositories/exercise.repo.ts",
+    "src/db/repositories/plan-exercise.repo.ts",
+    "__tests__/db/test-helpers.ts",
+    "__tests__/db/repositories/base.repository.test.ts"
   ],
   "filesModified": [],
   "keyDecisions": [
-    "All CREATE TABLE/INDEX use IF NOT EXISTS for idempotent initialization",
-    "No FOREIGN KEY constraints per design decision (application-layer integrity)",
-    "Migration version tracked in user_settings table (setting_key='schema_version')",
-    "Built-in exercises seeded only on first init (when DB has no exercises)",
-    "database.ts uses singleton pattern for DB connection and snowflake generator",
-    "SnowflakeIdGenerator interface used (not class) for type compatibility with createSnowflakeGenerator()"
+    "Created DatabaseAdapter interface to abstract expo-sqlite sync API, enabling sql.js-based integration testing without native dependencies",
+    "Used factory functions (createXxxRepo) instead of classes for simpler DI and testability",
+    "bigint biz_key values are converted to number via toDbValue() at the SQLite boundary since both expo-sqlite and sql.js store INTEGER as JS number",
+    "BaseRepository.create() excludes 'id' column from INSERT (auto-increment), includes it in SELECT",
+    "Exercise soft-delete via is_deleted=1 flag; findAllActive() and findByCategory() filter is_deleted=0",
+    "TrainingPlan.activatePlan() deactivates all other plans first (single active plan constraint)",
+    "PlanExercise stores sets_config as JSON string; parse on read, stringify on write (application responsibility)"
   ],
-  "testsPassed": 52,
+  "testsPassed": 98,
   "testsFailed": 0,
-  "coverage": 93.61,
+  "coverage": 89.44,
   "acceptanceCriteria": [
-    { "criterion": "src/db/database.ts initializes expo-sqlite database connection", "met": true },
-    { "criterion": "src/db/schema.ts contains all 15 CREATE TABLE statements matching schema.sql exactly", "met": true },
-    { "criterion": "All 15 CREATE INDEX statements from schema.sql executed", "met": true },
-    { "criterion": "src/db/migrations/ directory with migration manager that tracks schema version", "met": true },
-    { "criterion": "Database initializes without errors on first run", "met": true },
-    { "criterion": "Re-running initialization is idempotent (no errors, no data loss)", "met": true },
-    { "criterion": "All column types, constraints, and defaults match er-diagram.md entity details", "met": true }
+    { "criterion": "src/db/repositories/base.repository.ts implements BaseRepository<T> interface (findById, findByBizKey, findAll, create, update, deleteById)", "met": true },
+    { "criterion": "training-plan.repo.ts implements full CRUD for TrainingPlan with is_active toggle logic", "met": true },
+    { "criterion": "training-day.repo.ts implements CRUD with findByPlanBizKey for querying days of a plan", "met": true },
+    { "criterion": "exercise.repo.ts implements CRUD with soft-delete (is_deleted flag), findByCategory", "met": true },
+    { "criterion": "plan-exercise.repo.ts implements CRUD with findByTrainingDayBizKey, JSON parse/serialize for sets_config", "met": true },
+    { "criterion": "All repositories use snowflake biz_key for entity association (not auto-increment id)", "met": true },
+    { "criterion": "Integration tests with in-memory SQLite pass for all CRUD operations", "met": true }
   ],
-  "notes": "database.ts imports expo-sqlite (native module) so it cannot be unit-tested directly in Jest; schema.ts and migration-manager.ts both have 100% coverage. Schema has 16 tables (15 from schema.sql + user_settings which was in schema.sql too - total is 16). Built-in exercises count is 21 (4+3+4+4+3+3 per PRD 5.5)."
+  "notes": "Added sql.js and @types/sql.js as devDependencies for in-memory SQLite testing (better-sqlite3 requires native compilation). Installed via npm --legacy-peer-deps."
 }

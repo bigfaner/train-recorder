@@ -9,9 +9,9 @@ export interface TrainingPlan {
   id: number;
   biz_key: bigint;
   plan_name: string;
-  plan_mode: 'fixed_cycle' | 'infinite_loop';
+  plan_mode: "fixed_cycle" | "infinite_loop";
   cycle_length: number | null;
-  schedule_mode: 'weekly_fixed' | 'fixed_interval';
+  schedule_mode: "weekly_fixed" | "fixed_interval";
   rest_days: number;
   weekly_config: string | null; // JSON: weekday -> training_day_biz_key mapping
   is_active: 0 | 1;
@@ -24,7 +24,7 @@ export interface TrainingDay {
   biz_key: bigint;
   plan_biz_key: bigint;
   day_name: string;
-  training_type: 'push' | 'pull' | 'legs' | 'custom';
+  training_type: "push" | "pull" | "legs" | "custom";
   order_index: number;
   created_at: string;
   updated_at: string;
@@ -35,13 +35,13 @@ export interface Exercise {
   biz_key: bigint;
   exercise_name: string;
   category:
-    | 'core_powerlifting'
-    | 'upper_push'
-    | 'upper_pull'
-    | 'lower'
-    | 'core'
-    | 'shoulder'
-    | 'custom';
+    | "core_powerlifting"
+    | "upper_push"
+    | "upper_pull"
+    | "lower"
+    | "core"
+    | "shoulder"
+    | "custom";
   increment: number;
   default_rest: number;
   is_custom: 0 | 1;
@@ -52,14 +52,14 @@ export interface Exercise {
 
 // SetsConfig: discriminated union on mode field
 export interface FixedSetsConfig {
-  mode: 'fixed';
+  mode: "fixed";
   target_reps: number;
   target_weight: number | null;
   target_repeat: number;
 }
 
 export interface CustomSetsConfig {
-  mode: 'custom';
+  mode: "custom";
   sets: Array<{
     target_reps: number;
     target_weight: number | null;
@@ -84,8 +84,8 @@ export interface WorkoutSession {
   id: number;
   biz_key: bigint;
   session_date: string; // 'YYYY-MM-DD'
-  training_type: 'push' | 'pull' | 'legs' | 'custom';
-  session_status: 'in_progress' | 'completed' | 'completed_partial';
+  training_type: "push" | "pull" | "legs" | "custom";
+  session_status: "in_progress" | "completed" | "completed_partial";
   started_at: string;
   ended_at: string | null;
   is_backlog: 0 | 1;
@@ -99,12 +99,12 @@ export interface WorkoutExercise {
   workout_session_biz_key: bigint;
   exercise_biz_key: bigint;
   order_index: number;
-  exercise_status: 'pending' | 'in_progress' | 'completed' | 'skipped';
+  exercise_status: "pending" | "in_progress" | "completed" | "skipped";
   exercise_note: string | null;
   suggested_weight: number | null;
   target_sets: number;
   target_reps: number;
-  exercise_mode: 'fixed' | 'custom';
+  exercise_mode: "fixed" | "custom";
   created_at: string;
 }
 
@@ -147,7 +147,7 @@ export interface PersonalRecord {
   id: number;
   biz_key: bigint;
   exercise_biz_key: bigint;
-  pr_type: 'weight' | 'volume';
+  pr_type: "weight" | "volume";
   pr_value: number;
   pr_date: string; // 'YYYY-MM-DD'
   workout_set_biz_key: bigint | null;
@@ -222,7 +222,7 @@ export interface BaseRepository<T> {
   findByBizKey(bizKey: bigint): Promise<T | null>;
   findAll(filter?: Partial<T>, orderBy?: string, limit?: number): Promise<T[]>;
   create(
-    data: Omit<T, 'id' | 'biz_key' | 'created_at' | 'updated_at'>,
+    data: Omit<T, "id" | "biz_key" | "created_at" | "updated_at">,
   ): Promise<T>;
   update(id: number, data: Partial<T>): Promise<T>;
   deleteById(id: number): Promise<void>;
@@ -242,12 +242,12 @@ export interface CalendarDay {
   isSkipped: boolean;
   consecutiveSkips: number;
   dayType:
-    | 'training'
-    | 'rest'
-    | 'other_sport'
-    | 'completed'
-    | 'completed_partial'
-    | 'skipped';
+    | "training"
+    | "rest"
+    | "other_sport"
+    | "completed"
+    | "completed_partial"
+    | "skipped";
 }
 
 export interface CalendarComputer {
@@ -262,26 +262,20 @@ export interface CalendarComputer {
     plan: TrainingPlan,
     days: TrainingDay[],
   ): Promise<CalendarDay>;
-  getTodayPlan(
-    plan: TrainingPlan,
-    days: TrainingDay[],
-  ): Promise<CalendarDay>;
+  getTodayPlan(plan: TrainingPlan, days: TrainingDay[]): Promise<CalendarDay>;
   skipTrainingDay(date: string): Promise<void>;
   unskipTrainingDay(date: string): Promise<void>;
   getSkippedDates(planBizKey: bigint): Promise<string[]>;
-  getConsecutiveSkips(
-    planBizKey: bigint,
-    beforeDate: string,
-  ): Promise<number>;
+  getConsecutiveSkips(planBizKey: bigint, beforeDate: string): Promise<number>;
 }
 
 // --- ProgressiveOverload ---
 
 export interface OverloadSuggestion {
-  suggestedWeight: number;
+  suggestedWeight: number | null;
   previousWeight: number | null;
   increment: number;
-  direction: 'increase' | 'maintain' | 'decrease';
+  direction: "increase" | "maintain" | "decrease";
   reason: string;
   consecutiveCompleted: number;
   consecutiveMissed: number;
@@ -292,14 +286,8 @@ export interface ProgressiveOverload {
     exerciseBizKey: bigint,
     targetReps: number,
   ): Promise<OverloadSuggestion>;
-  recordResult(
-    exerciseBizKey: bigint,
-    sets: WorkoutSet[],
-  ): Promise<void>;
-  recalculateChain(
-    exerciseBizKey: bigint,
-    fromDate: string,
-  ): Promise<void>;
+  recordResult(exerciseBizKey: bigint, sets: WorkoutSet[]): Promise<void>;
+  recalculateChain(exerciseBizKey: bigint, fromDate: string): Promise<void>;
 }
 
 // --- TimerService ---
@@ -329,7 +317,7 @@ export interface TimerService {
 
 export interface PersonalRecordEntry {
   exerciseBizKey: bigint;
-  prType: 'weight' | 'volume';
+  prType: "weight" | "volume";
   prValue: number;
   prDate: string;
 }
@@ -375,14 +363,14 @@ export interface ExerciseHistoryService {
 export interface UnitConversion {
   kgToLbs(kg: number): number;
   lbsToKg(lbs: number): number;
-  displayWeight(kg: number, unit: 'kg' | 'lbs'): string;
-  storeWeight(input: number, unit: 'kg' | 'lbs'): number; // always stores as kg
+  displayWeight(kg: number, unit: "kg" | "lbs"): string;
+  storeWeight(input: number, unit: "kg" | "lbs"): number; // always stores as kg
   roundToPlate(kg: number): number; // round to nearest barbell plate combination
 }
 
 // --- DataExportService ---
 
-export type ExportRange = 'all' | '3m' | '6m';
+export type ExportRange = "all" | "3m" | "6m";
 
 export interface ExportResult {
   filePath: string;
@@ -408,7 +396,7 @@ export interface ImportValidation {
 export interface ImportConflict {
   bizKey: bigint;
   entityType: string;
-  action: 'skip' | 'overwrite';
+  action: "skip" | "overwrite";
 }
 
 export interface ImportResult {
@@ -421,7 +409,7 @@ export interface DataImportService {
   validateFile(filePath: string): Promise<ImportValidation>;
   importData(
     filePath: string,
-    conflictStrategy: 'skip' | 'overwrite',
+    conflictStrategy: "skip" | "overwrite",
   ): Promise<ImportResult>;
   previewImport(filePath: string): Promise<ImportValidation>;
 }
@@ -435,7 +423,7 @@ export interface PlanTemplateDayExercise {
 
 export interface PlanTemplateDay {
   dayName: string;
-  trainingType: 'push' | 'pull' | 'legs' | 'custom';
+  trainingType: "push" | "pull" | "legs" | "custom";
   exercises: PlanTemplateDayExercise[];
 }
 
@@ -443,18 +431,18 @@ export interface PlanTemplate {
   templateId: string;
   templateName: string;
   description: string;
-  planMode: 'fixed_cycle' | 'infinite_loop';
-  scheduleMode: 'weekly_fixed' | 'fixed_interval';
+  planMode: "fixed_cycle" | "infinite_loop";
+  scheduleMode: "weekly_fixed" | "fixed_interval";
   days: PlanTemplateDay[];
 }
 
 export interface OnboardingState {
   currentStep:
-    | 'welcome'
-    | 'template_select'
-    | 'plan_config'
-    | 'exercise_config'
-    | 'done';
+    | "welcome"
+    | "template_select"
+    | "plan_config"
+    | "exercise_config"
+    | "done";
   selectedTemplate: PlanTemplate | null;
   completed: boolean;
 }
@@ -472,92 +460,92 @@ export interface OnboardingService {
 // ============================================================
 
 export type ErrorCode =
-  | 'ERR_DB_INIT'
-  | 'ERR_DB_MIGRATION'
-  | 'ERR_VALIDATION'
-  | 'ERR_NOT_FOUND'
-  | 'ERR_PLAN_ACTIVE'
-  | 'ERR_WORKOUT_ACTIVE'
-  | 'ERR_EXERCISE_IN_USE'
-  | 'ERR_EXPORT'
-  | 'ERR_IMPORT'
-  | 'ERR_TIMER';
+  | "ERR_DB_INIT"
+  | "ERR_DB_MIGRATION"
+  | "ERR_VALIDATION"
+  | "ERR_NOT_FOUND"
+  | "ERR_PLAN_ACTIVE"
+  | "ERR_WORKOUT_ACTIVE"
+  | "ERR_EXERCISE_IN_USE"
+  | "ERR_EXPORT"
+  | "ERR_IMPORT"
+  | "ERR_TIMER";
 
 export class AppError extends Error {
   code: ErrorCode;
   constructor(code: ErrorCode, message: string) {
     super(message);
-    this.name = 'AppError';
+    this.name = "AppError";
     this.code = code;
   }
 }
 
 export class DatabaseInitError extends AppError {
   constructor(message: string) {
-    super('ERR_DB_INIT', message);
-    this.name = 'DatabaseInitError';
+    super("ERR_DB_INIT", message);
+    this.name = "DatabaseInitError";
   }
 }
 
 export class MigrationError extends AppError {
   constructor(message: string) {
-    super('ERR_DB_MIGRATION', message);
-    this.name = 'MigrationError';
+    super("ERR_DB_MIGRATION", message);
+    this.name = "MigrationError";
   }
 }
 
 export class ValidationError extends AppError {
   constructor(message: string) {
-    super('ERR_VALIDATION', message);
-    this.name = 'ValidationError';
+    super("ERR_VALIDATION", message);
+    this.name = "ValidationError";
   }
 }
 
 export class NotFoundError extends AppError {
   constructor(message: string) {
-    super('ERR_NOT_FOUND', message);
-    this.name = 'NotFoundError';
+    super("ERR_NOT_FOUND", message);
+    this.name = "NotFoundError";
   }
 }
 
 export class ActivePlanConflict extends AppError {
   constructor(message: string) {
-    super('ERR_PLAN_ACTIVE', message);
-    this.name = 'ActivePlanConflict';
+    super("ERR_PLAN_ACTIVE", message);
+    this.name = "ActivePlanConflict";
   }
 }
 
 export class ActiveWorkoutConflict extends AppError {
   constructor(message: string) {
-    super('ERR_WORKOUT_ACTIVE', message);
-    this.name = 'ActiveWorkoutConflict';
+    super("ERR_WORKOUT_ACTIVE", message);
+    this.name = "ActiveWorkoutConflict";
   }
 }
 
 export class ExerciseInUseError extends AppError {
   constructor(message: string) {
-    super('ERR_EXERCISE_IN_USE', message);
-    this.name = 'ExerciseInUseError';
+    super("ERR_EXERCISE_IN_USE", message);
+    this.name = "ExerciseInUseError";
   }
 }
 
 export class ExportError extends AppError {
   constructor(message: string) {
-    super('ERR_EXPORT', message);
-    this.name = 'ExportError';
+    super("ERR_EXPORT", message);
+    this.name = "ExportError";
   }
 }
 
 export class ImportError extends AppError {
   constructor(message: string) {
-    super('ERR_IMPORT', message);
-    this.name = 'ImportError';
+    super("ERR_IMPORT", message);
+    this.name = "ImportError";
   }
 }
 
 export class TimerError extends AppError {
   constructor(message: string) {
-    super('ERR_TIMER', message);
-    this.name = 'TimerError';
+    super("ERR_TIMER", message);
+    this.name = "TimerError";
   }
 }

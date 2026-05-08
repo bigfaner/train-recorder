@@ -1,11 +1,15 @@
 {
-  "task_id": "1.2",
-  "key": "1.2-types-and-snowflake",
-  "title": "TypeScript Types + Snowflake ID Generator",
+  "task_id": "1.3",
+  "key": "1.3-database-schema",
+  "title": "Database Schema + Migration Manager",
   "priority": "P0",
-  "estimatedTime": "3h",
-  "file": "1.2-types-and-snowflake.md",
-  "record": "records/1.2-types-and-snowflake.md",
-  "startedTime": "2026-05-08 23:24",
+  "estimatedTime": "2h",
+  "dependencies": [
+    "1.1",
+    "1.2"
+  ],
+  "file": "1.3-database-schema.md",
+  "record": "records/1.3-database-schema.md",
+  "startedTime": "2026-05-08 23:33",
   "scope": "all"
 }

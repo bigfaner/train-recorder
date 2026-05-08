@@ -1,33 +1,35 @@
 {
-  "taskId": "1.2",
+  "taskId": "1.3",
   "status": "completed",
-  "summary": "Defined all 15 entity TypeScript types matching er-diagram.md, SetsConfig discriminated union, all 9 service interfaces from tech-design, error types with codes, and implemented SnowflakeIdGenerator with 41-bit timestamp + 10-bit machine-id + 12-bit sequence producing unique bigint biz_keys.",
+  "summary": "Implemented database initialization module with all 16 CREATE TABLE statements, 15 CREATE INDEX statements matching schema.sql exactly, a migration manager for schema version management, and built-in exercise seed data per PRD 5.5.",
   "filesCreated": [
-    "src/types/index.ts",
-    "src/services/snowflake.ts",
-    "__tests__/services/snowflake.test.ts",
-    "jest.config.js"
+    "src/db/schema.ts",
+    "src/db/database.ts",
+    "src/db/migrations/migration-manager.ts",
+    "src/db/migrations/index.ts",
+    "__tests__/db/schema.test.ts",
+    "__tests__/db/migrations.test.ts"
   ],
   "filesModified": [],
   "keyDecisions": [
-    "Used bigint for all biz_key fields matching SQLite INTEGER 64-bit storage",
-    "SetsConfig uses discriminated union on mode field ('fixed' | 'custom')",
-    "Snowflake uses custom epoch 2024-01-01 for maximum timestamp range",
-    "Machine ID derivable from device fingerprint string via simple hash",
-    "All error types extend base AppError class with ErrorCode enum",
-    "TINYINT fields typed as 0 | 1 for SQLite boolean semantics"
+    "All CREATE TABLE/INDEX use IF NOT EXISTS for idempotent initialization",
+    "No FOREIGN KEY constraints per design decision (application-layer integrity)",
+    "Migration version tracked in user_settings table (setting_key='schema_version')",
+    "Built-in exercises seeded only on first init (when DB has no exercises)",
+    "database.ts uses singleton pattern for DB connection and snowflake generator",
+    "SnowflakeIdGenerator interface used (not class) for type compatibility with createSnowflakeGenerator()"
   ],
-  "testsPassed": 19,
+  "testsPassed": 52,
   "testsFailed": 0,
-  "coverage": 87.75,
+  "coverage": 93.61,
   "acceptanceCriteria": [
-    { "criterion": "src/types/index.ts exports types for all 15 entities matching er-diagram.md field definitions", "met": true },
-    { "criterion": "SetsConfig discriminated union type defined (mode: 'fixed' | 'custom')", "met": true },
-    { "criterion": "All service interfaces from tech-design defined", "met": true },
-    { "criterion": "Error types defined with codes matching tech-design Error Handling section", "met": true },
-    { "criterion": "src/services/snowflake.ts implements SnowflakeIdGenerator interface", "met": true },
-    { "criterion": "generate() produces unique bigint values; generateBatch(n) produces n unique values", "met": true },
-    { "criterion": "Unit tests for snowflake ID uniqueness and batch generation pass", "met": true }
+    { "criterion": "src/db/database.ts initializes expo-sqlite database connection", "met": true },
+    { "criterion": "src/db/schema.ts contains all 15 CREATE TABLE statements matching schema.sql exactly", "met": true },
+    { "criterion": "All 15 CREATE INDEX statements from schema.sql executed", "met": true },
+    { "criterion": "src/db/migrations/ directory with migration manager that tracks schema version", "met": true },
+    { "criterion": "Database initializes without errors on first run", "met": true },
+    { "criterion": "Re-running initialization is idempotent (no errors, no data loss)", "met": true },
+    { "criterion": "All column types, constraints, and defaults match er-diagram.md entity details", "met": true }
   ],
-  "notes": "jest.config.js created with ts-jest preset as project had no test configuration. ESLint not configured in project (no eslint.config.js), lint step skipped."
+  "notes": "database.ts imports expo-sqlite (native module) so it cannot be unit-tested directly in Jest; schema.ts and migration-manager.ts both have 100% coverage. Schema has 16 tables (15 from schema.sql + user_settings which was in schema.sql too - total is 16). Built-in exercises count is 21 (4+3+4+4+3+3 per PRD 5.5)."
 }

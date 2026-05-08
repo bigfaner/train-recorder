@@ -1,6 +1,46 @@
 [
-  {"phase": 1, "name": "Data Layer Foundation", "source": "fallback", "gates": [{"afterPhase": 1, "description": "Verify all repositories, schema, and types compile and match design spec"}]},
-  {"phase": 2, "name": "Services + State Management", "source": "fallback", "gates": [{"afterPhase": 2, "description": "Verify all services pass unit tests and stores integrate correctly"}]},
-  {"phase": 3, "name": "Core UI Pages", "source": "fallback", "gates": [{"afterPhase": 3, "description": "Verify core training flow (calendar → workout → feeling) and plan management work end-to-end"}]},
-  {"phase": 4, "name": "Secondary Features", "source": "fallback", "gates": [{"afterPhase": 4, "description": "Verify all remaining pages and features work correctly"}]}
+  {
+    "phase": 1,
+    "name": "Data Layer Foundation",
+    "source": "fallback",
+    "gates": [
+      {
+        "afterPhase": 1,
+        "description": "Verify all repositories, schema, and types compile and match design spec"
+      }
+    ]
+  },
+  {
+    "phase": 2,
+    "name": "Services + State Management",
+    "source": "fallback",
+    "gates": [
+      {
+        "afterPhase": 2,
+        "description": "Verify all services pass unit tests and stores integrate correctly"
+      }
+    ]
+  },
+  {
+    "phase": 3,
+    "name": "Core UI Pages",
+    "source": "fallback",
+    "gates": [
+      {
+        "afterPhase": 3,
+        "description": "Verify core training flow (calendar → workout → feeling) and plan management work end-to-end"
+      }
+    ]
+  },
+  {
+    "phase": 4,
+    "name": "Secondary Features",
+    "source": "fallback",
+    "gates": [
+      {
+        "afterPhase": 4,
+        "description": "Verify all remaining pages and features work correctly"
+      }
+    ]
+  }
 ]

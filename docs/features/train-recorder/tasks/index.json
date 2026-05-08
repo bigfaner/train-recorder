@@ -179,7 +179,7 @@
       "dependencies": [
         "1.gate"
       ],
-      "status": "pending",
+      "status": "completed",
       "file": "2.4-pr-and-history.md",
       "record": "records/2.4-pr-and-history.md",
       "scope": "all"

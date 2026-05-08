@@ -1,14 +1,14 @@
 {
-  "task_id": "2.3",
-  "key": "2.3-timer-service",
-  "title": "Timer Service (Foreground + Background)",
+  "task_id": "2.4",
+  "key": "2.4-pr-and-history",
+  "title": "PR Tracker + Exercise History Services",
   "priority": "P0",
-  "estimatedTime": "4h",
+  "estimatedTime": "3h",
   "dependencies": [
     "1.gate"
   ],
-  "file": "2.3-timer-service.md",
-  "record": "records/2.3-timer-service.md",
-  "startedTime": "2026-05-09 00:49",
+  "file": "2.4-pr-and-history.md",
+  "record": "records/2.4-pr-and-history.md",
+  "startedTime": "2026-05-09 00:56",
   "scope": "all"
 }

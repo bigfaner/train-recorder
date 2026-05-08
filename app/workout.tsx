@@ -1,31 +1,52 @@
-import { View, Text, StyleSheet } from "react-native";
-import { Colors, Typography, Spacing } from "@utils/constants";
+/**
+ * Workout execution page.
+ *
+ * Full-screen immersive mode (tab bar hidden).
+ * Uses WorkoutScreen component + workoutStore for state management.
+ * Auto-navigates to feeling page when all exercises completed.
+ */
 
-export default function WorkoutScreen() {
-  return (
-    <View style={styles.container}>
-      <Text style={styles.title}>训练执行</Text>
-      <Text style={styles.subtitle}>Workout Session</Text>
-    </View>
-  );
+import React, { useCallback } from "react";
+import { useRouter } from "expo-router";
+import { WorkoutScreen } from "@components/workout/WorkoutScreen";
+
+export default function WorkoutPage() {
+  // In production, these dependencies would come from a DI container.
+  // For now, the workout page expects the store to be provided via context.
+  // This is a placeholder that will be wired up when the full DI is implemented.
+  return <WorkoutPlaceholder />;
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: Colors.background,
-    padding: Spacing.contentPadding,
-  },
-  title: {
-    fontSize: Typography.heading1.fontSize,
-    fontWeight: Typography.heading1.fontWeight as "600",
-    color: Colors.textPrimary,
-  },
-  subtitle: {
-    fontSize: Typography.body.fontSize,
-    color: Colors.textSecondary,
-    marginTop: 8,
-  },
-});
+/**
+ * Placeholder screen for when store deps are not yet wired.
+ * Will be replaced with the full implementation in integration.
+ */
+function WorkoutPlaceholder() {
+  const router = useRouter();
+
+  const handleExit = useCallback(() => {
+    router.back();
+  }, [router]);
+
+  const handleAllCompleted = useCallback(() => {
+    router.replace("/feeling");
+  }, [router]);
+
+  return (
+    <WorkoutScreen
+      trainingTypeLabel="推日"
+      exercises={[]}
+      setsByExercise={new Map()}
+      currentExerciseBizKey={null}
+      exerciseNames={{ get: () => undefined }}
+      exerciseIncrements={new Map()}
+      completedExercises={0}
+      totalExercises={0}
+      onRecordSet={() => {}}
+      onCompleteExercise={() => {}}
+      onExit={handleExit}
+      onAllCompleted={handleAllCompleted}
+      onSelectExercise={() => {}}
+    />
+  );
+}

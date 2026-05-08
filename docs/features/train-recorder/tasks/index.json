@@ -414,7 +414,7 @@
       "dependencies": [
         "3.gate"
       ],
-      "status": "pending",
+      "status": "completed",
       "file": "4.3-settings-page.md",
       "record": "records/4.3-settings-page.md",
       "scope": "all"

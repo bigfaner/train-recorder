@@ -47,6 +47,8 @@ describe("SettingsStore", () => {
       expect(state.preferences.defaultRestTime).toBe(90);
       expect(state.preferences.notificationsEnabled).toBe(true);
       expect(state.preferences.reminderTime).toBeNull();
+      expect(state.preferences.vibrationEnabled).toBe(true);
+      expect(state.preferences.soundEnabled).toBe(false);
       expect(state.preferences.onboardingCompleted).toBe(false);
     });
   });
@@ -59,6 +61,8 @@ describe("SettingsStore", () => {
           default_rest_time: "120",
           notifications_enabled: "0",
           reminder_time: "08:00",
+          vibration_enabled: "0",
+          sound_enabled: "1",
           onboarding_completed: "true",
         };
         return map[key] ?? null;
@@ -71,6 +75,8 @@ describe("SettingsStore", () => {
       expect(prefs.defaultRestTime).toBe(120);
       expect(prefs.notificationsEnabled).toBe(false);
       expect(prefs.reminderTime).toBe("08:00");
+      expect(prefs.vibrationEnabled).toBe(false);
+      expect(prefs.soundEnabled).toBe(true);
       expect(prefs.onboardingCompleted).toBe(true);
       expect(store.getState().isLoaded).toBe(true);
     });
@@ -139,6 +145,24 @@ describe("SettingsStore", () => {
         "onboarding_completed",
         "true",
       );
+    });
+  });
+
+  describe("setVibrationEnabled", () => {
+    it("should update vibration and persist", () => {
+      store.getState().setVibrationEnabled(false);
+
+      expect(store.getState().preferences.vibrationEnabled).toBe(false);
+      expect(repo.setValue).toHaveBeenCalledWith("vibration_enabled", "0");
+    });
+  });
+
+  describe("setSoundEnabled", () => {
+    it("should update sound and persist", () => {
+      store.getState().setSoundEnabled(true);
+
+      expect(store.getState().preferences.soundEnabled).toBe(true);
+      expect(repo.setValue).toHaveBeenCalledWith("sound_enabled", "1");
     });
   });
 });

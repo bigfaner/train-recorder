@@ -20,6 +20,8 @@ export interface UserPreferences {
   defaultRestTime: number; // seconds
   notificationsEnabled: boolean;
   reminderTime: string | null; // HH:mm format, or null if disabled
+  vibrationEnabled: boolean;
+  soundEnabled: boolean;
   onboardingCompleted: boolean;
 }
 
@@ -44,6 +46,12 @@ export interface SettingsStoreActions {
   /** Update reminder time */
   setReminderTime(time: string | null): void;
 
+  /** Update vibration on rest end */
+  setVibrationEnabled(enabled: boolean): void;
+
+  /** Update sound on rest end */
+  setSoundEnabled(enabled: boolean): void;
+
   /** Set onboarding completed */
   setOnboardingCompleted(completed: boolean): void;
 }
@@ -59,6 +67,8 @@ const defaultPreferences: UserPreferences = {
   defaultRestTime: 90, // 90 seconds
   notificationsEnabled: true,
   reminderTime: null,
+  vibrationEnabled: true,
+  soundEnabled: false,
   onboardingCompleted: false,
 };
 
@@ -88,6 +98,8 @@ export function createSettingsStore(deps: SettingsStoreDeps) {
         "notifications_enabled",
       );
       const reminderTime = userSettingsRepo.getValue("reminder_time");
+      const vibrationEnabled = userSettingsRepo.getValue("vibration_enabled");
+      const soundEnabled = userSettingsRepo.getValue("sound_enabled");
       const onboardingCompleted = userSettingsRepo.getValue(
         "onboarding_completed",
       );
@@ -106,6 +118,18 @@ export function createSettingsStore(deps: SettingsStoreDeps) {
                 ? true
                 : defaultPreferences.notificationsEnabled,
           reminderTime: reminderTime ?? defaultPreferences.reminderTime,
+          vibrationEnabled:
+            vibrationEnabled === "0"
+              ? false
+              : vibrationEnabled === "1"
+                ? true
+                : defaultPreferences.vibrationEnabled,
+          soundEnabled:
+            soundEnabled === "0"
+              ? false
+              : soundEnabled === "1"
+                ? true
+                : defaultPreferences.soundEnabled,
           onboardingCompleted: onboardingCompleted === "true",
         },
         isLoaded: true,
@@ -140,6 +164,20 @@ export function createSettingsStore(deps: SettingsStoreDeps) {
       userSettingsRepo.setValue("reminder_time", time ?? "");
       set((state) => ({
         preferences: { ...state.preferences, reminderTime: time },
+      }));
+    },
+
+    setVibrationEnabled(enabled) {
+      userSettingsRepo.setValue("vibration_enabled", enabled ? "1" : "0");
+      set((state) => ({
+        preferences: { ...state.preferences, vibrationEnabled: enabled },
+      }));
+    },
+
+    setSoundEnabled(enabled) {
+      userSettingsRepo.setValue("sound_enabled", enabled ? "1" : "0");
+      set((state) => ({
+        preferences: { ...state.preferences, soundEnabled: enabled },
       }));
     },
 

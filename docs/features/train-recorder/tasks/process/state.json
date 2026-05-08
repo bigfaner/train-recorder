@@ -1,15 +1,14 @@
 {
-  "task_id": "1.gate",
-  "key": "1-gate",
-  "title": "Phase 1 Exit Gate",
+  "task_id": "2.2",
+  "key": "2.2-calendar-computer",
+  "title": "CalendarComputer Service",
   "priority": "P0",
-  "estimatedTime": "1h",
+  "estimatedTime": "3h",
   "dependencies": [
-    "1.summary"
+    "1.gate"
   ],
-  "file": "1-gate.md",
-  "record": "records/1-gate.md",
-  "startedTime": "2026-05-09 00:20",
-  "breaking": true,
+  "file": "2.2-calendar-computer.md",
+  "record": "records/2.2-calendar-computer.md",
+  "startedTime": "2026-05-09 00:39",
   "scope": "all"
 }

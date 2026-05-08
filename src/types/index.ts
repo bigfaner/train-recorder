@@ -263,8 +263,8 @@ export interface CalendarComputer {
     days: TrainingDay[],
   ): Promise<CalendarDay>;
   getTodayPlan(plan: TrainingPlan, days: TrainingDay[]): Promise<CalendarDay>;
-  skipTrainingDay(date: string): Promise<void>;
-  unskipTrainingDay(date: string): Promise<void>;
+  skipTrainingDay(date: string, planBizKey: bigint): Promise<void>;
+  unskipTrainingDay(date: string, planBizKey: bigint): Promise<void>;
   getSkippedDates(planBizKey: bigint): Promise<string[]>;
   getConsecutiveSkips(planBizKey: bigint, beforeDate: string): Promise<number>;
 }

@@ -1,36 +1,36 @@
 {
-  "taskId": "2.1",
+  "taskId": "2.2",
   "status": "completed",
-  "summary": "Implemented ProgressiveOverload service with calculateSuggestion, calculateSuggestionForWorkoutExercise, recordResult, and recalculateChain methods. Calculates weight recommendations based on historical set performance with increase/maintain/decrease directions, consecutive count tracking, and plate-rounding for decrease values.",
+  "summary": "Implemented CalendarComputer service with computeMonth, computeDay, getTodayPlan, skipTrainingDay, unskipTrainingDay, getSkippedDates, and getConsecutiveSkips methods. Supports weekly_fixed (weekday-to-training-day mapping) and fixed_interval (cycling through training days with configurable rest gaps) scheduling modes. Skipped dates persisted as JSON in user_settings. Day type resolution prioritizes: workout session > skipped > other sport > training > rest.",
   "filesCreated": [
-    "src/services/progressive-overload.ts",
-    "__tests__/services/progressive-overload.test.ts"
+    "src/services/calendar-computer.ts",
+    "__tests__/services/calendar-computer.test.ts"
   ],
   "filesModified": [
-    "src/types/index.ts"
+    "src/types/index.ts",
+    "src/db/repositories/other-sport.repo.ts"
   ],
   "keyDecisions": [
-    "2.1: Consecutive counts computed on-the-fly from WorkoutSet history rather than stored, making recalculateChain a no-op",
-    "2.1: OverloadSuggestion.suggestedWeight changed from number to number|null to support no-history case",
-    "2.1: calculateSuggestion operates per exercise_biz_key; calculateSuggestionForWorkoutExercise operates per WorkoutExercise.biz_key for US-17",
-    "2.1: Skipped exercises (exercise_status=skipped) and in_progress session exercises excluded from overload calculation",
-    "2.1: Decrease weight rounded to nearest increment multiple via Math.round(value/step)*step",
-    "2.1: recordResult and recalculateChain are no-ops since state is computed from DB on-the-fly; future extensions can add caching"
+    "2.2: CalendarComputer interface updated to include planBizKey parameter on skipTrainingDay/unskipTrainingDay (skipped dates are per-plan, stored as skipped_dates_{planBizKey} in user_settings)",
+    "2.2: fixed_interval mode uses deterministic day-1-based cycle computation (no dependency on plan start date)",
+    "2.2: CalendarComputerServiceImpl typed as alias of CalendarComputer (no empty interface)",
+    "2.2: Day type priority: completed session > skipped > other_sport (on rest day) > training > other_sport (on training day) > rest",
+    "2.2: Completed workout session overrides skip status (user can unskip by doing the workout)",
+    "2.2: Added findByDateRange to OtherSportRepo for batch-loading sport records in computeMonth"
   ],
-  "testsPassed": 255,
+  "testsPassed": 283,
   "testsFailed": 0,
-  "coverage": 93.48,
+  "coverage": 93.54,
   "acceptanceCriteria": [
-    { "criterion": "calculateSuggestion(exerciseBizKey, targetReps) returns OverloadSuggestion", "met": true },
-    { "criterion": "All sets met → direction='increase', suggestedWeight = previousWeight + exercise.increment", "met": true },
-    { "criterion": "Some sets missed → direction='maintain', suggestedWeight = previousWeight", "met": true },
-    { "criterion": "Consecutive 2 sessions missed → direction='decrease', suggestedWeight = previousWeight * 0.9", "met": true },
-    { "criterion": "Consecutive 3 sessions completed → UI hint '考虑加大增量？' (no auto-modify)", "met": true },
-    { "criterion": "No history → suggestedWeight = null, reason explains first-time input needed", "met": true },
-    { "criterion": "Decrease value rounded to nearest plate combination via roundToNearest", "met": true },
-    { "criterion": "recordResult(exerciseBizKey, sets) updates consecutive counts", "met": true },
-    { "criterion": "recalculateChain(exerciseBizKey, fromDate) rebuilds suggestion chain from a given date", "met": true },
-    { "criterion": "Unit tests: 90%+ coverage for all overload scenarios", "met": true }
-  ],
-  "notes": "25 dedicated progressive-overload tests covering all acceptance criteria including US-10 (in_progress exclusion), US-16 (skipped exclusion), US-17 (independent per-WorkoutExercise chains). Overall project coverage 93.48%, progressive-overload.ts at 93.9% statements."
+    { "criterion": "computeMonth(year, month, plan, days) returns CalendarDay[] for all days in the month", "met": true },
+    { "criterion": "weekly_fixed mode: maps weekday -> training_day_biz_key from plan.weekly_config JSON", "met": true },
+    { "criterion": "fixed_interval mode: cycles through training days with rest_days gaps between", "met": true },
+    { "criterion": "Past dates with WorkoutSession show actual status (completed/completed_partial)", "met": true },
+    { "criterion": "Past dates without session but plan has training -> dayType='training' (user may have skipped)", "met": true },
+    { "criterion": "skipTrainingDay(date) stores skipped date in user_settings JSON array", "met": true },
+    { "criterion": "unskipTrainingDay(date) removes from skipped list and restores assignment", "met": true },
+    { "criterion": "getConsecutiveSkips(planBizKey, beforeDate) returns consecutive skip count", "met": true },
+    { "criterion": "Other sport records displayed on correct dates", "met": true },
+    { "criterion": "Unit tests: weekly_fixed and fixed_interval scheduling, skip/unskip, consecutive skips", "met": true }
+  ]
 }

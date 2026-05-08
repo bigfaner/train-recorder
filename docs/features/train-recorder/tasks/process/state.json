@@ -1,14 +1,14 @@
 {
-  "task_id": "4.5",
-  "key": "4.5-other-sport-pages",
-  "title": "Other Sport + Sport Editor Pages",
-  "priority": "P1",
+  "task_id": "4.6",
+  "key": "4.6-onboarding-page",
+  "title": "Onboarding Page",
+  "priority": "P2",
   "estimatedTime": "3h",
   "dependencies": [
     "3.gate"
   ],
-  "file": "4.5-other-sport-pages.md",
-  "record": "records/4.5-other-sport-pages.md",
-  "startedTime": "2026-05-09 04:35",
+  "file": "4.6-onboarding-page.md",
+  "record": "records/4.6-onboarding-page.md",
+  "startedTime": "2026-05-09 04:46",
   "scope": "all"
 }

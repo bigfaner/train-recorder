@@ -41,7 +41,7 @@ function generateSafeBizKeys(
 // Static Plan Templates
 // ============================================================
 
-const TEMPLATES: PlanTemplate[] = [
+export const TEMPLATES: PlanTemplate[] = [
   {
     templateId: "ppl",
     templateName: "推拉蹲 3日循环",

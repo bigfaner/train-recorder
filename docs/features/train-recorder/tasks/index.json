@@ -388,7 +388,7 @@
       "dependencies": [
         "3.gate"
       ],
-      "status": "pending",
+      "status": "completed",
       "file": "4.1-history-page.md",
       "record": "records/4.1-history-page.md",
       "scope": "all"

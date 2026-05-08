@@ -1,15 +1,14 @@
 {
-  "task_id": "3.gate",
-  "key": "3-gate",
-  "title": "Phase 3 Exit Gate",
-  "priority": "P0",
-  "estimatedTime": "1h",
+  "task_id": "4.1",
+  "key": "4.1-history-page",
+  "title": "History Page (Tab 3)",
+  "priority": "P1",
+  "estimatedTime": "4h",
   "dependencies": [
-    "3.summary"
+    "3.gate"
   ],
-  "file": "3-gate.md",
-  "record": "records/3-gate.md",
-  "startedTime": "2026-05-09 03:29",
-  "breaking": true,
+  "file": "4.1-history-page.md",
+  "record": "records/4.1-history-page.md",
+  "startedTime": "2026-05-09 03:33",
   "scope": "all"
 }

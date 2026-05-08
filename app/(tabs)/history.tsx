@@ -1,31 +1,30 @@
-import { View, Text, StyleSheet } from "react-native";
-import { Colors, Typography, Spacing } from "@utils/constants";
+import { HistoryScreen } from "@components/history";
 
-export default function HistoryScreen() {
+/**
+ * History tab page (Tab 3).
+ * Uses the injected-props HistoryScreen component.
+ * Data will be wired via hooks/stores in future integration phase.
+ */
+export default function HistoryTabPage() {
+  // Placeholder: in production, these props come from hooks/stores
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>历史记录</Text>
-      <Text style={styles.subtitle}>History</Text>
-    </View>
+    <HistoryScreen
+      sessions={[]}
+      exercisesBySession={new Map()}
+      setsByExercise={new Map()}
+      prs={[]}
+      feelingsBySession={new Map()}
+      exercises={[]}
+      progressData={[]}
+      progressExercises={[]}
+      volumeData={[]}
+      volumeSummary={{ currentWeek: 0, lastWeek: 0, monthlyTotal: 0 }}
+      volumeWeekChange="N/A"
+      prCards={[]}
+      onEditSession={() => {}}
+      onDeleteSession={() => {}}
+      selectedExerciseBizKey={null}
+      onExerciseSelect={() => {}}
+    />
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: Colors.background,
-    padding: Spacing.contentPadding,
-  },
-  title: {
-    fontSize: Typography.heading1.fontSize,
-    fontWeight: Typography.heading1.fontWeight as "600",
-    color: Colors.textPrimary,
-  },
-  subtitle: {
-    fontSize: Typography.body.fontSize,
-    color: Colors.textSecondary,
-    marginTop: 8,
-  },
-});

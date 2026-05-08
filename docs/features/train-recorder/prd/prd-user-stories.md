@@ -144,7 +144,7 @@ feature: "Train Recorder"
 **So that** 我可以快速构建计划，同时不被预设列表限制
 
 **Acceptance Criteria:**
-- Given 用户创建训练计划选择动作，When 打开动作库，Then 显示分类列表（核心力量举、上肢推、上肢拉、下肢辅助、其他、自定义）
+- Given 用户创建训练计划选择动作，When 打开动作库，Then 显示分类列表（核心力量举、上肢推、上肢拉、下肢、核心、肩部、自定义）
 - Given 用户选择「深蹲」，When 添加到训练日，Then 使用深蹲的默认加重增量（5kg）和默认休息时间（180 秒）
 - Given 用户需要的动作不在内置库中，When 点击「自定义动作」，Then 可以输入名称、选择分类、设置加重增量和默认休息时间
 - Given 用户自定义了一个动作，When 下次创建计划时，Then 该动作出现在动作库的「自定义」分类中
@@ -163,7 +163,7 @@ feature: "Train Recorder"
 **Acceptance Criteria:**
 - Given 用户完成了 3 个动作中的 2 个，When 用户点击返回或退出按钮，Then 弹出确认对话框「已完成 2/3 动作，确定结束训练？」
 - Given 用户确认退出，When 保存数据，Then 已完成的 2 个动作数据正常保存，第 3 个动作标记为「未完成」
-- Given 用户中途退出的训练，When 在日历上查看该日，Then 显示「已完成（部分）」状态
+- Given 用户中途退出的训练，When 在日历上查看该日，Then 显示「已完成（部分）」状态（status: completed_partial）
 - Given 用户中途退出的训练，When 加重算法计算下次建议，Then 已完成的动作正常参与加重判断，未完成的动作不纳入
 - Given 用户中途退出时倒计时仍在运行，When 退出训练，Then 倒计时自动取消
 

@@ -178,15 +178,6 @@ function showToast(message, duration = 3000) {
   setTimeout(() => toast.classList.remove('show'), duration);
 }
 
-// Calendar day click
-function selectDay(el) {
-  document.querySelectorAll('.calendar-day.selected').forEach(d => d.classList.remove('selected'));
-  el.classList.add('selected');
-  // Show day detail card
-  const detail = document.getElementById('day-detail');
-  if (detail) detail.classList.remove('hidden');
-}
-
 // Navigation helper
 function navigateTo(page) {
   location.href = page;

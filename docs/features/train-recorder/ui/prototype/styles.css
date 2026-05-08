@@ -11,6 +11,7 @@ a { color: #0071e3; text-decoration: none; }
 img { max-width: 100%; display: block; }
 button { font-family: inherit; cursor: pointer; border: none; background: none; }
 input, textarea, select { font-family: inherit; font-size: inherit; }
+input[type="text"], input[type="number"], input[type="search"] { border: none; outline: none; -webkit-appearance: none; background: transparent; }
 
 /* 2. CSS Variables */
 :root {

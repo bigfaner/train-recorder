@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>统计 — Train Recorder</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .stat-hero {
+      background: linear-gradient(135deg, #1d1d1f 0%, #3a3a3c 100%);
+      border-radius: var(--radius-xl);
+      padding: 24px 20px;
+      color: white;
+      margin-bottom: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+    .stat-hero::before {
+      content: '';
+      position: absolute;
+      top: -40px;
+      right: -40px;
+      width: 120px;
+      height: 120px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 50%;
+    }
+    .stat-hero .hero-title {
+      font-size: 13px;
+      color: rgba(255,255,255,0.5);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 4px;
+    }
+    .stat-hero .hero-value {
+      font-family: var(--font-display);
+      font-size: 40px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+    }
+    .stat-hero .hero-unit {
+      font-size: 16px;
+      font-weight: 400;
+      color: rgba(255,255,255,0.6);
+      margin-left: 4px;
+    }
+    .stat-hero .hero-change {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      font-size: 13px;
+      font-weight: 600;
+      margin-top: 6px;
+      padding: 2px 8px;
+      border-radius: 100px;
+    }
+    .stat-hero .hero-change.up {
+      color: #30d158;
+      background: rgba(48,209,88,0.15);
+    }
+    .stat-hero .hero-change.down {
+      color: #ff453a;
+      background: rgba(255,69,58,0.15);
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .summary-card {
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      box-shadow: var(--shadow-sm);
+    }
+    .summary-card .sc-label {
+      font-size: 12px;
+      color: var(--text-tertiary);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      margin-bottom: 6px;
+    }
+    .summary-card .sc-value {
+      font-family: var(--font-display);
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+    }
+    .summary-card .sc-sub {
+      font-size: 12px;
+      color: var(--text-tertiary);
+      margin-top: 2px;
+    }
+
+    .pr-list { margin-bottom: 16px; }
+    .pr-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .pr-item:last-child { border-bottom: none; }
+    .pr-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+    .pr-icon.gold { background: rgba(255,214,10,0.12); color: #FFD60A; }
+    .pr-info { flex: 1; }
+    .pr-name { font-size: 15px; font-weight: 600; color: var(--text-primary); }
+    .pr-detail { font-size: 12px; color: var(--text-tertiary); margin-top: 2px; }
+    .pr-value {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--text-primary);
+      text-align: right;
+    }
+    .pr-value .pr-date {
+      font-size: 11px;
+      font-weight: 400;
+      color: var(--text-tertiary);
+    }
+
+    .week-bar-chart {
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+      height: 100px;
+      padding: 0 4px;
+      margin-top: 12px;
+    }
+    .week-bar-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    .week-bar {
+      width: 100%;
+      border-radius: 4px 4px 0 0;
+      min-height: 4px;
+      transition: height 0.3s;
+    }
+    .week-bar-label {
+      font-size: 11px;
+      color: var(--text-tertiary);
+    }
+  </style>
+</head>
+<body>
+
+<div class="phone-frame">
+  <div class="app-container">
+
+    <!-- Status Bar -->
+    <div class="status-bar">
+      <span class="time">9:41</span>
+      <div class="icons">
+        <svg width="17" height="12" viewBox="0 0 17 12" fill="none"><path d="M1 8.5C3.5 4 6 2 8.5 2s5 2 7.5 6.5" stroke="#1d1d1f" stroke-width="1.5" stroke-linecap="round"/><path d="M4 10c1.5-2.5 3-3.5 4.5-3.5S11.5 7.5 13 10" stroke="#1d1d1f" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <svg width="16" height="12" viewBox="0 0 16 12" fill="none"><rect x=".5" y="3" width="3" height="9" rx="1" fill="#1d1d1f"/><rect x="4.5" y="1" width="3" height="11" rx="1" fill="#1d1d1f"/><rect x="8.5" y="4" width="3" height="8" rx="1" fill="#1d1d1f"/><rect x="12.5" y="0" width="3" height="12" rx="1" fill="#1d1d1f"/></svg>
+        <svg width="27" height="13" viewBox="0 0 27 13" fill="none"><rect x=".5" y=".5" width="22" height="12" rx="3.5" stroke="#1d1d1f"/><rect x="2" y="2" width="16" height="9" rx="2" fill="#1d1d1f"/><path d="M24 4.5v4a2.5 2.5 0 000-4z" fill="#1d1d1f"/></svg>
+      </div>
+    </div>
+
+    <!-- Nav Bar -->
+    <div class="nav-bar">
+      <div style="width:60px"></div>
+      <span class="nav-title">统计</span>
+      <div style="width:60px"></div>
+    </div>
+
+    <!-- Scrollable Content -->
+    <div class="page-content" style="padding-top: 8px;">
+
+      <!-- Hero: This Week Volume -->
+      <div class="stat-hero fade-in">
+        <div class="hero-title">本周训练容量</div>
+        <div>
+          <span class="hero-value">18,450</span>
+          <span class="hero-unit">kg</span>
+        </div>
+        <span class="hero-change up">&#8593; 12% vs 上周</span>
+      </div>
+
+      <!-- Summary Grid -->
+      <div class="summary-grid">
+        <div class="summary-card fade-in">
+          <div class="sc-label">本周训练</div>
+          <div class="sc-value">3 <span style="font-size:14px;font-weight:400;color:var(--text-tertiary)">次</span></div>
+          <div class="sc-sub">目标 3 次</div>
+        </div>
+        <div class="summary-card fade-in">
+          <div class="sc-label">本月训练</div>
+          <div class="sc-value">11 <span style="font-size:14px;font-weight:400;color:var(--text-tertiary)">次</span></div>
+          <div class="sc-sub">连续 4 周</div>
+        </div>
+        <div class="summary-card fade-in">
+          <div class="sc-label">总训练时长</div>
+          <div class="sc-value">4.5 <span style="font-size:14px;font-weight:400;color:var(--text-tertiary)">h</span></div>
+          <div class="sc-sub">本周累计</div>
+        </div>
+        <div class="summary-card fade-in">
+          <div class="sc-label">个人记录</div>
+          <div class="sc-value">2 <span style="font-size:14px;font-weight:400;color:var(--text-tertiary)">PR</span></div>
+          <div class="sc-sub">本月新增</div>
+        </div>
+      </div>
+
+      <!-- Weekly Volume Chart -->
+      <div style="background:var(--surface); border-radius:var(--radius-lg); padding:16px; box-shadow:var(--shadow-sm); margin-bottom:16px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+          <span style="font-size:15px; font-weight:600; color:var(--text-primary);">周训练容量</span>
+          <span style="font-size:12px; color:var(--text-tertiary);">最近 8 周</span>
+        </div>
+        <div class="week-bar-chart">
+          <div class="week-bar-col">
+            <div class="week-bar" style="height:45%; background:var(--bg-alt);"></div>
+            <span class="week-bar-label">4/14</span>
+          </div>
+          <div class="week-bar-col">
+            <div class="week-bar" style="height:55%; background:var(--bg-alt);"></div>
+            <span class="week-bar-label">4/21</span>
+          </div>
+          <div class="week-bar-col">
+            <div class="week-bar" style="height:40%; background:var(--bg-alt);"></div>
+            <span class="week-bar-label">4/28</span>
+          </div>
+          <div class="week-bar-col">
+            <div class="week-bar" style="height:70%; background:var(--bg-alt);"></div>
+            <span class="week-bar-label">5/5</span>
+          </div>
+          <div class="week-bar-col">
+            <div class="week-bar" style="height:62%; background:var(--bg-alt);"></div>
+            <span class="week-bar-label">5/12</span>
+          </div>
+          <div class="week-bar-col">
+            <div class="week-bar" style="height:80%; background:var(--bg-alt);"></div>
+            <span class="week-bar-label">5/19</span>
+          </div>
+          <div class="week-bar-col">
+            <div class="week-bar" style="height:68%; background:rgba(48,209,88,0.2); border:1.5px solid #30d158;"></div>
+            <span class="week-bar-label">5/26</span>
+          </div>
+          <div class="week-bar-col">
+            <div class="week-bar" style="height:90%; background:var(--accent);"></div>
+            <span class="week-bar-label" style="font-weight:600;color:var(--text-primary);">本周</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- PR Records -->
+      <div style="background:var(--surface); border-radius:var(--radius-lg); padding:16px; box-shadow:var(--shadow-sm); margin-bottom:16px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+          <span style="font-size:15px; font-weight:600; color:var(--text-primary);">个人记录</span>
+          <a href="history.html" style="font-size:13px; color:var(--accent); font-weight:500;">查看全部</a>
+        </div>
+        <div class="pr-list">
+          <div class="pr-item">
+            <div class="pr-icon gold">&#127942;</div>
+            <div class="pr-info">
+              <div class="pr-name">卧推</div>
+              <div class="pr-detail">1RM 估测</div>
+            </div>
+            <div class="pr-value">
+              80 kg
+              <div class="pr-date">5月5日</div>
+            </div>
+          </div>
+          <div class="pr-item">
+            <div class="pr-icon gold">&#127942;</div>
+            <div class="pr-info">
+              <div class="pr-name">深蹲</div>
+              <div class="pr-detail">1RM 估测</div>
+            </div>
+            <div class="pr-value">
+              120 kg
+              <div class="pr-date">5月2日</div>
+            </div>
+          </div>
+          <div class="pr-item">
+            <div class="pr-icon gold">&#127942;</div>
+            <div class="pr-info">
+              <div class="pr-name">硬拉</div>
+              <div class="pr-detail">1RM 估测</div>
+            </div>
+            <div class="pr-value">
+              140 kg
+              <div class="pr-date">4月28日</div>
+            </div>
+          </div>
+          <div class="pr-item">
+            <div class="pr-icon gold">&#127942;</div>
+            <div class="pr-info">
+              <div class="pr-name">推举</div>
+              <div class="pr-detail">1RM 估测</div>
+            </div>
+            <div class="pr-value">
+              50 kg
+              <div class="pr-date">4月25日</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Training Frequency -->
+      <div style="background:var(--surface); border-radius:var(--radius-lg); padding:16px; box-shadow:var(--shadow-sm); margin-bottom:16px;">
+        <span style="font-size:15px; font-weight:600; color:var(--text-primary);">训练频率</span>
+        <div style="margin-top:12px; display:flex; gap:3px; flex-wrap:wrap;">
+          <!-- 12-week heatmap -->
+          <div style="width:14px;height:14px;border-radius:3px;background:rgba(48,209,88,0.1);" title="4/13 休息"></div>
+          <div style="width:14px;height:14px;border-radius:3px;background:rgba(48,209,88,0.6);" title="4/14 推日"></div>
+          <div style="width:14px;height:14px;border-radius:3px;background:rgba(48,209,88,0.1);" title="4/15 休息"></div>
+          <div style="width:14px;height:14px;border-radius:3px;background:rgba(48,209,88,0.8);" title="4/16 拉日"></div>
+          <div style="width:14px;height:14px;border-radius:3px;background:rgba(48,209,88,0.1);" title="4/17 休息"></div>
+          <div style="width:14px;height:14px;border-radius:3px;background:rgba(48,209,88,0.9);" title="4/18 蹲日"></div>
+          <div style="width:14px;height:14px;border-radius:3px;background:rgba(48,209,88,0.1);" title="4/19 休息"></div>
+
+          <div style="width:14px;height:14px;border-radius:3px;background:rgba(48,209,88,0.1);" title="4/20 休息"></div>
+          <div style="width:14px;height:14px;border-radius:3px;background:rgba(48,209,88,0.5);" title="4/21 推日"></div>
+          <div style="width:14px;height:14px;border-radius:3px;background:rgba(48,209,88,0.1);" title="4/22 休息"></div>
+          <div style="width:14px;height:14px;border-radius:3px;background:rgba(48,209,88,0.7);" title="4/23 拉日"></div>
+          <div style="width:14px;height:14px;border-radius:3px;background:rgba(48,209,88,0.1);" title="4/24 休息"></div>
+          <div style="width:14px;height:14px;border-radius:3px;background:rgba(48,209,88,0.85);" title="4/25 蹲日"></div>
+          <div style="width:14px;height:14px;border-radius:3px;background:rgba(48,209,88,0.1);" title="4/26 休息"></div>
+
+          <div style="width:14px;height:14px;border-radius:3px;background:rgba(48,209,88,0.1);" title="4/27 休息"></div>
+          <div style="width:14px;height:14px;border-radius:3px;background:rgba(48,209,88,0.6);" title="4/28 推日"></div>
+          <div style="width:14px;height:14px;border-radius:3px;background:rgba(48,209,88,0.1);" title="4/29 休息"></div>
+          <div style="width:14px;height:14px;border-radius:3px;background:rgba(48,209,88,0.75);" title="4/30 拉日"></div>
+          <div style="width:14px;height:14px;border-radius:3px;background:rgba(48,209,88,0.1);" title="5/1 休息"></div>
+          <div style="width:14px;height:14px;border-radius:3px;background:rgba(48,209,88,0.9);" title="5/2 蹲日"></div>
+          <div style="width:14px;height:14px;border-radius:3px;background:rgba(48,209,88,0.1);" title="5/3 休息"></div>
+
+          <div style="width:14px;height:14px;border-radius:3px;background:rgba(48,209,88,0.1);" title="5/4 休息"></div>
+          <div style="width:14px;height:14px;border-radius:3px;background:rgba(48,209,88,0.8);" title="5/5 推日 PR"></div>
+          <div style="width:14px;height:14px;border-radius:3px;background:rgba(48,209,88,0.1);" title="5/6 休息"></div>
+          <div style="width:14px;height:14px;border-radius:3px;background:rgba(48,209,88,0.7);" title="5/7 拉日"></div>
+          <div style="width:14px;height:14px;border-radius:3px;background:rgba(48,209,88,0.1);" title="5/8 休息"></div>
+          <div style="width:14px;height:14px;border-radius:3px;background:var(--accent);border:1.5px solid var(--accent);" title="5/9 蹲日(计划)"></div>
+          <div style="width:14px;height:14px;border-radius:3px;background:var(--bg-alt);" title="5/10"></div>
+        </div>
+        <div style="display:flex; align-items:center; gap:6px; margin-top:10px; font-size:11px; color:var(--text-tertiary);">
+          <span>少</span>
+          <div style="width:12px;height:12px;border-radius:2px;background:rgba(48,209,88,0.1);"></div>
+          <div style="width:12px;height:12px;border-radius:2px;background:rgba(48,209,88,0.4);"></div>
+          <div style="width:12px;height:12px;border-radius:2px;background:rgba(48,209,88,0.7);"></div>
+          <div style="width:12px;height:12px;border-radius:2px;background:rgba(48,209,88,1);"></div>
+          <span>多</span>
+          <span style="margin-left:8px;">&#9679;</span><span>计划中</span>
+        </div>
+      </div>
+
+      <div style="height:16px;"></div>
+    </div>
+
+    <!-- Tab Bar -->
+    <div class="tab-bar">
+      <a class="tab-item" href="calendar.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        <span>记录</span>
+      </a>
+      <a class="tab-item" href="history.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        <span>历史</span>
+      </a>
+      <a class="tab-item" href="plan.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        <span>计划</span>
+      </a>
+      <a class="tab-item active" href="stats.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        <span>统计</span>
+      </a>
+      <a class="tab-item" href="settings.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        <span>设置</span>
+      </a>
+    </div>
+
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

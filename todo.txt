@@ -1,4 +1,4 @@
-1、历史页面与统计页面的区别
-2、根据原型html反过来修复prd-ui-functions.md等
-3、各个原型html之间的跳转要优化。
-4、继续优化原型
+1、历史页面与统计页面的区别.done
+2、根据原型html反过来修正prd-ui-functions.md等.done
+3、各个原型html之间的跳转要优化。done
+4、继续优化原型.done

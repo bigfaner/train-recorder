@@ -301,7 +301,7 @@ export interface TimerState {
 }
 
 export interface TimerService {
-  start(durationSeconds: number): void;
+  start(durationSeconds: number, exerciseBizKey?: bigint): void;
   pause(): void;
   resume(): void;
   skip(): void;

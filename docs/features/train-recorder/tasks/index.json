@@ -166,7 +166,7 @@
       "dependencies": [
         "1.gate"
       ],
-      "status": "pending",
+      "status": "completed",
       "file": "2.3-timer-service.md",
       "record": "records/2.3-timer-service.md",
       "scope": "all"

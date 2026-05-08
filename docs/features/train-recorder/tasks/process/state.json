@@ -1,14 +1,14 @@
 {
-  "task_id": "2.2",
-  "key": "2.2-calendar-computer",
-  "title": "CalendarComputer Service",
+  "task_id": "2.3",
+  "key": "2.3-timer-service",
+  "title": "Timer Service (Foreground + Background)",
   "priority": "P0",
-  "estimatedTime": "3h",
+  "estimatedTime": "4h",
   "dependencies": [
     "1.gate"
   ],
-  "file": "2.2-calendar-computer.md",
-  "record": "records/2.2-calendar-computer.md",
-  "startedTime": "2026-05-09 00:39",
+  "file": "2.3-timer-service.md",
+  "record": "records/2.3-timer-service.md",
+  "startedTime": "2026-05-09 00:49",
   "scope": "all"
 }

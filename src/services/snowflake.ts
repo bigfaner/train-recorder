@@ -11,7 +11,7 @@ export interface SnowflakeIdGenerator {
 const CUSTOM_EPOCH = 1704067200000n;
 
 // Bit lengths
-const TIMESTAMP_BITS = 41n;
+const _TIMESTAMP_BITS = 41n;
 const MACHINE_ID_BITS = 10n;
 const SEQUENCE_BITS = 12n;
 
@@ -54,7 +54,9 @@ export class SnowflakeGenerator implements SnowflakeIdGenerator {
       this.machineId = BigInt(deriveMachineId(fingerprint));
     } else {
       // Default: use a random machine ID for single-device usage
-      this.machineId = BigInt(Math.floor(Math.random() * Number(MAX_MACHINE_ID)));
+      this.machineId = BigInt(
+        Math.floor(Math.random() * Number(MAX_MACHINE_ID)),
+      );
     }
   }
 
@@ -115,7 +117,7 @@ export class SnowflakeGenerator implements SnowflakeIdGenerator {
    */
   generateBatch(count: number): bigint[] {
     if (count < 0) {
-      throw new Error('Count must be non-negative');
+      throw new Error("Count must be non-negative");
     }
     const ids: bigint[] = [];
     for (let i = 0; i < count; i++) {

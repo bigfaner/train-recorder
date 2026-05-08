@@ -1,14 +1,15 @@
 {
-  "task_id": "2.6",
-  "key": "2.6-onboarding-service",
-  "title": "Onboarding Service + Plan Templates",
-  "priority": "P1",
-  "estimatedTime": "2h",
+  "task_id": "2.gate",
+  "key": "2-gate",
+  "title": "Phase 2 Exit Gate",
+  "priority": "P0",
+  "estimatedTime": "1h",
   "dependencies": [
-    "1.gate"
+    "2.summary"
   ],
-  "file": "2.6-onboarding-service.md",
-  "record": "records/2.6-onboarding-service.md",
-  "startedTime": "2026-05-09 01:17",
+  "file": "2-gate.md",
+  "record": "records/2-gate.md",
+  "startedTime": "2026-05-09 01:47",
+  "breaking": true,
   "scope": "all"
 }

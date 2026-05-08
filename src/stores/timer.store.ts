@@ -81,7 +81,7 @@ export function createTimerStore(deps: TimerStoreDeps) {
   const { timerService } = deps;
 
   // Register tick callback - placeholder for future real-time sync
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
   timerService.onTick((_remaining) => {
     // State sync handled by getState() calls in actions
     // For real-time UI, consumers poll or subscribe via the hook

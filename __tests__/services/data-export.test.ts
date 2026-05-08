@@ -65,7 +65,6 @@ class MockFileReader implements FileReaderAdapter {
     this.content = content;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async readAsStringAsync(_path: string): Promise<string> {
     return this.content;
   }

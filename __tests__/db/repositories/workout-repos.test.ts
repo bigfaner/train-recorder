@@ -3,12 +3,25 @@
  * Uses sql.js in-memory SQLite to test CRUD operations and domain-specific queries.
  */
 
-import { createTestDb } from '../test-helpers';
-import type { DatabaseAdapter } from '../../../src/db/database-adapter';
-import { createWorkoutSessionRepo, type WorkoutSessionRepo } from '../../../src/db/repositories/workout-session.repo';
-import { createWorkoutExerciseRepo, type WorkoutExerciseRepo } from '../../../src/db/repositories/workout-exercise.repo';
-import { createWorkoutSetRepo, type WorkoutSetRepo } from '../../../src/db/repositories/workout-set.repo';
-import type { WorkoutSession, WorkoutExercise, WorkoutSet } from '../../../src/types';
+import { createTestDb } from "../test-helpers";
+import type { DatabaseAdapter } from "../../../src/db/database-adapter";
+import {
+  createWorkoutSessionRepo,
+  type WorkoutSessionRepo,
+} from "../../../src/db/repositories/workout-session.repo";
+import {
+  createWorkoutExerciseRepo,
+  type WorkoutExerciseRepo,
+} from "../../../src/db/repositories/workout-exercise.repo";
+import {
+  createWorkoutSetRepo,
+  type WorkoutSetRepo,
+} from "../../../src/db/repositories/workout-set.repo";
+import type {
+  WorkoutSession,
+  WorkoutExercise,
+  WorkoutSet,
+} from "../../../src/types";
 
 let db: DatabaseAdapter;
 let sessionRepo: WorkoutSessionRepo;
@@ -24,14 +37,16 @@ beforeEach(async () => {
 
 // Helper to create a session with defaults
 let sessionBizKeyCounter = 1000n;
-function createTestSession(overrides: Partial<Omit<WorkoutSession, 'id'>> = {}): WorkoutSession {
+function createTestSession(
+  overrides: Partial<Omit<WorkoutSession, "id">> = {},
+): WorkoutSession {
   const now = new Date().toISOString();
   sessionBizKeyCounter += 1n;
   return sessionRepo.createSession({
     biz_key: sessionBizKeyCounter,
-    session_date: '2026-05-09',
-    training_type: 'push',
-    session_status: 'in_progress',
+    session_date: "2026-05-09",
+    training_type: "push",
+    session_status: "in_progress",
     started_at: now,
     ended_at: null,
     is_backlog: 0,
@@ -43,7 +58,9 @@ function createTestSession(overrides: Partial<Omit<WorkoutSession, 'id'>> = {}):
 
 // Helper to create a workout exercise with defaults
 let exerciseBizKeyCounter = 100n;
-function createTestExercise(overrides: Partial<Omit<WorkoutExercise, 'id'>> = {}): WorkoutExercise {
+function createTestExercise(
+  overrides: Partial<Omit<WorkoutExercise, "id">> = {},
+): WorkoutExercise {
   const now = new Date().toISOString();
   exerciseBizKeyCounter += 1n;
   return exerciseRepo.createExercise({
@@ -51,12 +68,12 @@ function createTestExercise(overrides: Partial<Omit<WorkoutExercise, 'id'>> = {}
     workout_session_biz_key: 100n,
     exercise_biz_key: 200n,
     order_index: 0,
-    exercise_status: 'pending',
+    exercise_status: "pending",
     exercise_note: null,
     suggested_weight: null,
     target_sets: 5,
     target_reps: 5,
-    exercise_mode: 'fixed',
+    exercise_mode: "fixed",
     created_at: now,
     ...overrides,
   });
@@ -66,136 +83,139 @@ function createTestExercise(overrides: Partial<Omit<WorkoutExercise, 'id'>> = {}
 // WorkoutSession Repository
 // ============================================================
 
-describe('WorkoutSessionRepository', () => {
-  describe('CRUD', () => {
-    it('should create a workout session', () => {
+describe("WorkoutSessionRepository", () => {
+  describe("CRUD", () => {
+    it("should create a workout session", () => {
       const session = createTestSession();
       expect(session.id).toBeGreaterThan(0);
-      expect(session.session_status).toBe('in_progress');
-      expect(session.training_type).toBe('push');
+      expect(session.session_status).toBe("in_progress");
+      expect(session.training_type).toBe("push");
     });
 
-    it('should find a session by id', () => {
+    it("should find a session by id", () => {
       const session = createTestSession({ biz_key: 1001n });
       const found = sessionRepo.findById(session.id);
       expect(found).not.toBeNull();
       expect(Number(found!.biz_key)).toBe(1001);
     });
 
-    it('should find a session by biz_key', () => {
+    it("should find a session by biz_key", () => {
       const session = createTestSession({ biz_key: 1002n });
       const found = sessionRepo.findByBizKey(1002n);
       expect(found).not.toBeNull();
       expect(found!.id).toBe(session.id);
     });
 
-    it('should update a session', () => {
+    it("should update a session", () => {
       const session = createTestSession({ biz_key: 1003n });
-      const updated = sessionRepo.update(session.id, { training_type: 'pull' });
-      expect(updated.training_type).toBe('pull');
+      const updated = sessionRepo.update(session.id, { training_type: "pull" });
+      expect(updated.training_type).toBe("pull");
     });
 
-    it('should delete a session', () => {
+    it("should delete a session", () => {
       const session = createTestSession({ biz_key: 1004n });
       sessionRepo.deleteById(session.id);
       expect(sessionRepo.findById(session.id)).toBeNull();
     });
 
-    it('should return null for non-existent id', () => {
+    it("should return null for non-existent id", () => {
       expect(sessionRepo.findById(99999)).toBeNull();
     });
 
-    it('should return null for non-existent biz_key', () => {
+    it("should return null for non-existent biz_key", () => {
       expect(sessionRepo.findByBizKey(99999n)).toBeNull();
     });
   });
 
-  describe('findByDate', () => {
-    it('should find sessions by exact date', () => {
-      createTestSession({ biz_key: 2001n, session_date: '2026-05-09' });
-      createTestSession({ biz_key: 2002n, session_date: '2026-05-09' });
-      createTestSession({ biz_key: 2003n, session_date: '2026-05-10' });
+  describe("findByDate", () => {
+    it("should find sessions by exact date", () => {
+      createTestSession({ biz_key: 2001n, session_date: "2026-05-09" });
+      createTestSession({ biz_key: 2002n, session_date: "2026-05-09" });
+      createTestSession({ biz_key: 2003n, session_date: "2026-05-10" });
 
-      const results = sessionRepo.findByDate('2026-05-09');
+      const results = sessionRepo.findByDate("2026-05-09");
       expect(results.length).toBe(2);
     });
 
-    it('should return empty array for date with no sessions', () => {
-      const results = sessionRepo.findByDate('2020-01-01');
+    it("should return empty array for date with no sessions", () => {
+      const results = sessionRepo.findByDate("2020-01-01");
       expect(results).toEqual([]);
     });
   });
 
-  describe('findByDateRange', () => {
-    it('should find sessions within date range inclusive', () => {
-      createTestSession({ biz_key: 3001n, session_date: '2026-05-01' });
-      createTestSession({ biz_key: 3002n, session_date: '2026-05-05' });
-      createTestSession({ biz_key: 3003n, session_date: '2026-05-08' });
-      createTestSession({ biz_key: 3004n, session_date: '2026-05-10' });
-      createTestSession({ biz_key: 3005n, session_date: '2026-05-15' });
+  describe("findByDateRange", () => {
+    it("should find sessions within date range inclusive", () => {
+      createTestSession({ biz_key: 3001n, session_date: "2026-05-01" });
+      createTestSession({ biz_key: 3002n, session_date: "2026-05-05" });
+      createTestSession({ biz_key: 3003n, session_date: "2026-05-08" });
+      createTestSession({ biz_key: 3004n, session_date: "2026-05-10" });
+      createTestSession({ biz_key: 3005n, session_date: "2026-05-15" });
 
-      const results = sessionRepo.findByDateRange('2026-05-05', '2026-05-10');
+      const results = sessionRepo.findByDateRange("2026-05-05", "2026-05-10");
       expect(results.length).toBe(3);
     });
 
-    it('should return sessions ordered by session_date ASC', () => {
-      createTestSession({ biz_key: 3010n, session_date: '2026-05-10' });
-      createTestSession({ biz_key: 3011n, session_date: '2026-05-05' });
+    it("should return sessions ordered by session_date ASC", () => {
+      createTestSession({ biz_key: 3010n, session_date: "2026-05-10" });
+      createTestSession({ biz_key: 3011n, session_date: "2026-05-05" });
 
-      const results = sessionRepo.findByDateRange('2026-05-01', '2026-05-15');
-      expect(results[0].session_date).toBe('2026-05-05');
-      expect(results[1].session_date).toBe('2026-05-10');
+      const results = sessionRepo.findByDateRange("2026-05-01", "2026-05-15");
+      expect(results[0].session_date).toBe("2026-05-05");
+      expect(results[1].session_date).toBe("2026-05-10");
     });
 
-    it('should return empty array for range with no sessions', () => {
-      const results = sessionRepo.findByDateRange('2020-01-01', '2020-01-31');
+    it("should return empty array for range with no sessions", () => {
+      const results = sessionRepo.findByDateRange("2020-01-01", "2020-01-31");
       expect(results).toEqual([]);
     });
   });
 
-  describe('findByStatus', () => {
-    it('should find sessions by status', () => {
-      const s1 = createTestSession({ biz_key: 4001n, session_status: 'in_progress' });
-      createTestSession({ biz_key: 4002n, session_status: 'in_progress' });
+  describe("findByStatus", () => {
+    it("should find sessions by status", () => {
+      const s1 = createTestSession({
+        biz_key: 4001n,
+        session_status: "in_progress",
+      });
+      createTestSession({ biz_key: 4002n, session_status: "in_progress" });
       sessionRepo.completeSession(s1.id);
 
-      const inProgress = sessionRepo.findByStatus('in_progress');
-      const completed = sessionRepo.findByStatus('completed');
+      const inProgress = sessionRepo.findByStatus("in_progress");
+      const completed = sessionRepo.findByStatus("completed");
       expect(inProgress.length).toBe(1);
       expect(completed.length).toBe(1);
     });
   });
 
-  describe('findByTrainingType', () => {
-    it('should find sessions by training_type', () => {
-      createTestSession({ biz_key: 5001n, training_type: 'push' });
-      createTestSession({ biz_key: 5002n, training_type: 'push' });
-      createTestSession({ biz_key: 5003n, training_type: 'pull' });
+  describe("findByTrainingType", () => {
+    it("should find sessions by training_type", () => {
+      createTestSession({ biz_key: 5001n, training_type: "push" });
+      createTestSession({ biz_key: 5002n, training_type: "push" });
+      createTestSession({ biz_key: 5003n, training_type: "pull" });
 
-      const pushSessions = sessionRepo.findByTrainingType('push');
+      const pushSessions = sessionRepo.findByTrainingType("push");
       expect(pushSessions.length).toBe(2);
     });
   });
 
-  describe('session_status state machine', () => {
-    it('should transition in_progress -> completed', () => {
+  describe("session_status state machine", () => {
+    it("should transition in_progress -> completed", () => {
       const session = createTestSession({ biz_key: 6001n });
-      expect(session.session_status).toBe('in_progress');
+      expect(session.session_status).toBe("in_progress");
 
       const completed = sessionRepo.completeSession(session.id);
-      expect(completed.session_status).toBe('completed');
+      expect(completed.session_status).toBe("completed");
       expect(completed.ended_at).not.toBeNull();
     });
 
-    it('should transition in_progress -> completed_partial', () => {
+    it("should transition in_progress -> completed_partial", () => {
       const session = createTestSession({ biz_key: 6002n });
 
       const partial = sessionRepo.partialCompleteSession(session.id);
-      expect(partial.session_status).toBe('completed_partial');
+      expect(partial.session_status).toBe("completed_partial");
       expect(partial.ended_at).not.toBeNull();
     });
 
-    it('should reject transition completed -> completed', () => {
+    it("should reject transition completed -> completed", () => {
       const session = createTestSession({ biz_key: 6003n });
       sessionRepo.completeSession(session.id);
 
@@ -204,7 +224,7 @@ describe('WorkoutSessionRepository', () => {
       );
     });
 
-    it('should reject transition completed_partial -> completed', () => {
+    it("should reject transition completed_partial -> completed", () => {
       const session = createTestSession({ biz_key: 6004n });
       sessionRepo.partialCompleteSession(session.id);
 
@@ -213,7 +233,7 @@ describe('WorkoutSessionRepository', () => {
       );
     });
 
-    it('should reject transition completed -> completed_partial', () => {
+    it("should reject transition completed -> completed_partial", () => {
       const session = createTestSession({ biz_key: 6005n });
       sessionRepo.completeSession(session.id);
 
@@ -222,15 +242,18 @@ describe('WorkoutSessionRepository', () => {
       );
     });
 
-    it('should reject transition for non-existent session', () => {
+    it("should reject transition for non-existent session", () => {
       expect(() => sessionRepo.completeSession(99999)).toThrow(/not found/);
     });
   });
 
-  describe('findActive', () => {
-    it('should find the active (in_progress) session', () => {
-      createTestSession({ biz_key: 7001n, session_status: 'in_progress' });
-      const s2 = createTestSession({ biz_key: 7002n, session_status: 'in_progress' });
+  describe("findActive", () => {
+    it("should find the active (in_progress) session", () => {
+      createTestSession({ biz_key: 7001n, session_status: "in_progress" });
+      const s2 = createTestSession({
+        biz_key: 7002n,
+        session_status: "in_progress",
+      });
       sessionRepo.completeSession(s2.id);
 
       const active = sessionRepo.findActive();
@@ -238,13 +261,13 @@ describe('WorkoutSessionRepository', () => {
       expect(Number(active!.biz_key)).toBe(7001);
     });
 
-    it('should return null when no active session exists', () => {
+    it("should return null when no active session exists", () => {
       expect(sessionRepo.findActive()).toBeNull();
     });
   });
 
-  describe('is_backlog flag', () => {
-    it('should create a backlog session', () => {
+  describe("is_backlog flag", () => {
+    it("should create a backlog session", () => {
       const session = createTestSession({ biz_key: 8001n, is_backlog: 1 });
       expect(session.is_backlog).toBe(1);
     });
@@ -255,54 +278,70 @@ describe('WorkoutSessionRepository', () => {
 // WorkoutExercise Repository
 // ============================================================
 
-describe('WorkoutExerciseRepository', () => {
-  describe('CRUD', () => {
-    it('should create a workout exercise', () => {
+describe("WorkoutExerciseRepository", () => {
+  describe("CRUD", () => {
+    it("should create a workout exercise", () => {
       const we = createTestExercise({ biz_key: 101n });
       expect(we.id).toBeGreaterThan(0);
-      expect(we.exercise_status).toBe('pending');
+      expect(we.exercise_status).toBe("pending");
       expect(we.target_sets).toBe(5);
       expect(we.target_reps).toBe(5);
     });
 
-    it('should find by id', () => {
+    it("should find by id", () => {
       const we = createTestExercise({ biz_key: 102n });
       const found = exerciseRepo.findById(we.id);
       expect(found).not.toBeNull();
       expect(Number(found!.biz_key)).toBe(102);
     });
 
-    it('should find by biz_key', () => {
+    it("should find by biz_key", () => {
       const we = createTestExercise({ biz_key: 103n });
       const found = exerciseRepo.findByBizKey(103n);
       expect(found).not.toBeNull();
       expect(found!.id).toBe(we.id);
     });
 
-    it('should update a workout exercise', () => {
+    it("should update a workout exercise", () => {
       const we = createTestExercise({ biz_key: 104n });
       const updated = exerciseRepo.update(we.id, {
-        exercise_status: 'completed',
+        exercise_status: "completed",
         suggested_weight: 82.5,
       });
-      expect(updated.exercise_status).toBe('completed');
+      expect(updated.exercise_status).toBe("completed");
       expect(updated.suggested_weight).toBe(82.5);
     });
 
-    it('should delete a workout exercise', () => {
+    it("should delete a workout exercise", () => {
       const we = createTestExercise({ biz_key: 105n });
       exerciseRepo.deleteById(we.id);
       expect(exerciseRepo.findById(we.id)).toBeNull();
     });
   });
 
-  describe('findBySessionBizKey', () => {
-    it('should find exercises by session biz_key ordered by order_index', () => {
+  describe("findBySessionBizKey", () => {
+    it("should find exercises by session biz_key ordered by order_index", () => {
       const sessionBizKey = 5001n;
-      createTestExercise({ biz_key: 201n, workout_session_biz_key: sessionBizKey, order_index: 2 });
-      createTestExercise({ biz_key: 202n, workout_session_biz_key: sessionBizKey, order_index: 0 });
-      createTestExercise({ biz_key: 203n, workout_session_biz_key: sessionBizKey, order_index: 1 });
-      createTestExercise({ biz_key: 204n, workout_session_biz_key: 9999n, order_index: 0 });
+      createTestExercise({
+        biz_key: 201n,
+        workout_session_biz_key: sessionBizKey,
+        order_index: 2,
+      });
+      createTestExercise({
+        biz_key: 202n,
+        workout_session_biz_key: sessionBizKey,
+        order_index: 0,
+      });
+      createTestExercise({
+        biz_key: 203n,
+        workout_session_biz_key: sessionBizKey,
+        order_index: 1,
+      });
+      createTestExercise({
+        biz_key: 204n,
+        workout_session_biz_key: 9999n,
+        order_index: 0,
+      });
 
       const results = exerciseRepo.findBySessionBizKey(sessionBizKey);
       expect(results.length).toBe(3);
@@ -311,14 +350,14 @@ describe('WorkoutExerciseRepository', () => {
       expect(results[2].order_index).toBe(2);
     });
 
-    it('should return empty array for session with no exercises', () => {
+    it("should return empty array for session with no exercises", () => {
       const results = exerciseRepo.findBySessionBizKey(9999n);
       expect(results).toEqual([]);
     });
   });
 
-  describe('findByExerciseBizKey', () => {
-    it('should find workout exercises by exercise biz_key', () => {
+  describe("findByExerciseBizKey", () => {
+    it("should find workout exercises by exercise biz_key", () => {
       const exerciseBizKey = 3001n;
       createTestExercise({ biz_key: 301n, exercise_biz_key: exerciseBizKey });
       createTestExercise({ biz_key: 302n, exercise_biz_key: exerciseBizKey });
@@ -328,16 +367,19 @@ describe('WorkoutExerciseRepository', () => {
       expect(results.length).toBe(2);
     });
 
-    it('should return empty array for exercise with no workout records', () => {
+    it("should return empty array for exercise with no workout records", () => {
       const results = exerciseRepo.findByExerciseBizKey(9999n);
       expect(results).toEqual([]);
     });
   });
 
-  describe('exercise_status values', () => {
-    it('should support all four exercise_status values', () => {
-      const statuses: WorkoutExercise['exercise_status'][] = [
-        'pending', 'in_progress', 'completed', 'skipped',
+  describe("exercise_status values", () => {
+    it("should support all four exercise_status values", () => {
+      const statuses: WorkoutExercise["exercise_status"][] = [
+        "pending",
+        "in_progress",
+        "completed",
+        "skipped",
       ];
       const bizKeys = [410n, 411n, 412n, 413n];
       for (let i = 0; i < statuses.length; i++) {
@@ -350,13 +392,19 @@ describe('WorkoutExerciseRepository', () => {
     });
   });
 
-  describe('exercise_mode values', () => {
-    it('should support fixed and custom exercise_mode', () => {
-      const fixed = createTestExercise({ biz_key: 401n, exercise_mode: 'fixed' });
-      expect(fixed.exercise_mode).toBe('fixed');
+  describe("exercise_mode values", () => {
+    it("should support fixed and custom exercise_mode", () => {
+      const fixed = createTestExercise({
+        biz_key: 401n,
+        exercise_mode: "fixed",
+      });
+      expect(fixed.exercise_mode).toBe("fixed");
 
-      const custom = createTestExercise({ biz_key: 402n, exercise_mode: 'custom' });
-      expect(custom.exercise_mode).toBe('custom');
+      const custom = createTestExercise({
+        biz_key: 402n,
+        exercise_mode: "custom",
+      });
+      expect(custom.exercise_mode).toBe("custom");
     });
   });
 });
@@ -365,10 +413,12 @@ describe('WorkoutExerciseRepository', () => {
 // WorkoutSet Repository
 // ============================================================
 
-describe('WorkoutSetRepository', () => {
+describe("WorkoutSetRepository", () => {
   // Helper to create a workout set with defaults
   let setBizKeyCounter = 500n;
-  function createTestSet(overrides: Partial<Omit<WorkoutSet, 'id' | 'is_target_met'>> = {}): WorkoutSet {
+  function createTestSet(
+    overrides: Partial<Omit<WorkoutSet, "id" | "is_target_met">> = {},
+  ): WorkoutSet {
     setBizKeyCounter += 1n;
     return setRepo.createSet({
       biz_key: setBizKeyCounter,
@@ -384,29 +434,29 @@ describe('WorkoutSetRepository', () => {
     });
   }
 
-  describe('CRUD', () => {
-    it('should create a workout set', () => {
+  describe("CRUD", () => {
+    it("should create a workout set", () => {
       const set = createTestSet({ biz_key: 501n });
       expect(set.id).toBeGreaterThan(0);
       expect(set.target_weight).toBe(80.0);
       expect(set.target_reps).toBe(5);
     });
 
-    it('should find by id', () => {
+    it("should find by id", () => {
       const set = createTestSet({ biz_key: 502n });
       const found = setRepo.findById(set.id);
       expect(found).not.toBeNull();
       expect(Number(found!.biz_key)).toBe(502);
     });
 
-    it('should find by biz_key', () => {
+    it("should find by biz_key", () => {
       const set = createTestSet({ biz_key: 503n });
       const found = setRepo.findByBizKey(503n);
       expect(found).not.toBeNull();
       expect(found!.id).toBe(set.id);
     });
 
-    it('should update a workout set', () => {
+    it("should update a workout set", () => {
       const set = createTestSet({ biz_key: 504n });
       const updated = setRepo.update(set.id, {
         actual_weight: 82.5,
@@ -418,15 +468,15 @@ describe('WorkoutSetRepository', () => {
       expect(updated.is_completed).toBe(1);
     });
 
-    it('should delete a workout set', () => {
+    it("should delete a workout set", () => {
       const set = createTestSet({ biz_key: 505n });
       setRepo.deleteById(set.id);
       expect(setRepo.findById(set.id)).toBeNull();
     });
   });
 
-  describe('is_target_met computation', () => {
-    it('should compute is_target_met = 1 when actual_reps >= target_reps', () => {
+  describe("is_target_met computation", () => {
+    it("should compute is_target_met = 1 when actual_reps >= target_reps", () => {
       const set = createTestSet({
         biz_key: 601n,
         target_reps: 5,
@@ -435,7 +485,7 @@ describe('WorkoutSetRepository', () => {
       expect(set.is_target_met).toBe(1);
     });
 
-    it('should compute is_target_met = 1 when actual_reps > target_reps', () => {
+    it("should compute is_target_met = 1 when actual_reps > target_reps", () => {
       const set = createTestSet({
         biz_key: 602n,
         target_reps: 5,
@@ -444,7 +494,7 @@ describe('WorkoutSetRepository', () => {
       expect(set.is_target_met).toBe(1);
     });
 
-    it('should compute is_target_met = 0 when actual_reps < target_reps', () => {
+    it("should compute is_target_met = 0 when actual_reps < target_reps", () => {
       const set = createTestSet({
         biz_key: 603n,
         target_reps: 5,
@@ -453,7 +503,7 @@ describe('WorkoutSetRepository', () => {
       expect(set.is_target_met).toBe(0);
     });
 
-    it('should compute is_target_met = 0 when actual_reps = 0', () => {
+    it("should compute is_target_met = 0 when actual_reps = 0", () => {
       const set = createTestSet({
         biz_key: 604n,
         target_reps: 5,
@@ -462,7 +512,7 @@ describe('WorkoutSetRepository', () => {
       expect(set.is_target_met).toBe(0);
     });
 
-    it('should set is_target_met = null when actual_reps is null', () => {
+    it("should set is_target_met = null when actual_reps is null", () => {
       const set = createTestSet({
         biz_key: 605n,
         target_reps: 5,
@@ -472,13 +522,29 @@ describe('WorkoutSetRepository', () => {
     });
   });
 
-  describe('findByWorkoutExerciseBizKey', () => {
-    it('should find sets by workout exercise biz_key ordered by set_index', () => {
+  describe("findByWorkoutExerciseBizKey", () => {
+    it("should find sets by workout exercise biz_key ordered by set_index", () => {
       const weBizKey = 7001n;
-      createTestSet({ biz_key: 701n, workout_exercise_biz_key: weBizKey, set_index: 2 });
-      createTestSet({ biz_key: 702n, workout_exercise_biz_key: weBizKey, set_index: 0 });
-      createTestSet({ biz_key: 703n, workout_exercise_biz_key: weBizKey, set_index: 1 });
-      createTestSet({ biz_key: 704n, workout_exercise_biz_key: 9999n, set_index: 0 });
+      createTestSet({
+        biz_key: 701n,
+        workout_exercise_biz_key: weBizKey,
+        set_index: 2,
+      });
+      createTestSet({
+        biz_key: 702n,
+        workout_exercise_biz_key: weBizKey,
+        set_index: 0,
+      });
+      createTestSet({
+        biz_key: 703n,
+        workout_exercise_biz_key: weBizKey,
+        set_index: 1,
+      });
+      createTestSet({
+        biz_key: 704n,
+        workout_exercise_biz_key: 9999n,
+        set_index: 0,
+      });
 
       const results = setRepo.findByWorkoutExerciseBizKey(weBizKey);
       expect(results.length).toBe(3);
@@ -487,14 +553,14 @@ describe('WorkoutSetRepository', () => {
       expect(results[2].set_index).toBe(2);
     });
 
-    it('should return empty array for exercise with no sets', () => {
+    it("should return empty array for exercise with no sets", () => {
       const results = setRepo.findByWorkoutExerciseBizKey(9999n);
       expect(results).toEqual([]);
     });
   });
 
-  describe('complete set flow', () => {
-    it('should record a completed set with actual values', () => {
+  describe("complete set flow", () => {
+    it("should record a completed set with actual values", () => {
       const set = createTestSet({
         biz_key: 801n,
         target_weight: 80.0,
@@ -523,13 +589,13 @@ describe('WorkoutSetRepository', () => {
 // Cross-entity integration: session -> exercise -> set
 // ============================================================
 
-describe('Workout entity integration', () => {
-  it('should support full workout flow: session -> exercises -> sets', () => {
+describe("Workout entity integration", () => {
+  it("should support full workout flow: session -> exercises -> sets", () => {
     // 1. Create a workout session
     const session = createTestSession({
       biz_key: 9001n,
-      session_date: '2026-05-09',
-      training_type: 'push',
+      session_date: "2026-05-09",
+      training_type: "push",
     });
 
     // 2. Add exercises to the session
@@ -541,7 +607,7 @@ describe('Workout entity integration', () => {
       target_sets: 3,
       target_reps: 5,
     });
-    const exercise2 = createTestExercise({
+    createTestExercise({
       biz_key: 9102n,
       workout_session_biz_key: session.biz_key,
       exercise_biz_key: 301n,
@@ -582,58 +648,64 @@ describe('Workout entity integration', () => {
     const sessionExercises = exerciseRepo.findBySessionBizKey(session.biz_key);
     expect(sessionExercises.length).toBe(2);
 
-    const exercise1Sets = setRepo.findByWorkoutExerciseBizKey(exercise1.biz_key);
+    const exercise1Sets = setRepo.findByWorkoutExerciseBizKey(
+      exercise1.biz_key,
+    );
     expect(exercise1Sets.length).toBe(2);
 
     // 5. Complete the session
     const completedSession = sessionRepo.completeSession(session.id);
-    expect(completedSession.session_status).toBe('completed');
+    expect(completedSession.session_status).toBe("completed");
     expect(completedSession.ended_at).not.toBeNull();
   });
 
-  it('should support partial workout completion flow', () => {
+  it("should support partial workout completion flow", () => {
     // Create session with exercises, complete only some
     const session = createTestSession({
       biz_key: 9002n,
-      session_date: '2026-05-09',
+      session_date: "2026-05-09",
     });
-    const ex1 = createTestExercise({
+    createTestExercise({
       biz_key: 9103n,
       workout_session_biz_key: session.biz_key,
-      exercise_status: 'completed',
+      exercise_status: "completed",
     });
-    const ex2 = createTestExercise({
+    createTestExercise({
       biz_key: 9104n,
       workout_session_biz_key: session.biz_key,
-      exercise_status: 'skipped',
+      exercise_status: "skipped",
     });
 
     // Partial complete the session
     const partial = sessionRepo.partialCompleteSession(session.id);
-    expect(partial.session_status).toBe('completed_partial');
+    expect(partial.session_status).toBe("completed_partial");
 
     // Verify completed exercises are queryable
     const exercises = exerciseRepo.findBySessionBizKey(session.biz_key);
-    const completed = exercises.filter((e) => e.exercise_status === 'completed');
-    const skipped = exercises.filter((e) => e.exercise_status === 'skipped');
+    const completed = exercises.filter(
+      (e) => e.exercise_status === "completed",
+    );
+    const skipped = exercises.filter((e) => e.exercise_status === "skipped");
     expect(completed.length).toBe(1);
     expect(skipped.length).toBe(1);
   });
 
-  it('should support backlog workout creation', () => {
+  it("should support backlog workout creation", () => {
     const session = createTestSession({
       biz_key: 9003n,
-      session_date: '2026-05-01',
+      session_date: "2026-05-01",
       is_backlog: 1,
-      session_status: 'completed',
+      session_status: "completed",
     });
 
     expect(session.is_backlog).toBe(1);
-    expect(session.session_status).toBe('completed');
+    expect(session.session_status).toBe("completed");
 
     // Find backlog sessions
-    const all = sessionRepo.findAll({ is_backlog: 1 } as Partial<WorkoutSession>);
+    const all = sessionRepo.findAll({
+      is_backlog: 1,
+    } as Partial<WorkoutSession>);
     expect(all.length).toBe(1);
-    expect(all[0].session_date).toBe('2026-05-01');
+    expect(all[0].session_date).toBe("2026-05-01");
   });
 });

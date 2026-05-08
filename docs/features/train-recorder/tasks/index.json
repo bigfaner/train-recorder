@@ -113,7 +113,7 @@
       "dependencies": [
         "2.summary"
       ],
-      "status": "pending",
+      "status": "completed",
       "file": "2-gate.md",
       "record": "records/2-gate.md",
       "breaking": true,
@@ -127,7 +127,7 @@
       "dependencies": [
         "2.x"
       ],
-      "status": "pending",
+      "status": "completed",
       "file": "2-summary.md",
       "record": "records/2-summary.md",
       "scope": "all"
@@ -224,7 +224,7 @@
         "2.5",
         "2.6"
       ],
-      "status": "pending",
+      "status": "completed",
       "file": "2.7-stores-and-hooks.md",
       "record": "records/2.7-stores-and-hooks.md",
       "scope": "all"

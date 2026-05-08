@@ -1,33 +1,40 @@
 {
-  "taskId": "2.6",
+  "taskId": "2.gate",
   "status": "completed",
-  "summary": "Implemented OnboardingService with 3 plan templates (PPL, Upper/Lower, Full Body), plan creation from templates with exercise name resolution, and onboarding state management via user_settings table.",
-  "filesCreated": [
-    "src/services/onboarding.ts",
-    "__tests__/services/onboarding.test.ts"
-  ],
+  "summary": "Phase 2 Exit Gate verification: all 13 checklist items pass. Fixed pre-existing lint errors (unused variables in test files, missing eslint ignores for config files, added underscore-prefix ignore pattern). All 491 tests pass, 93.76% line coverage, compile/fmt/lint/test all green.",
+  "filesCreated": [],
   "filesModified": [
-    "src/types/index.ts"
+    "__tests__/db/migrations.test.ts",
+    "__tests__/db/repositories/auxiliary-repos.test.ts",
+    "__tests__/db/repositories/base.repository.test.ts",
+    "__tests__/db/repositories/workout-repos.test.ts",
+    "__tests__/services/data-export.test.ts",
+    "src/services/snowflake.ts",
+    "src/services/progressive-overload.ts",
+    "src/stores/timer.store.ts",
+    "eslint.config.mjs"
   ],
   "keyDecisions": [
-    "Changed OnboardingService interface from async (Promise<>) to sync return types since all underlying repo operations are synchronous with expo-sqlite sync API",
-    "Used generateSafeBizKeys() that masks snowflake IDs to 53-bit safe integers to avoid Number precision loss when bigint biz_keys are converted via toDbValue()",
-    "Injected SnowflakeIdGenerator as a dependency to enable test isolation and avoid ID collisions across test runs",
-    "Templates are hardcoded static data (not DB records) as specified in task requirements",
-    "Exercise name-to-biz_key resolution uses a pre-built Map lookup for efficiency within transactions"
+    "Added underscore-prefix ignore pattern for @typescript-eslint/no-unused-vars in eslint config to align with common TS convention",
+    "Added babel.config.js and jest.config.js to eslint ignores since they use CommonJS module syntax that eslint flags as no-undef"
   ],
-  "testsPassed": 20,
+  "testsPassed": 491,
   "testsFailed": 0,
-  "coverage": 97.5,
+  "coverage": 93.76,
   "acceptanceCriteria": [
-    { "criterion": "getTemplates() returns at least 3 templates: PPL, Upper/Lower, Full Body", "met": true },
-    { "criterion": "Each template has: name, description, plan_mode, schedule_mode, days with exercises and sets_config", "met": true },
-    { "criterion": "createPlanFromTemplate(template) creates TrainingPlan + TrainingDays + PlanExercises from template", "met": true },
-    { "criterion": "isOnboardingComplete() reads user_settings key 'onboarding_completed'", "met": true },
-    { "criterion": "markOnboardingComplete() sets user_settings key to 'true'", "met": true },
-    { "criterion": "resetOnboarding() clears the flag for re-viewing from Settings", "met": true },
-    { "criterion": "Template exercises reference built-in exercise names from seed data", "met": true },
-    { "criterion": "Unit tests for template creation and state management", "met": true }
+    { "criterion": "ProgressiveOverload service passes all overload scenario tests", "met": true },
+    { "criterion": "CalendarComputer produces correct day types for weekly_fixed and fixed_interval modes", "met": true },
+    { "criterion": "TimerService state transitions work (start/pause/resume/skip/adjust/persist/recover)", "met": true },
+    { "criterion": "PR Tracker correctly detects, records, and rolls back personal records", "met": true },
+    { "criterion": "Exercise History returns correct session summaries", "met": true },
+    { "criterion": "Unit Conversion kg/lbs accuracy within tolerance", "met": true },
+    { "criterion": "Data Export produces valid JSON with all entity arrays", "met": true },
+    { "criterion": "Data Import validates and merges with conflict resolution", "met": true },
+    { "criterion": "Onboarding templates create valid plans with exercises", "met": true },
+    { "criterion": "Zustand stores state transitions pass unit tests", "met": true },
+    { "criterion": "No type mismatches between service interfaces and store actions", "met": true },
+    { "criterion": "Project builds successfully", "met": true },
+    { "criterion": "All tests pass (just test)", "met": true }
   ],
-  "notes": "Full test suite: 438 tests passing across 14 suites. Services coverage: 94.56%. Onboarding service specific coverage: 97.5% (only uncovered line is the 'Exercise not found' error throw path)."
+  "notes": "Verification-only task. All 7 Phase 2 implementation tasks (2.1-2.7) were previously completed. This gate confirmed internal consistency and full test coverage. Lint fixes were minor unused variable cleanup in test files and eslint config improvements."
 }

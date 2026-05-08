@@ -253,7 +253,7 @@ export function createProgressiveOverloadService(
   return {
     async calculateSuggestion(
       exerciseBizKey: bigint,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
       _targetReps: number,
     ): Promise<OverloadSuggestion> {
       // Get exercise increment
@@ -268,7 +268,7 @@ export function createProgressiveOverloadService(
 
     async calculateSuggestionForWorkoutExercise(
       workoutExerciseBizKey: bigint,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
       _targetReps: number,
     ): Promise<OverloadSuggestion> {
       // First find the WorkoutExercise to get its exercise_biz_key
@@ -316,9 +316,8 @@ export function createProgressiveOverloadService(
     },
 
     async recordResult(
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       _exerciseBizKey: bigint,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
       _sets: WorkoutSet[],
     ): Promise<void> {
       // recordResult is a hook for post-computation actions.
@@ -328,9 +327,8 @@ export function createProgressiveOverloadService(
     },
 
     async recalculateChain(
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       _exerciseBizKey: bigint,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
       _fromDate: string,
     ): Promise<void> {
       // Since consecutive counts are computed on-the-fly from the

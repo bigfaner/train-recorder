@@ -1,15 +1,15 @@
 {
-  "task_id": "2.gate",
-  "key": "2-gate",
-  "title": "Phase 2 Exit Gate",
+  "task_id": "3.2",
+  "key": "3.2-calendar-page",
+  "title": "Calendar Page (Tab 1)",
   "priority": "P0",
-  "estimatedTime": "1h",
+  "estimatedTime": "4h",
   "dependencies": [
-    "2.summary"
+    "2.gate",
+    "3.1"
   ],
-  "file": "2-gate.md",
-  "record": "records/2-gate.md",
-  "startedTime": "2026-05-09 01:47",
-  "breaking": true,
+  "file": "3.2-calendar-page.md",
+  "record": "records/3.2-calendar-page.md",
+  "startedTime": "2026-05-09 02:10",
   "scope": "all"
 }

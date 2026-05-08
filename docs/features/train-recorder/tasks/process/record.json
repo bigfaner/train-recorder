@@ -1,40 +1,45 @@
 {
-  "taskId": "2.gate",
+  "taskId": "3.2",
   "status": "completed",
-  "summary": "Phase 2 Exit Gate verification: all 13 checklist items pass. Fixed pre-existing lint errors (unused variables in test files, missing eslint ignores for config files, added underscore-prefix ignore pattern). All 491 tests pass, 93.76% line coverage, compile/fmt/lint/test all green.",
-  "filesCreated": [],
+  "summary": "Implemented the training calendar page (Tab 1) with month-view grid, training type color dots (push=blue, pull=green, legs=orange), month navigation arrows, training type filter tabs, day detail card with context-aware content (training start, completed summary, rest message, skip/unskip), empty calendar state, backlog workout option for past dates, and consecutive skip warning (>=3).",
+  "filesCreated": [
+    "src/components/calendar/CalendarMonthGrid.tsx",
+    "src/components/calendar/CalendarMonthHeader.tsx",
+    "src/components/calendar/CalendarFilterTabs.tsx",
+    "src/components/calendar/CalendarDetailCard.tsx",
+    "src/components/calendar/EmptyCalendar.tsx",
+    "src/components/calendar/index.ts",
+    "__tests__/utils/date.test.ts",
+    "__tests__/components/calendar/calendar-components.test.ts"
+  ],
   "filesModified": [
-    "__tests__/db/migrations.test.ts",
-    "__tests__/db/repositories/auxiliary-repos.test.ts",
-    "__tests__/db/repositories/base.repository.test.ts",
-    "__tests__/db/repositories/workout-repos.test.ts",
-    "__tests__/services/data-export.test.ts",
-    "src/services/snowflake.ts",
-    "src/services/progressive-overload.ts",
-    "src/stores/timer.store.ts",
-    "eslint.config.mjs"
+    "src/utils/date.ts",
+    "app/(tabs)/calendar.tsx"
   ],
   "keyDecisions": [
-    "Added underscore-prefix ignore pattern for @typescript-eslint/no-unused-vars in eslint config to align with common TS convention",
-    "Added babel.config.js and jest.config.js to eslint ignores since they use CommonJS module syntax that eslint flags as no-undef"
+    "Calendar page accepts props (plan, calendarDays, computeMonth etc.) instead of using hooks internally, enabling testability and future DI via context/provider",
+    "Separated calendar into 5 focused components: CalendarMonthGrid, CalendarMonthHeader, CalendarFilterTabs, CalendarDetailCard, EmptyCalendar",
+    "Date utilities in src/utils/date.ts provide calendar-specific helpers (getDaysInMonth, getFirstDayWeekday, getTrainingTypeColor) reused across components",
+    "Detail card content is context-aware: training days show start button, completed days show checkmark, rest days show message, past days without records show backlog option",
+    "Filter tabs dim non-matching days rather than hiding them, preserving calendar grid layout"
   ],
-  "testsPassed": 491,
+  "testsPassed": 557,
   "testsFailed": 0,
-  "coverage": 93.76,
+  "coverage": 88.84,
   "acceptanceCriteria": [
-    { "criterion": "ProgressiveOverload service passes all overload scenario tests", "met": true },
-    { "criterion": "CalendarComputer produces correct day types for weekly_fixed and fixed_interval modes", "met": true },
-    { "criterion": "TimerService state transitions work (start/pause/resume/skip/adjust/persist/recover)", "met": true },
-    { "criterion": "PR Tracker correctly detects, records, and rolls back personal records", "met": true },
-    { "criterion": "Exercise History returns correct session summaries", "met": true },
-    { "criterion": "Unit Conversion kg/lbs accuracy within tolerance", "met": true },
-    { "criterion": "Data Export produces valid JSON with all entity arrays", "met": true },
-    { "criterion": "Data Import validates and merges with conflict resolution", "met": true },
-    { "criterion": "Onboarding templates create valid plans with exercises", "met": true },
-    { "criterion": "Zustand stores state transitions pass unit tests", "met": true },
-    { "criterion": "No type mismatches between service interfaces and store actions", "met": true },
-    { "criterion": "Project builds successfully", "met": true },
-    { "criterion": "All tests pass (just test)", "met": true }
+    { "criterion": "Month-view grid displays all days with training type color dots (push=blue, pull=green, legs=orange)", "met": true },
+    { "criterion": "Month navigation with left/right arrows", "met": true },
+    { "criterion": "Clicking a date shows detail card at bottom with training info", "met": true },
+    { "criterion": "Future training days show plan preview + start workout button", "met": true },
+    { "criterion": "Completed days show green checkmark + training summary", "met": true },
+    { "criterion": "Completed_partial days show semi-transparent checkmark + partial label", "met": true },
+    { "criterion": "Rest days show no training scheduled message", "met": true },
+    { "criterion": "Empty calendar (no plan) shows create first plan prompt", "met": true },
+    { "criterion": "Training type filter tabs below month header", "met": true },
+    { "criterion": "Start workout navigates to workout page", "met": true },
+    { "criterion": "Record other sport navigates to other-sport page", "met": true },
+    { "criterion": "Skipped days show grey dashed indicator", "met": true },
+    { "criterion": "Consecutive skip warning (>=3) displays alert", "met": true }
   ],
-  "notes": "Verification-only task. All 7 Phase 2 implementation tasks (2.1-2.7) were previously completed. This gate confirmed internal consistency and full test coverage. Lint fixes were minor unused variable cleanup in test files and eslint config improvements."
+  "notes": "Calendar page is designed as a pure presentational component receiving data via props. A future integration task will connect it to real DB via a context provider or hook wrapper. The component structure supports this pattern already."
 }

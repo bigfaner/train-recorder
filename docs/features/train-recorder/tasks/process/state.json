@@ -1,15 +1,14 @@
 {
-  "task_id": "3.7",
-  "key": "3.7-exercise-pages",
-  "title": "Exercise Library + Detail Pages",
-  "priority": "P1",
-  "estimatedTime": "3h",
+  "task_id": "3.summary",
+  "key": "3-summary",
+  "title": "Phase 3 Summary",
+  "priority": "P0",
+  "estimatedTime": "15min",
   "dependencies": [
-    "2.gate",
-    "3.1"
+    "3.x"
   ],
-  "file": "3.7-exercise-pages.md",
-  "record": "records/3.7-exercise-pages.md",
-  "startedTime": "2026-05-09 03:12",
+  "file": "3-summary.md",
+  "record": "records/3-summary.md",
+  "startedTime": "2026-05-09 03:27",
   "scope": "all"
 }

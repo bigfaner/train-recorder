@@ -1,14 +1,14 @@
 {
-  "task_id": "4.1",
-  "key": "4.1-history-page",
-  "title": "History Page (Tab 3)",
+  "task_id": "4.2",
+  "key": "4.2-stats-page",
+  "title": "Stats Page (Tab 4)",
   "priority": "P1",
   "estimatedTime": "4h",
   "dependencies": [
     "3.gate"
   ],
-  "file": "4.1-history-page.md",
-  "record": "records/4.1-history-page.md",
-  "startedTime": "2026-05-09 03:33",
+  "file": "4.2-stats-page.md",
+  "record": "records/4.2-stats-page.md",
+  "startedTime": "2026-05-09 03:45",
   "scope": "all"
 }

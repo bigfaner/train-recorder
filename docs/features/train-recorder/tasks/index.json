@@ -10,10 +10,8 @@
       "title": "Phase 1 Exit Gate",
       "priority": "P0",
       "estimatedTime": "1h",
-      "dependencies": [
-        "1.summary"
-      ],
-      "status": "pending",
+      "dependencies": ["1.summary"],
+      "status": "completed",
       "file": "1-gate.md",
       "record": "records/1-gate.md",
       "breaking": true,
@@ -24,9 +22,7 @@
       "title": "Phase 1 Summary",
       "priority": "P0",
       "estimatedTime": "15min",
-      "dependencies": [
-        "1.x"
-      ],
+      "dependencies": ["1.x"],
       "status": "completed",
       "file": "1-summary.md",
       "record": "records/1-summary.md",
@@ -57,10 +53,7 @@
       "title": "Database Schema + Migration Manager",
       "priority": "P0",
       "estimatedTime": "2h",
-      "dependencies": [
-        "1.1",
-        "1.2"
-      ],
+      "dependencies": ["1.1", "1.2"],
       "status": "completed",
       "file": "1.3-database-schema.md",
       "record": "records/1.3-database-schema.md",
@@ -71,9 +64,7 @@
       "title": "Core Repositories (Plan, Day, Exercise, PlanExercise)",
       "priority": "P0",
       "estimatedTime": "3h",
-      "dependencies": [
-        "1.3"
-      ],
+      "dependencies": ["1.3"],
       "status": "completed",
       "file": "1.4-core-repos.md",
       "record": "records/1.4-core-repos.md",
@@ -84,9 +75,7 @@
       "title": "Workout Repositories (Session, Exercise, Set)",
       "priority": "P0",
       "estimatedTime": "2h",
-      "dependencies": [
-        "1.3"
-      ],
+      "dependencies": ["1.3"],
       "status": "completed",
       "file": "1.5-workout-repos.md",
       "record": "records/1.5-workout-repos.md",
@@ -97,9 +86,7 @@
       "title": "Auxiliary Repositories (Feeling, PR, Body, Sport, Settings)",
       "priority": "P0",
       "estimatedTime": "3h",
-      "dependencies": [
-        "1.3"
-      ],
+      "dependencies": ["1.3"],
       "status": "completed",
       "file": "1.6-auxiliary-repos.md",
       "record": "records/1.6-auxiliary-repos.md",
@@ -110,9 +97,7 @@
       "title": "Phase 2 Exit Gate",
       "priority": "P0",
       "estimatedTime": "1h",
-      "dependencies": [
-        "2.summary"
-      ],
+      "dependencies": ["2.summary"],
       "status": "pending",
       "file": "2-gate.md",
       "record": "records/2-gate.md",
@@ -124,9 +109,7 @@
       "title": "Phase 2 Summary",
       "priority": "P0",
       "estimatedTime": "15min",
-      "dependencies": [
-        "2.x"
-      ],
+      "dependencies": ["2.x"],
       "status": "pending",
       "file": "2-summary.md",
       "record": "records/2-summary.md",
@@ -137,9 +120,7 @@
       "title": "ProgressiveOverload Service",
       "priority": "P0",
       "estimatedTime": "3h",
-      "dependencies": [
-        "1.gate"
-      ],
+      "dependencies": ["1.gate"],
       "status": "pending",
       "file": "2.1-progressive-overload.md",
       "record": "records/2.1-progressive-overload.md",
@@ -150,9 +131,7 @@
       "title": "CalendarComputer Service",
       "priority": "P0",
       "estimatedTime": "3h",
-      "dependencies": [
-        "1.gate"
-      ],
+      "dependencies": ["1.gate"],
       "status": "pending",
       "file": "2.2-calendar-computer.md",
       "record": "records/2.2-calendar-computer.md",
@@ -163,9 +142,7 @@
       "title": "Timer Service (Foreground + Background)",
       "priority": "P0",
       "estimatedTime": "4h",
-      "dependencies": [
-        "1.gate"
-      ],
+      "dependencies": ["1.gate"],
       "status": "pending",
       "file": "2.3-timer-service.md",
       "record": "records/2.3-timer-service.md",
@@ -176,9 +153,7 @@
       "title": "PR Tracker + Exercise History Services",
       "priority": "P0",
       "estimatedTime": "3h",
-      "dependencies": [
-        "1.gate"
-      ],
+      "dependencies": ["1.gate"],
       "status": "pending",
       "file": "2.4-pr-and-history.md",
       "record": "records/2.4-pr-and-history.md",
@@ -189,9 +164,7 @@
       "title": "Unit Conversion + Data Export/Import Services",
       "priority": "P1",
       "estimatedTime": "3h",
-      "dependencies": [
-        "1.gate"
-      ],
+      "dependencies": ["1.gate"],
       "status": "pending",
       "file": "2.5-utility-services.md",
       "record": "records/2.5-utility-services.md",
@@ -202,9 +175,7 @@
       "title": "Onboarding Service + Plan Templates",
       "priority": "P1",
       "estimatedTime": "2h",
-      "dependencies": [
-        "1.gate"
-      ],
+      "dependencies": ["1.gate"],
       "status": "pending",
       "file": "2.6-onboarding-service.md",
       "record": "records/2.6-onboarding-service.md",
@@ -215,15 +186,7 @@
       "title": "Zustand Stores + Custom Hooks",
       "priority": "P0",
       "estimatedTime": "4h",
-      "dependencies": [
-        "1.gate",
-        "2.1",
-        "2.2",
-        "2.3",
-        "2.4",
-        "2.5",
-        "2.6"
-      ],
+      "dependencies": ["1.gate", "2.1", "2.2", "2.3", "2.4", "2.5", "2.6"],
       "status": "pending",
       "file": "2.7-stores-and-hooks.md",
       "record": "records/2.7-stores-and-hooks.md",
@@ -234,9 +197,7 @@
       "title": "Phase 3 Exit Gate",
       "priority": "P0",
       "estimatedTime": "1h",
-      "dependencies": [
-        "3.summary"
-      ],
+      "dependencies": ["3.summary"],
       "status": "pending",
       "file": "3-gate.md",
       "record": "records/3-gate.md",
@@ -248,9 +209,7 @@
       "title": "Phase 3 Summary",
       "priority": "P0",
       "estimatedTime": "15min",
-      "dependencies": [
-        "3.x"
-      ],
+      "dependencies": ["3.x"],
       "status": "pending",
       "file": "3-summary.md",
       "record": "records/3-summary.md",
@@ -261,9 +220,7 @@
       "title": "Base UI Components + Navigation Layout",
       "priority": "P0",
       "estimatedTime": "4h",
-      "dependencies": [
-        "2.gate"
-      ],
+      "dependencies": ["2.gate"],
       "status": "pending",
       "file": "3.1-base-ui-and-nav.md",
       "record": "records/3.1-base-ui-and-nav.md",
@@ -274,10 +231,7 @@
       "title": "Calendar Page (Tab 1)",
       "priority": "P0",
       "estimatedTime": "4h",
-      "dependencies": [
-        "2.gate",
-        "3.1"
-      ],
+      "dependencies": ["2.gate", "3.1"],
       "status": "pending",
       "file": "3.2-calendar-page.md",
       "record": "records/3.2-calendar-page.md",
@@ -288,10 +242,7 @@
       "title": "Workout Execution - Recording UI",
       "priority": "P0",
       "estimatedTime": "3h",
-      "dependencies": [
-        "2.gate",
-        "3.1"
-      ],
+      "dependencies": ["2.gate", "3.1"],
       "status": "pending",
       "file": "3.3-workout-recording.md",
       "record": "records/3.3-workout-recording.md",
@@ -302,10 +253,7 @@
       "title": "Workout Execution - Timer Panel UI",
       "priority": "P0",
       "estimatedTime": "3h",
-      "dependencies": [
-        "2.gate",
-        "3.3"
-      ],
+      "dependencies": ["2.gate", "3.3"],
       "status": "pending",
       "file": "3.4-workout-timer.md",
       "record": "records/3.4-workout-timer.md",
@@ -316,10 +264,7 @@
       "title": "Post-Workout Feeling Page",
       "priority": "P1",
       "estimatedTime": "2h",
-      "dependencies": [
-        "2.gate",
-        "3.1"
-      ],
+      "dependencies": ["2.gate", "3.1"],
       "status": "pending",
       "file": "3.5-feeling-page.md",
       "record": "records/3.5-feeling-page.md",
@@ -330,10 +275,7 @@
       "title": "Plan Management (Tab 2) + Editor Pages",
       "priority": "P0",
       "estimatedTime": "4h",
-      "dependencies": [
-        "2.gate",
-        "3.1"
-      ],
+      "dependencies": ["2.gate", "3.1"],
       "status": "pending",
       "file": "3.6-plan-pages.md",
       "record": "records/3.6-plan-pages.md",
@@ -344,10 +286,7 @@
       "title": "Exercise Library + Detail Pages",
       "priority": "P1",
       "estimatedTime": "3h",
-      "dependencies": [
-        "2.gate",
-        "3.1"
-      ],
+      "dependencies": ["2.gate", "3.1"],
       "status": "pending",
       "file": "3.7-exercise-pages.md",
       "record": "records/3.7-exercise-pages.md",
@@ -358,9 +297,7 @@
       "title": "Phase 4 Exit Gate",
       "priority": "P0",
       "estimatedTime": "1h",
-      "dependencies": [
-        "4.summary"
-      ],
+      "dependencies": ["4.summary"],
       "status": "pending",
       "file": "4-gate.md",
       "record": "records/4-gate.md",
@@ -372,9 +309,7 @@
       "title": "Phase 4 Summary",
       "priority": "P0",
       "estimatedTime": "15min",
-      "dependencies": [
-        "4.x"
-      ],
+      "dependencies": ["4.x"],
       "status": "pending",
       "file": "4-summary.md",
       "record": "records/4-summary.md",
@@ -385,9 +320,7 @@
       "title": "History Page (Tab 3)",
       "priority": "P1",
       "estimatedTime": "4h",
-      "dependencies": [
-        "3.gate"
-      ],
+      "dependencies": ["3.gate"],
       "status": "pending",
       "file": "4.1-history-page.md",
       "record": "records/4.1-history-page.md",
@@ -398,9 +331,7 @@
       "title": "Stats Page (Tab 4)",
       "priority": "P1",
       "estimatedTime": "4h",
-      "dependencies": [
-        "3.gate"
-      ],
+      "dependencies": ["3.gate"],
       "status": "pending",
       "file": "4.2-stats-page.md",
       "record": "records/4.2-stats-page.md",
@@ -411,9 +342,7 @@
       "title": "Settings Page (Tab 5)",
       "priority": "P1",
       "estimatedTime": "3h",
-      "dependencies": [
-        "3.gate"
-      ],
+      "dependencies": ["3.gate"],
       "status": "pending",
       "file": "4.3-settings-page.md",
       "record": "records/4.3-settings-page.md",
@@ -424,9 +353,7 @@
       "title": "Body Data Page",
       "priority": "P1",
       "estimatedTime": "2h",
-      "dependencies": [
-        "3.gate"
-      ],
+      "dependencies": ["3.gate"],
       "status": "pending",
       "file": "4.4-body-data-page.md",
       "record": "records/4.4-body-data-page.md",
@@ -437,9 +364,7 @@
       "title": "Other Sport + Sport Editor Pages",
       "priority": "P1",
       "estimatedTime": "3h",
-      "dependencies": [
-        "3.gate"
-      ],
+      "dependencies": ["3.gate"],
       "status": "pending",
       "file": "4.5-other-sport-pages.md",
       "record": "records/4.5-other-sport-pages.md",
@@ -450,9 +375,7 @@
       "title": "Onboarding Page",
       "priority": "P2",
       "estimatedTime": "3h",
-      "dependencies": [
-        "3.gate"
-      ],
+      "dependencies": ["3.gate"],
       "status": "pending",
       "file": "4.6-onboarding-page.md",
       "record": "records/4.6-onboarding-page.md",
@@ -463,9 +386,7 @@
       "title": "Consolidate Specs",
       "priority": "P2",
       "estimatedTime": "20min",
-      "dependencies": [
-        "T-test-4.5"
-      ],
+      "dependencies": ["T-test-4.5"],
       "status": "pending",
       "file": "consolidate-specs.md",
       "record": "records/consolidate-specs.md",
@@ -476,9 +397,7 @@
       "title": "Evaluate e2e Test Cases",
       "priority": "P1",
       "estimatedTime": "30min",
-      "dependencies": [
-        "T-test-1"
-      ],
+      "dependencies": ["T-test-1"],
       "status": "pending",
       "file": "eval-test-cases.md",
       "record": "records/eval-test-cases.md",
@@ -490,9 +409,7 @@
       "title": "Generate e2e Test Cases",
       "priority": "P1",
       "estimatedTime": "1-2h",
-      "dependencies": [
-        "4.gate"
-      ],
+      "dependencies": ["4.gate"],
       "status": "pending",
       "file": "gen-test-cases.md",
       "record": "records/gen-test-cases.md",
@@ -503,9 +420,7 @@
       "title": "Generate e2e Test Scripts",
       "priority": "P1",
       "estimatedTime": "1-2h",
-      "dependencies": [
-        "T-test-1b"
-      ],
+      "dependencies": ["T-test-1b"],
       "status": "pending",
       "file": "gen-test-scripts.md",
       "record": "records/gen-test-scripts.md",
@@ -516,9 +431,7 @@
       "title": "Graduate Test Scripts",
       "priority": "P1",
       "estimatedTime": "30min",
-      "dependencies": [
-        "T-test-3"
-      ],
+      "dependencies": ["T-test-3"],
       "status": "pending",
       "file": "graduate-tests.md",
       "record": "records/graduate-tests.md",
@@ -529,9 +442,7 @@
       "title": "Run e2e Tests",
       "priority": "P1",
       "estimatedTime": "30min-1h",
-      "dependencies": [
-        "T-test-2"
-      ],
+      "dependencies": ["T-test-2"],
       "status": "pending",
       "file": "run-e2e-tests.md",
       "record": "records/run-e2e-tests.md",
@@ -542,25 +453,13 @@
       "title": "Verify Full E2E Regression",
       "priority": "P1",
       "estimatedTime": "15-30min",
-      "dependencies": [
-        "T-test-4"
-      ],
+      "dependencies": ["T-test-4"],
       "status": "pending",
       "file": "verify-regression.md",
       "record": "records/verify-regression.md",
       "scope": "all"
     }
   },
-  "statusEnum": [
-    "pending",
-    "in_progress",
-    "completed",
-    "blocked",
-    "skipped"
-  ],
-  "priorityEnum": [
-    "P0",
-    "P1",
-    "P2"
-  ]
+  "statusEnum": ["pending", "in_progress", "completed", "blocked", "skipped"],
+  "priorityEnum": ["P0", "P1", "P2"]
 }

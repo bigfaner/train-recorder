@@ -43,6 +43,7 @@ Exit verification gate for Phase 1. Confirms that all data layer outputs are com
 
 This is a verification-only task. No new feature code should be written.
 If issues are found:
+
 1. Fix inline if trivial (e.g., type mismatch in a single file)
 2. Document non-trivial issues as decisions in the record
 3. Set status to `blocked` if a blocking issue cannot be resolved

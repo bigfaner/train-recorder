@@ -430,6 +430,16 @@ function selectDay(el, dateStr) {
     // Remove any previous completed button
     const prevBtn = card.querySelector('.btn-completed');
     if (prevBtn) prevBtn.remove();
+    // Add "记录其他运动" link for rest days
+    let otherSportLink = card.querySelector('.other-sport-link');
+    if (!otherSportLink) {
+      otherSportLink = document.createElement('a');
+      otherSportLink.className = 'other-sport-link';
+      otherSportLink.href = 'other-sport.html';
+      otherSportLink.textContent = '记录其他运动';
+      otherSportLink.style.cssText = 'display:block;text-align:center;color:var(--accent);font-size:15px;font-weight:500;padding:8px 0;';
+      card.appendChild(otherSportLink);
+    }
   } else {
     const parts = dateStr.split('-');
     const dayNum = parseInt(parts[2], 10);
@@ -440,6 +450,10 @@ function selectDay(el, dateStr) {
     document.getElementById('detailTag').className = 'tag ' + data.tag;
     document.getElementById('detailTag').textContent = data.label;
     document.getElementById('detailExercises').textContent = data.exercises;
+
+    // Remove "记录其他运动" link if present
+    const prevLink = card.querySelector('.other-sport-link');
+    if (prevLink) prevLink.remove();
 
     // Remove any previous completed button
     const prevBtn = card.querySelector('.btn-completed');

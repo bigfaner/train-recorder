@@ -1,14 +1,14 @@
 {
-  "task_id": "1.5",
-  "key": "1.5-workout-repos",
-  "title": "Workout Repositories (Session, Exercise, Set)",
+  "task_id": "1.6",
+  "key": "1.6-auxiliary-repos",
+  "title": "Auxiliary Repositories (Feeling, PR, Body, Sport, Settings)",
   "priority": "P0",
-  "estimatedTime": "2h",
+  "estimatedTime": "3h",
   "dependencies": [
     "1.3"
   ],
-  "file": "1.5-workout-repos.md",
-  "record": "records/1.5-workout-repos.md",
-  "startedTime": "2026-05-08 23:59",
+  "file": "1.6-auxiliary-repos.md",
+  "record": "records/1.6-auxiliary-repos.md",
+  "startedTime": "2026-05-09 00:09",
   "scope": "all"
 }

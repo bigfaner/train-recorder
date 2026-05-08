@@ -1,11 +1,11 @@
 {
-  "task_id": "1.1",
-  "key": "1.1-project-scaffold",
-  "title": "Project Scaffold",
+  "task_id": "1.2",
+  "key": "1.2-types-and-snowflake",
+  "title": "TypeScript Types + Snowflake ID Generator",
   "priority": "P0",
-  "estimatedTime": "2h",
-  "file": "1.1-project-scaffold.md",
-  "record": "records/1.1-project-scaffold.md",
-  "startedTime": "2026-05-08 23:09",
+  "estimatedTime": "3h",
+  "file": "1.2-types-and-snowflake.md",
+  "record": "records/1.2-types-and-snowflake.md",
+  "startedTime": "2026-05-08 23:24",
   "scope": "all"
 }

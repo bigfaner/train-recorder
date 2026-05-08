@@ -47,7 +47,7 @@
       "title": "TypeScript Types + Snowflake ID Generator",
       "priority": "P0",
       "estimatedTime": "3h",
-      "status": "pending",
+      "status": "completed",
       "file": "1.2-types-and-snowflake.md",
       "record": "records/1.2-types-and-snowflake.md",
       "scope": "all"

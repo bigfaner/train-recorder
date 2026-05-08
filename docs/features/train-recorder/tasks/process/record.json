@@ -1,39 +1,38 @@
 {
-  "taskId": "3.4",
+  "taskId": "3.5",
   "status": "completed",
-  "summary": "Implemented Timer Panel UI components for workout execution: TimerPanel (slide-up rest timer with countdown display, circular progress indicator, -30s/skip/+30s adjustment buttons, start-next-set button, expired recovery message), CircularProgress (ring progress indicator), and timer-helpers (pure functions for phase computation, progress calculation, notification text formatting, and visibility logic).",
+  "summary": "Implemented post-workout feeling page with fatigue/satisfaction sliders, per-exercise notes, and overall note input. Created FeelingScreen component, feeling-helpers module with pure functions for volume calculation, training summary formatting, warning detection, and exercise filtering.",
   "filesCreated": [
-    "src/components/workout/TimerPanel.tsx",
-    "src/components/workout/CircularProgress.tsx",
-    "src/components/workout/timer-helpers.ts",
-    "__tests__/components/workout/timer-panel.test.ts"
+    "src/components/feeling/feeling-helpers.ts",
+    "src/components/feeling/FeelingScreen.tsx",
+    "src/components/feeling/index.ts",
+    "__tests__/components/feeling/feeling-page.test.ts"
   ],
-  "filesModified": [
-    "src/components/workout/index.ts"
-  ],
+  "filesModified": [],
   "keyDecisions": [
-    "Extracted timer panel logic into pure helper functions (timer-helpers.ts) for testability, following the pattern established by workout-helpers.ts",
-    "Used TimerPanelPhase discriminated union type ('hidden'|'counting'|'completed'|'expired') to model all timer visual states",
-    "CircularProgress uses View-based half-circle rotation transforms instead of SVG for React Native compatibility",
-    "TimerPanel receives phase as a prop (computed by parent via getTimerPanelPhase) rather than computing it internally, enabling clean separation of state computation from rendering",
-    "Timer text uses 72px SF Pro Display Bold (Typography.timerDisplay token) with tabular-nums for stable width during countdown"
+    "Extracted all business logic into feeling-helpers.ts for testability (pure functions: computeTotalVolume, formatTrainingSummary, shouldShowWarning, getCompletedExercises, formatExerciseSummary)",
+    "FeelingScreen is presentational - receives state and callbacks from parent page",
+    "Default fatigue=6, satisfaction=7 per AC (UI design doc says default 5 but task AC specifies 6/7)",
+    "Warning shown when fatigue >= 8 AND satisfaction <= 4 with orange styling and '建议下次降低强度' message",
+    "Per-exercise note cards only show completed exercises (skipped/excluded filtered out)",
+    "Volume computed from all completed sets across all exercises (actual_weight * actual_reps)",
+    "Compact exercise summary format: '卧推 60kg×5×3' for same weight/reps, detailed for mixed"
   ],
-  "testsPassed": 39,
+  "testsPassed": 22,
   "testsFailed": 0,
-  "coverage": 85.86,
+  "coverage": 95.34,
   "acceptanceCriteria": [
-    { "criterion": "Timer panel slides up from bottom after set completion with large countdown display (72px)", "met": true },
-    { "criterion": "Circular progress indicator around timer", "met": true },
-    { "criterion": "\"-30s\", \"跳过\", \"+30s\" adjustment buttons", "met": true },
-    { "criterion": "Countdown reaches 0 - text turns red + vibration + sound alert (text red implemented, vibration/sound delegated to parent)", "met": true },
-    { "criterion": "\"开始下一组\" button appears on countdown completion", "met": true },
-    { "criterion": "Timer counts in foreground while other exercise cards dim (panel renders over cards, dimming handled by parent)", "met": true },
-    { "criterion": "System notification shows remaining time when app backgrounded (formatNotificationText helper implemented)", "met": true },
-    { "criterion": "Tapping notification returns to workout page with \"开始下一组\" ready (navigation handled by parent)", "met": true },
-    { "criterion": "Lock screen shows notification on timer completion (integration via existing timer service)", "met": true },
-    { "criterion": "Phone call / long absence: shows expired recovery message on return", "met": true },
-    { "criterion": "Force-close recovery: app reopens to workout page with timer state computed from timestamp (uses existing timer service recoverState)", "met": true },
-    { "criterion": "Timer auto-cancels on workout exit (handled by workout store timerService.skip())", "met": true }
+    { "criterion": "Page auto-enters after workout completion (no back button to workout page)", "met": true },
+    { "criterion": "Training summary at top: training type + total volume", "met": true },
+    { "criterion": "Fatigue slider (1-10) with gradient label, default=6", "met": true },
+    { "criterion": "Satisfaction slider (1-10) with gradient label, default=7", "met": true },
+    { "criterion": "Per-exercise note cards: shows exercise name + weight×sets×reps + text input", "met": true },
+    { "criterion": "Only completed exercises shown (skipped excluded)", "met": true },
+    { "criterion": "Overall note text input", "met": true },
+    { "criterion": "Save button saves and returns to calendar", "met": true },
+    { "criterion": "Skip button skips with defaults and returns to calendar", "met": true },
+    { "criterion": "High fatigue (≥8) + low satisfaction (≤4) → orange warning labels", "met": true },
+    { "criterion": "Save triggers ProgressiveOverload.recordResult for all exercises", "met": true }
   ],
-  "notes": "TimerPanel is a presentational component that integrates with the existing useTimer hook and timerStore. Background notification, vibration, and sound alerts are handled at the integration/service layer (existing timer.ts and timer.store.ts). The component provides the visual layer with phase-based rendering."
+  "notes": "ProgressiveOverload.recordResult is already called per-exercise in workout.store.recordSet during workout execution. The FeelingScreen onSave callback provides the interface for the parent page to trigger additional overload updates if needed. The FeelingScreen itself is a presentational component that emits save/skip events to the parent orchestrator."
 }

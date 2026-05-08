@@ -449,10 +449,10 @@ export interface OnboardingState {
 
 export interface OnboardingService {
   getTemplates(): PlanTemplate[];
-  createPlanFromTemplate(template: PlanTemplate): Promise<TrainingPlan>;
-  isOnboardingComplete(): Promise<boolean>;
-  markOnboardingComplete(): Promise<void>;
-  resetOnboarding(): Promise<void>;
+  createPlanFromTemplate(template: PlanTemplate): TrainingPlan;
+  isOnboardingComplete(): boolean;
+  markOnboardingComplete(): void;
+  resetOnboarding(): void;
 }
 
 // ============================================================

@@ -1,14 +1,14 @@
 {
-  "task_id": "2.5",
-  "key": "2.5-utility-services",
-  "title": "Unit Conversion + Data Export/Import Services",
+  "task_id": "2.6",
+  "key": "2.6-onboarding-service",
+  "title": "Onboarding Service + Plan Templates",
   "priority": "P1",
-  "estimatedTime": "3h",
+  "estimatedTime": "2h",
   "dependencies": [
     "1.gate"
   ],
-  "file": "2.5-utility-services.md",
-  "record": "records/2.5-utility-services.md",
-  "startedTime": "2026-05-09 01:06",
+  "file": "2.6-onboarding-service.md",
+  "record": "records/2.6-onboarding-service.md",
+  "startedTime": "2026-05-09 01:17",
   "scope": "all"
 }

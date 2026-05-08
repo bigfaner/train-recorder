@@ -264,7 +264,7 @@
       "dependencies": [
         "2.gate"
       ],
-      "status": "pending",
+      "status": "completed",
       "file": "3.1-base-ui-and-nav.md",
       "record": "records/3.1-base-ui-and-nav.md",
       "scope": "all"

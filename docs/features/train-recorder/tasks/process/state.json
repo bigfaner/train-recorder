@@ -1,0 +1,11 @@
+{
+  "task_id": "1.1",
+  "key": "1.1-project-scaffold",
+  "title": "Project Scaffold",
+  "priority": "P0",
+  "estimatedTime": "2h",
+  "file": "1.1-project-scaffold.md",
+  "record": "records/1.1-project-scaffold.md",
+  "startedTime": "2026-05-08 23:09",
+  "scope": "all"
+}

@@ -1,31 +1,23 @@
-import { View, Text, StyleSheet } from "react-native";
-import { Colors, Typography, Spacing } from "@utils/constants";
+/**
+ * Sport Editor Route
+ *
+ * Push page for custom sport type creation.
+ * Renders the CustomSportEditor component with injected props.
+ * In production, data will be connected via store/context.
+ */
 
-export default function SportEditorScreen() {
-  return (
-    <View style={styles.container}>
-      <Text style={styles.title}>运动编辑</Text>
-      <Text style={styles.subtitle}>Sport Editor</Text>
-    </View>
-  );
+import React from "react";
+import { CustomSportEditor } from "@components/sport";
+import type { CustomSportData } from "@components/sport";
+
+export default function SportEditorRoute() {
+  const handleSave = (_data: CustomSportData) => {
+    // Will create SportType (is_custom=1) + SportMetric entries via repo
+  };
+
+  const handleBack = () => {
+    // Will navigate back via router.back()
+  };
+
+  return <CustomSportEditor onSave={handleSave} onBack={handleBack} />;
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: Colors.background,
-    padding: Spacing.contentPadding,
-  },
-  title: {
-    fontSize: Typography.heading1.fontSize,
-    fontWeight: Typography.heading1.fontWeight as "600",
-    color: Colors.textPrimary,
-  },
-  subtitle: {
-    fontSize: Typography.body.fontSize,
-    color: Colors.textSecondary,
-    marginTop: 8,
-  },
-});

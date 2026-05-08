@@ -1,14 +1,14 @@
 {
-  "task_id": "4.2",
-  "key": "4.2-stats-page",
-  "title": "Stats Page (Tab 4)",
+  "task_id": "4.5",
+  "key": "4.5-other-sport-pages",
+  "title": "Other Sport + Sport Editor Pages",
   "priority": "P1",
-  "estimatedTime": "4h",
+  "estimatedTime": "3h",
   "dependencies": [
     "3.gate"
   ],
-  "file": "4.2-stats-page.md",
-  "record": "records/4.2-stats-page.md",
-  "startedTime": "2026-05-09 03:45",
+  "file": "4.5-other-sport-pages.md",
+  "record": "records/4.5-other-sport-pages.md",
+  "startedTime": "2026-05-09 04:35",
   "scope": "all"
 }

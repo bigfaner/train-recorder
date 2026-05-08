@@ -1,43 +1,44 @@
 {
-  "taskId": "4.2",
+  "taskId": "4.4",
   "status": "completed",
-  "summary": "Implemented the Stats Page (Tab 4) with all dashboard components: HeroCard (weekly volume + week-over-week change), FourGridSummary (4-card grid with sessions/duration/PRs), WeeklyVolumeChart (8-week bar chart), PRList (top 4 exercises with Epley 1RM), TrainingHeatmap (28-day frequency grid with intensity shading), and EmptyStatsState. Created StatsService for computing all statistics from WorkoutSession/WorkoutSet/PersonalRecord/Exercise repos.",
+  "summary": "Implemented body measurement recording page with latest data card, entry form, trend chart, history list, metric selector, and empty state. All components follow the injected-props pattern for testability.",
   "filesCreated": [
-    "src/services/stats-service.ts",
-    "src/components/stats/HeroCard.tsx",
-    "src/components/stats/FourGridSummary.tsx",
-    "src/components/stats/WeeklyVolumeChart.tsx",
-    "src/components/stats/PRList.tsx",
-    "src/components/stats/TrainingHeatmap.tsx",
-    "src/components/stats/EmptyStatsState.tsx",
-    "src/components/stats/index.ts",
-    "__tests__/services/stats-service.test.ts",
-    "__tests__/components/stats/stats-components.test.ts"
+    "src/components/body/body-helpers.ts",
+    "src/components/body/LatestDataCard.tsx",
+    "src/components/body/TrendChart.tsx",
+    "src/components/body/BodyEntryForm.tsx",
+    "src/components/body/HistoryList.tsx",
+    "src/components/body/EmptyBodyState.tsx",
+    "src/components/body/BodyDataScreen.tsx",
+    "src/components/body/index.ts",
+    "__tests__/components/body/body-data-page.test.ts"
   ],
   "filesModified": [
-    "app/(tabs)/stats.tsx"
+    "app/body-data.tsx"
   ],
   "keyDecisions": [
-    "Used pure computation StatsService with repo injection pattern (same as other services like calendar-computer, pr-tracker)",
-    "Used simple View-based bar chart instead of victory-native BarChart to avoid native dependency issues in testing",
-    "Heatmap uses intensity thresholds: rest=0.1 (<1 volume), light=0.4 (<2000), moderate=0.6-0.8 (<20000), heavy=0.9+ (>=20000)",
-    "FourGridSummary uses Dimensions-based card width calculation instead of CSS calc() (not supported in RN)",
-    "Stats screen uses placeholder state pattern - will be wired to actual data via store/hook in future tasks",
-    "Exported formatting functions (formatVolume, formatChangePct, formatWeight, getIntensityColor, formatCompact) for testability"
+    "Used injected-props pattern for BodyDataScreen (same as HistoryScreen) to maximize testability",
+    "TrendChart uses View-based dot rendering instead of native chart library for testability",
+    "BodyEntryForm handles both create and edit modes via optional editingMeasurement prop",
+    "Weight change computed as latest minus previous with green-down/red-up convention",
+    "Circumference fields are optional (nullable) - only non-null values saved",
+    "Validation rejects future dates, zero/negative weight, and abnormal weight values (>500kg)"
   ],
-  "testsPassed": 41,
+  "testsPassed": 920,
   "testsFailed": 0,
-  "coverage": 93.64,
+  "coverage": 73.94,
   "acceptanceCriteria": [
-    { "criterion": "Hero card: weekly volume with week-over-week change percentage (green up / red down)", "met": true },
-    { "criterion": "Four-grid summary cards: weekly sessions (current/target), monthly sessions (consecutive weeks), weekly total duration (hours), monthly new PRs", "met": true },
-    { "criterion": "Weekly volume bar chart: last 8 weeks, current week highlighted in accent, last week green border", "met": true },
-    { "criterion": "PR list: top 4 exercises with estimated 1RM and date, link to history PR panel", "met": true },
-    { "criterion": "Training frequency heatmap: 28-day grid, intensity shading (rest=0.1, light=0.4-0.6, moderate=0.7-0.8, heavy=0.9+)", "met": true },
-    { "criterion": "Planned but incomplete dates: blue border on heatmap", "met": true },
-    { "criterion": "Empty state: prompt for first training", "met": true },
-    { "criterion": "Week-over-week formula: thisWeekVolume / lastWeekVolume - 1; no data shows --", "met": true },
-    { "criterion": "1RM estimation formula: weight * (1 + reps / 30)", "met": true }
+    { "criterion": "Latest data card at top: most recent weight + change trend arrow (green down / red up) + date", "met": true },
+    { "criterion": "\"+ 记录数据\" button opens entry form (push page)", "met": true },
+    { "criterion": "Entry form: date picker (default today), weight (required), chest/waist/arm/thigh circumference (optional), note", "met": true },
+    { "criterion": "Save creates BodyMeasurement record", "met": true },
+    { "criterion": "Segment selector: 趋势图 / 历史记录", "met": true },
+    { "criterion": "Trend chart: line chart of selected metric over time", "met": true },
+    { "criterion": "Metric selector: weight/chest/waist/arm/thigh", "met": true },
+    { "criterion": "History list: records sorted by date descending with edit/delete on swipe", "met": true },
+    { "criterion": "Edit pre-fills form with existing data", "met": true },
+    { "criterion": "Empty state: \"记录你的第一次身体数据\" prompt", "met": true },
+    { "criterion": "Nullable circumference fields: only save non-null values", "met": true }
   ],
-  "notes": "Stats screen currently shows empty state placeholder. Database integration will be wired up when the store/hook layer is created. The bar chart is implemented with plain Views rather than victory-native for testability and simplicity."
+  "notes": "41 new tests for body data page helpers and component exports. Total suite 920 tests all passing."
 }

@@ -1,31 +1,37 @@
-import { View, Text, StyleSheet } from "react-native";
-import { Colors, Typography, Spacing } from "@utils/constants";
+/**
+ * Body Data Route
+ *
+ * Push page for body measurement recording.
+ * Renders the BodyDataScreen component with injected props.
+ * In production, data will be connected via store/context.
+ */
 
-export default function BodyDataScreen() {
+import React from "react";
+import { BodyDataScreen } from "@components/body";
+import type { BodyEntryData } from "@components/body";
+
+export default function BodyDataRoute() {
+  // Placeholder handlers - will be connected to store/context
+  const handleSave = (_data: BodyEntryData) => {
+    // Will create BodyMeasurement record via repo
+  };
+
+  const handleUpdate = (_id: number, _data: BodyEntryData) => {
+    // Will update BodyMeasurement record via repo
+  };
+
+  const handleDelete = (_id: number) => {
+    // Will delete BodyMeasurement record via repo
+  };
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>身体数据</Text>
-      <Text style={styles.subtitle}>Body Data</Text>
-    </View>
+    <BodyDataScreen
+      measurements={[]}
+      latest={null}
+      previous={null}
+      onSave={handleSave}
+      onUpdate={handleUpdate}
+      onDelete={handleDelete}
+    />
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: Colors.background,
-    padding: Spacing.contentPadding,
-  },
-  title: {
-    fontSize: Typography.heading1.fontSize,
-    fontWeight: Typography.heading1.fontWeight as "600",
-    color: Colors.textPrimary,
-  },
-  subtitle: {
-    fontSize: Typography.body.fontSize,
-    color: Colors.textSecondary,
-    marginTop: 8,
-  },
-});

@@ -5,6 +5,11 @@ export {
   type WorkoutScreenProps,
   type ExerciseNameMap,
 } from "./WorkoutScreen";
+export { TimerPanel, type TimerPanelProps } from "./TimerPanel";
+export {
+  CircularProgress,
+  type CircularProgressProps,
+} from "./CircularProgress";
 export {
   getExerciseDisplayName,
   isCustomWeight,
@@ -19,3 +24,13 @@ export {
   isAllExercisesCompleted,
   getNextSetIndex,
 } from "./workout-helpers";
+export {
+  getTimerPanelPhase,
+  computeTimerProgress,
+  formatNotificationText,
+  getTimerTextColor,
+  shouldShowNextSetButton,
+  getExpiredMessage,
+  isTimerPanelVisible,
+  type TimerPanelPhase,
+} from "./timer-helpers";

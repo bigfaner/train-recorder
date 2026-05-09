@@ -57,15 +57,15 @@ evaluator: Claude (automated, adversarial)
 
 ## Deductions
 
-| Location | Issue | Penalty |
-|----------|-------|---------|
-| tech-design.md: Interfaces | BaseRepository<T> is generic; per-entity repositories (e.g., WorkoutSessionRepo, ExerciseRepo) have no specific query method signatures. A developer must guess which custom queries each repo exposes beyond the base CRUD. | -1 (D2: Interface signatures) |
-| tech-design.md: OnboardingService | `PlanTemplate` references `SetsConfig` type that is never defined as a TypeScript interface. The sets_config JSON shape is described in er-diagram.md prose and schema.sql comments but has no formal type definition in the Interfaces section. | -1 (D2: Inline models) |
-| schema.sql: all CREATE TABLE statements | Every column and table uses MySQL `COMMENT '...'` syntax (e.g., line 16: `biz_key INTEGER NOT NULL UNIQUE COMMENT '...'`, line 26: `) COMMENT '...'`). SQLite does not support the COMMENT keyword. Executing this DDL against expo-sqlite produces syntax errors. The AUTOINCREMENT fix was applied but COMMENT syntax was not. | -2 (D2: SQL DDL directly usable) |
-| tech-design.md: Testing | "Detox / Maestro" still lists two E2E tools without selecting one. "zustand testing" does not name a specific utility. This was flagged in iteration 1 and remains unchanged. | -2 (D4: Test tooling) |
-| tech-design.md: Security | PRD states "训练数据为个人隐私数据" and design acknowledges local data access as a threat, but the only mitigation is "Rely on iOS/Android device-level full-disk encryption." No app-layer encryption (e.g., SQLCipher, expo-secure-store for keys) is considered despite the privacy classification. This was flagged in iteration 1 and remains unchanged. | -2 (D6: Mitigations) |
-| tech-design.md: Interfaces | Per-entity repositories lack specific method signatures (e.g., WorkoutSessionRepo.findByDateRange(), ExerciseRepo.findByCategory()). Services call these methods but the repo contracts are unspecified, creating a gap in task derivability. | -1 (D5: Tasks derivable) |
-| tech-design.md: Security | Threat model lists "Local data access" as Low risk without considering the scenario of a jailbroken/rooted device where full-disk encryption is bypassed. For an app storing personal health data, this threat deserves a more thorough analysis. | -1 (D6: Threat model) |
+| Location                                | Issue                                                                                                                                                                                                                                                                                                                                                         | Penalty                          |
+| --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------- |
+| tech-design.md: Interfaces              | BaseRepository<T> is generic; per-entity repositories (e.g., WorkoutSessionRepo, ExerciseRepo) have no specific query method signatures. A developer must guess which custom queries each repo exposes beyond the base CRUD.                                                                                                                                  | -1 (D2: Interface signatures)    |
+| tech-design.md: OnboardingService       | `PlanTemplate` references `SetsConfig` type that is never defined as a TypeScript interface. The sets_config JSON shape is described in er-diagram.md prose and schema.sql comments but has no formal type definition in the Interfaces section.                                                                                                              | -1 (D2: Inline models)           |
+| schema.sql: all CREATE TABLE statements | Every column and table uses MySQL `COMMENT '...'` syntax (e.g., line 16: `biz_key INTEGER NOT NULL UNIQUE COMMENT '...'`, line 26: `) COMMENT '...'`). SQLite does not support the COMMENT keyword. Executing this DDL against expo-sqlite produces syntax errors. The AUTOINCREMENT fix was applied but COMMENT syntax was not.                              | -2 (D2: SQL DDL directly usable) |
+| tech-design.md: Testing                 | "Detox / Maestro" still lists two E2E tools without selecting one. "zustand testing" does not name a specific utility. This was flagged in iteration 1 and remains unchanged.                                                                                                                                                                                 | -2 (D4: Test tooling)            |
+| tech-design.md: Security                | PRD states "训练数据为个人隐私数据" and design acknowledges local data access as a threat, but the only mitigation is "Rely on iOS/Android device-level full-disk encryption." No app-layer encryption (e.g., SQLCipher, expo-secure-store for keys) is considered despite the privacy classification. This was flagged in iteration 1 and remains unchanged. | -2 (D6: Mitigations)             |
+| tech-design.md: Interfaces              | Per-entity repositories lack specific method signatures (e.g., WorkoutSessionRepo.findByDateRange(), ExerciseRepo.findByCategory()). Services call these methods but the repo contracts are unspecified, creating a gap in task derivability.                                                                                                                 | -1 (D5: Tasks derivable)         |
+| tech-design.md: Security                | Threat model lists "Local data access" as Low risk without considering the scenario of a jailbroken/rooted device where full-disk encryption is bypassed. For an app storing personal health data, this threat deserves a more thorough analysis.                                                                                                             | -1 (D6: Threat model)            |
 
 ---
 
@@ -74,6 +74,7 @@ evaluator: Claude (automated, adversarial)
 ### Attack 1: Interface & Model Definitions -- SQL DDL COMMENT syntax is MySQL, not SQLite
 
 **Where**: schema.sql, every CREATE TABLE statement. Example from lines 14-26:
+
 ```sql
 CREATE TABLE training_plans (
     id              INTEGER         PRIMARY KEY AUTOINCREMENT,
@@ -81,6 +82,7 @@ CREATE TABLE training_plans (
     ...
 ) COMMENT '训练计划定义';
 ```
+
 The `COMMENT '...'` syntax appears on every column definition (lines 16-25) and every table definition (line 26). This pattern repeats across all 16 tables.
 
 **Why it's weak**: SQLite does not support the `COMMENT` keyword in DDL statements. This is MySQL-specific syntax. Executing `CREATE TABLE ... COMMENT '...'` against expo-sqlite will raise a syntax error on the very first table definition. The iteration 1 report flagged MySQL `AUTO_INCREMENT` syntax and that was fixed to SQLite `AUTOINCREMENT`, but the `COMMENT` syntax issue was introduced or retained alongside the fix. A schema.sql file that cannot be executed as-is fails the "directly usable" criterion. The file header claims "Generated from: design/er-diagram.md" and lists conventions, but none of those conventions mention that the COMMENT syntax is non-executable documentation.
@@ -90,10 +92,13 @@ The `COMMENT '...'` syntax appears on every column definition (lines 16-25) and 
 ### Attack 2: Testing Strategy -- E2E tool selection still ambiguous
 
 **Where**: tech-design.md, Testing Strategy section, Per-Layer Test Plan table (line 493):
+
 ```
 | E2E | E2E | Detox / Maestro | Core workout flow, plan creation, data export | Key flows |
 ```
+
 And the zustand testing entry (line 492):
+
 ```
 | Stores | Unit | Jest + zustand testing | State transitions, async actions | 80% |
 ```
@@ -105,6 +110,7 @@ And the zustand testing entry (line 492):
 ### Attack 3: Security Considerations -- No app-layer encryption for classified personal data
 
 **Where**: tech-design.md, Security Considerations, Mitigations section (lines 521-524):
+
 ```
 - Data encryption: Rely on iOS/Android device-level full-disk encryption (enabled by default)
 - Data loss: Export feature for backup; import for restore; encourage periodic exports
@@ -120,11 +126,11 @@ And the zustand testing entry (line 492):
 
 ## Previous Issues Check
 
-| Previous Attack (Iteration 1) | Addressed? | Evidence |
-|-------------------------------|------------|----------|
-| Attack 1: PRD AC coverage incomplete (10+ ACs unmapped) | ✅ Fixed | PRD Coverage Map now covers US-1 through US-18 with individual ACs mapped to specific design components and interfaces. Every previously unmapped AC (US-1 AC6, US-2 AC9, US-3 AC6/AC8, US-5 AC5, US-6 AC6/AC7, US-7 AC5, US-9 AC7, US-14 AC1, US-18 AC4) now has explicit mappings. |
-| Attack 2: DataExport/DataImport/SnowflakeId/Onboarding have no interface specs | ✅ Fixed | All four now have full interface signatures: DataExportService (lines 332-337), DataImportService (lines 362-367), SnowflakeIdGenerator (lines 312-316), OnboardingService (lines 396-403). |
-| Attack 3: SQL DDL uses MySQL AUTO_INCREMENT | ✅ Fixed | schema.sql now uses `INTEGER PRIMARY KEY AUTOINCREMENT` (SQLite syntax) throughout all tables. However, MySQL `COMMENT` syntax remains. |
+| Previous Attack (Iteration 1)                                                  | Addressed? | Evidence                                                                                                                                                                                                                                                                             |
+| ------------------------------------------------------------------------------ | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Attack 1: PRD AC coverage incomplete (10+ ACs unmapped)                        | ✅ Fixed   | PRD Coverage Map now covers US-1 through US-18 with individual ACs mapped to specific design components and interfaces. Every previously unmapped AC (US-1 AC6, US-2 AC9, US-3 AC6/AC8, US-5 AC5, US-6 AC6/AC7, US-7 AC5, US-9 AC7, US-14 AC1, US-18 AC4) now has explicit mappings. |
+| Attack 2: DataExport/DataImport/SnowflakeId/Onboarding have no interface specs | ✅ Fixed   | All four now have full interface signatures: DataExportService (lines 332-337), DataImportService (lines 362-367), SnowflakeIdGenerator (lines 312-316), OnboardingService (lines 396-403).                                                                                          |
+| Attack 3: SQL DDL uses MySQL AUTO_INCREMENT                                    | ✅ Fixed   | schema.sql now uses `INTEGER PRIMARY KEY AUTOINCREMENT` (SQLite syntax) throughout all tables. However, MySQL `COMMENT` syntax remains.                                                                                                                                              |
 
 ---
 

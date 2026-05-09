@@ -9,7 +9,7 @@
  *     converted to/from number at the boundary
  */
 
-import type { DatabaseAdapter } from '../database-adapter';
+import type { DatabaseAdapter } from "../database-adapter";
 
 /**
  * Convert bigint values to number for SQLite storage.
@@ -17,7 +17,7 @@ import type { DatabaseAdapter } from '../database-adapter';
  * expo-sqlite and sql.js work with JS numbers for INTEGER columns.
  */
 function toDbValue(value: unknown): unknown {
-  if (typeof value === 'bigint') {
+  if (typeof value === "bigint") {
     return Number(value);
   }
   return value;
@@ -32,19 +32,25 @@ export function createBaseRepository<T extends { id: number; biz_key: bigint }>(
   allColumns: string[],
 ) {
   // Columns for SELECT (includes id)
-  const selectColumnsStr = allColumns.join(', ');
+  const selectColumnsStr = allColumns.join(", ");
   // Columns for INSERT (excludes id, which is auto-increment)
-  const insertColumns = allColumns.filter((c) => c !== 'id');
-  const insertColumnsStr = insertColumns.join(', ');
-  const insertPlaceholders = insertColumns.map(() => '?').join(', ');
+  const insertColumns = allColumns.filter((c) => c !== "id");
+  const insertColumnsStr = insertColumns.join(", ");
+  const insertPlaceholders = insertColumns.map(() => "?").join(", ");
 
   return {
     findById(id: number): T | null {
-      return db.getFirstSync<T>(`SELECT ${selectColumnsStr} FROM ${tableName} WHERE id = ?`, [id]);
+      return db.getFirstSync<T>(
+        `SELECT ${selectColumnsStr} FROM ${tableName} WHERE id = ?`,
+        [id],
+      );
     },
 
     findByBizKey(bizKey: bigint): T | null {
-      return db.getFirstSync<T>(`SELECT ${selectColumnsStr} FROM ${tableName} WHERE biz_key = ?`, [Number(bizKey)]);
+      return db.getFirstSync<T>(
+        `SELECT ${selectColumnsStr} FROM ${tableName} WHERE biz_key = ?`,
+        [Number(bizKey)],
+      );
     },
 
     findAll(filter?: Partial<T>, orderBy?: string, limit?: number): T[] {
@@ -60,7 +66,7 @@ export function createBaseRepository<T extends { id: number; biz_key: bigint }>(
           }
         }
         if (clauses.length > 0) {
-          sql += ' WHERE ' + clauses.join(' AND ');
+          sql += " WHERE " + clauses.join(" AND ");
         }
       }
 
@@ -74,15 +80,18 @@ export function createBaseRepository<T extends { id: number; biz_key: bigint }>(
       return db.getAllSync<T>(sql, params);
     },
 
-    create(data: Omit<T, 'id'> & { id?: never }): T {
-      const values = insertColumns.map((col) => toDbValue((data as Record<string, unknown>)[col]));
+    create(data: Omit<T, "id"> & { id?: never }): T {
+      const values = insertColumns.map((col) =>
+        toDbValue((data as Record<string, unknown>)[col]),
+      );
       const result = db.runSync(
         `INSERT INTO ${tableName} (${insertColumnsStr}) VALUES (${insertPlaceholders})`,
         values,
       );
-      return db.getFirstSync<T>(`SELECT ${selectColumnsStr} FROM ${tableName} WHERE id = ?`, [
-        result.lastInsertRowId,
-      ])!;
+      return db.getFirstSync<T>(
+        `SELECT ${selectColumnsStr} FROM ${tableName} WHERE id = ?`,
+        [result.lastInsertRowId],
+      )!;
     },
 
     update(id: number, data: Partial<T>): T {
@@ -90,7 +99,10 @@ export function createBaseRepository<T extends { id: number; biz_key: bigint }>(
         ([, v]) => v !== undefined,
       );
       if (entries.length === 0) {
-        return db.getFirstSync<T>(`SELECT ${selectColumnsStr} FROM ${tableName} WHERE id = ?`, [id])!;
+        return db.getFirstSync<T>(
+          `SELECT ${selectColumnsStr} FROM ${tableName} WHERE id = ?`,
+          [id],
+        )!;
       }
 
       const setClauses = entries.map(([key]) => `${key} = ?`);
@@ -98,10 +110,13 @@ export function createBaseRepository<T extends { id: number; biz_key: bigint }>(
       values.push(id);
 
       db.runSync(
-        `UPDATE ${tableName} SET ${setClauses.join(', ')} WHERE id = ?`,
+        `UPDATE ${tableName} SET ${setClauses.join(", ")} WHERE id = ?`,
         values,
       );
-      return db.getFirstSync<T>(`SELECT ${selectColumnsStr} FROM ${tableName} WHERE id = ?`, [id])!;
+      return db.getFirstSync<T>(
+        `SELECT ${selectColumnsStr} FROM ${tableName} WHERE id = ?`,
+        [id],
+      )!;
     },
 
     deleteById(id: number): void {
@@ -110,4 +125,6 @@ export function createBaseRepository<T extends { id: number; biz_key: bigint }>(
   };
 }
 
-export type BaseRepo<T extends { id: number; biz_key: bigint }> = ReturnType<typeof createBaseRepository<T>>;
+export type BaseRepo<T extends { id: number; biz_key: bigint }> = ReturnType<
+  typeof createBaseRepository<T>
+>;

@@ -14,6 +14,7 @@ status: pending
 Call `/gen-test-cases` skill to generate structured test case documentation from PRD acceptance criteria.
 
 Each test case includes:
+
 - Source: Specific acceptance criterion from PRD
 - Type: UI / API / CLI
 - Target: Test target path

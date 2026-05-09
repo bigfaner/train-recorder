@@ -41,3 +41,4 @@ yarn-error.*
 /android
 .forge/state.json
 docs/features/*/tasks/process/*
+coverage/

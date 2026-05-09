@@ -57,12 +57,12 @@ evaluator: Claude (automated, adversarial)
 
 ## Deductions
 
-| Location | Issue | Penalty |
-|----------|-------|---------|
-| tech-design.md: Interfaces, BaseRepository<T> (lines 172-181) | Per-entity repositories (training-plan.repo.ts, exercise.repo.ts, etc.) are listed in the directory structure but have no specific query method signatures beyond the generic BaseRepository<T>. Services like CalendarComputer call methods like `findAll({ training_type: 'push' })` (line 564) and PRTracker calls `recalculatePR(exerciseBizKey)` which implies custom repo queries, but the repo contracts are unspecified. | -1 (D2: Interface signatures) |
-| tech-design.md: Interfaces, PlanTemplate (line 386) | `PlanTemplate.exercises[].setsConfig` has type `SetsConfig` but `SetsConfig` is never defined as a TypeScript interface. The JSON shape is described in er-diagram.md prose (lines 272-298) and referenced in the Cross-Layer Data Map (line 471: `mode: 'fixed' \| 'custom'`), but no formal type definition exists in the Interfaces section. | -1 (D2: Inline models) |
-| tech-design.md: Interfaces, per-entity repos | Without specific repo method signatures, a developer cannot derive implementation tasks for custom query methods. For example, `ExerciseHistoryService.getRecentSessions()` needs a repo query joining workout_exercises + workout_sets by exercise_biz_key, but no repo interface exposes this. | -1 (D5: Tasks derivable) |
-| tech-design.md: Security, Threat Model (line 522) vs Mitigations (lines 528-533) | Threat "Local data access (unlocked device)" is rated Medium but has no corresponding mitigation entry. The mitigations address locked devices (OS encryption), database encryption (evaluated, rejected), jailbroken devices (accepted risk), and export files. The unlocked-device scenario -- the most common real-world threat for a phone seized while in use -- is unmitigated and undiscussed in the Mitigations section. | -1 (D6: Mitigations) |
+| Location                                                                         | Issue                                                                                                                                                                                                                                                                                                                                                                                                                            | Penalty                       |
+| -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------- |
+| tech-design.md: Interfaces, BaseRepository<T> (lines 172-181)                    | Per-entity repositories (training-plan.repo.ts, exercise.repo.ts, etc.) are listed in the directory structure but have no specific query method signatures beyond the generic BaseRepository<T>. Services like CalendarComputer call methods like `findAll({ training_type: 'push' })` (line 564) and PRTracker calls `recalculatePR(exerciseBizKey)` which implies custom repo queries, but the repo contracts are unspecified. | -1 (D2: Interface signatures) |
+| tech-design.md: Interfaces, PlanTemplate (line 386)                              | `PlanTemplate.exercises[].setsConfig` has type `SetsConfig` but `SetsConfig` is never defined as a TypeScript interface. The JSON shape is described in er-diagram.md prose (lines 272-298) and referenced in the Cross-Layer Data Map (line 471: `mode: 'fixed' \| 'custom'`), but no formal type definition exists in the Interfaces section.                                                                                  | -1 (D2: Inline models)        |
+| tech-design.md: Interfaces, per-entity repos                                     | Without specific repo method signatures, a developer cannot derive implementation tasks for custom query methods. For example, `ExerciseHistoryService.getRecentSessions()` needs a repo query joining workout_exercises + workout_sets by exercise_biz_key, but no repo interface exposes this.                                                                                                                                 | -1 (D5: Tasks derivable)      |
+| tech-design.md: Security, Threat Model (line 522) vs Mitigations (lines 528-533) | Threat "Local data access (unlocked device)" is rated Medium but has no corresponding mitigation entry. The mitigations address locked devices (OS encryption), database encryption (evaluated, rejected), jailbroken devices (accepted risk), and export files. The unlocked-device scenario -- the most common real-world threat for a phone seized while in use -- is unmitigated and undiscussed in the Mitigations section. | -1 (D6: Mitigations)          |
 
 ---
 
@@ -76,8 +76,16 @@ evaluator: Claude (automated, adversarial)
 
 ```typescript
 type SetsConfig =
-  | { mode: 'fixed'; target_reps: number; target_weight: number | null; target_repeat: number }
-  | { mode: 'custom'; sets: Array<{ target_reps: number; target_weight: number | null }> };
+  | {
+      mode: "fixed";
+      target_reps: number;
+      target_weight: number | null;
+      target_repeat: number;
+    }
+  | {
+      mode: "custom";
+      sets: Array<{ target_reps: number; target_weight: number | null }>;
+    };
 ```
 
 **What must improve**: Add a `SetsConfig` TypeScript type definition to the Interfaces section of tech-design.md, using a discriminated union on the `mode` field to capture both fixed and custom variants with all their fields typed.
@@ -102,11 +110,11 @@ type SetsConfig =
 
 ## Previous Issues Check
 
-| Previous Attack (Iteration 2) | Addressed? | Evidence |
-|-------------------------------|------------|----------|
-| Attack 1: SQL DDL COMMENT syntax is MySQL, not SQLite | ✅ Fixed | schema.sql now uses `-- ` SQL comments exclusively for all documentation. All 16 CREATE TABLE statements and all indexes use valid SQLite syntax. No COMMENT keyword anywhere. DDL is directly executable. |
-| Attack 2: E2E tool selection still ambiguous ("Detox / Maestro") | ✅ Fixed | tech-design.md line 493 now shows "Maestro" as the sole E2E tool. Lines 496-497 provide a "Tooling Rationale" section with a clear comparison and justification for choosing Maestro over Detox. Zustand testing pattern is fully specified with example code at lines 498-499. |
-| Attack 3: No app-layer encryption for classified personal data | ✅ Fixed | Threat model expanded from 3 to 5 rows, including separate entries for locked (Low), unlocked (Medium), and jailbroken (Medium) devices. Mitigations section now has detailed evaluations of SQLCipher, expo-sqlite-encrypted, export file encryption, and jailbroken device risk -- each with explicit accept/reject decisions and rationale. This is a substantial improvement from iteration 2's single-line "Rely on OS full-disk encryption." |
+| Previous Attack (Iteration 2)                                    | Addressed? | Evidence                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| ---------------------------------------------------------------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Attack 1: SQL DDL COMMENT syntax is MySQL, not SQLite            | ✅ Fixed   | schema.sql now uses `-- ` SQL comments exclusively for all documentation. All 16 CREATE TABLE statements and all indexes use valid SQLite syntax. No COMMENT keyword anywhere. DDL is directly executable.                                                                                                                                                                                                                                         |
+| Attack 2: E2E tool selection still ambiguous ("Detox / Maestro") | ✅ Fixed   | tech-design.md line 493 now shows "Maestro" as the sole E2E tool. Lines 496-497 provide a "Tooling Rationale" section with a clear comparison and justification for choosing Maestro over Detox. Zustand testing pattern is fully specified with example code at lines 498-499.                                                                                                                                                                    |
+| Attack 3: No app-layer encryption for classified personal data   | ✅ Fixed   | Threat model expanded from 3 to 5 rows, including separate entries for locked (Low), unlocked (Medium), and jailbroken (Medium) devices. Mitigations section now has detailed evaluations of SQLCipher, expo-sqlite-encrypted, export file encryption, and jailbroken device risk -- each with explicit accept/reject decisions and rationale. This is a substantial improvement from iteration 2's single-line "Rely on OS full-disk encryption." |
 
 ---
 

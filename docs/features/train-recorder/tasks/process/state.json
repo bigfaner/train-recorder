@@ -1,15 +1,14 @@
 {
-  "task_id": "4.gate",
-  "key": "4-gate",
-  "title": "Phase 4 Exit Gate",
-  "priority": "P0",
-  "estimatedTime": "1h",
+  "task_id": "T-test-1",
+  "key": "gen-test-cases",
+  "title": "Generate e2e Test Cases",
+  "priority": "P1",
+  "estimatedTime": "1-2h",
   "dependencies": [
-    "4.summary"
+    "4.gate"
   ],
-  "file": "4-gate.md",
-  "record": "records/4-gate.md",
-  "startedTime": "2026-05-09 04:55",
-  "breaking": true,
+  "file": "gen-test-cases.md",
+  "record": "records/gen-test-cases.md",
+  "startedTime": "2026-05-09 05:01",
   "scope": "all"
 }

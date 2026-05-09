@@ -1,142 +1,207 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Train Recorder — 原型导航</title>
-  <link rel="stylesheet" href="styles.css">
-  <style>
-    body { background: #f5f5f7; padding: 40px 20px; }
-    .hub-container { max-width: 800px; margin: 0 auto; }
-    .hub-header { text-align: center; margin-bottom: 48px; }
-    .hub-header h1 { font-size: 36px; margin-bottom: 8px; }
-    .hub-header p { color: #6e6e73; font-size: 17px; }
-    .page-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-      gap: 16px;
-    }
-    .page-link { text-decoration: none; color: inherit; }
-    .page-link-card {
-      background: white;
-      border-radius: 16px;
-      padding: 20px;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-      transition: transform 0.15s, box-shadow 0.15s;
-    }
-    .page-link-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
-    .page-link-card .card-icon {
-      width: 48px; height: 48px;
-      border-radius: 12px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 24px;
-      margin-bottom: 12px;
-    }
-    .page-link-card h3 { font-size: 17px; font-weight: 600; margin-bottom: 4px; }
-    .page-link-card p { font-size: 14px; color: #6e6e73; line-height: 1.4; }
-    .page-link-card .tag-row { margin-top: 8px; }
-    .icon-blue { background: rgba(0,113,227,0.1); }
-    .icon-green { background: rgba(48,209,88,0.1); }
-    .icon-orange { background: rgba(255,149,0,0.1); }
-    .icon-purple { background: rgba(175,82,222,0.1); }
-    .icon-gray { background: rgba(134,134,139,0.1); }
-    @media (max-width: 500px) {
-      body { padding: 20px 12px; }
-      .hub-header h1 { font-size: 28px; }
-      .page-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
-    }
-  </style>
-</head>
-<body>
-  <div class="hub-container">
-    <div class="hub-header">
-      <h1>Train Recorder</h1>
-      <p>渐进式力量训练助手 — 交互原型导航</p>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Train Recorder — 原型导航</title>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      body {
+        background: #f5f5f7;
+        padding: 40px 20px;
+      }
+      .hub-container {
+        max-width: 800px;
+        margin: 0 auto;
+      }
+      .hub-header {
+        text-align: center;
+        margin-bottom: 48px;
+      }
+      .hub-header h1 {
+        font-size: 36px;
+        margin-bottom: 8px;
+      }
+      .hub-header p {
+        color: #6e6e73;
+        font-size: 17px;
+      }
+      .page-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 16px;
+      }
+      .page-link {
+        text-decoration: none;
+        color: inherit;
+      }
+      .page-link-card {
+        background: white;
+        border-radius: 16px;
+        padding: 20px;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+        transition:
+          transform 0.15s,
+          box-shadow 0.15s;
+      }
+      .page-link-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+      }
+      .page-link-card .card-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        margin-bottom: 12px;
+      }
+      .page-link-card h3 {
+        font-size: 17px;
+        font-weight: 600;
+        margin-bottom: 4px;
+      }
+      .page-link-card p {
+        font-size: 14px;
+        color: #6e6e73;
+        line-height: 1.4;
+      }
+      .page-link-card .tag-row {
+        margin-top: 8px;
+      }
+      .icon-blue {
+        background: rgba(0, 113, 227, 0.1);
+      }
+      .icon-green {
+        background: rgba(48, 209, 88, 0.1);
+      }
+      .icon-orange {
+        background: rgba(255, 149, 0, 0.1);
+      }
+      .icon-purple {
+        background: rgba(175, 82, 222, 0.1);
+      }
+      .icon-gray {
+        background: rgba(134, 134, 139, 0.1);
+      }
+      @media (max-width: 500px) {
+        body {
+          padding: 20px 12px;
+        }
+        .hub-header h1 {
+          font-size: 28px;
+        }
+        .page-grid {
+          grid-template-columns: 1fr 1fr;
+          gap: 10px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="hub-container">
+      <div class="hub-header">
+        <h1>Train Recorder</h1>
+        <p>渐进式力量训练助手 — 交互原型导航</p>
+      </div>
+
+      <div class="page-grid">
+        <a href="calendar.html" class="page-link">
+          <div class="page-link-card">
+            <div class="card-icon icon-blue">📅</div>
+            <h3>训练日历</h3>
+            <p>首页，月视图展示训练安排和历史记录</p>
+            <div class="tag-row">
+              <span
+                class="tag tag-push"
+                style="font-size: 11px; padding: 2px 8px"
+                >首页</span
+              >
+            </div>
+          </div>
+        </a>
+
+        <a href="workout.html" class="page-link">
+          <div class="page-link-card">
+            <div class="card-icon icon-green">🏋️</div>
+            <h3>训练执行</h3>
+            <p>逐组记录重量和次数，组间休息计时器</p>
+            <div class="tag-row">
+              <span
+                class="tag tag-pull"
+                style="font-size: 11px; padding: 2px 8px"
+                >核心流程</span
+              >
+            </div>
+          </div>
+        </a>
+
+        <a href="plan.html" class="page-link">
+          <div class="page-link-card">
+            <div class="card-icon icon-orange">📋</div>
+            <h3>训练计划管理</h3>
+            <p>创建周期化训练计划，定义推/拉/蹲训练日</p>
+          </div>
+        </a>
+
+        <a href="exercise-library.html" class="page-link">
+          <div class="page-link-card">
+            <div class="card-icon icon-purple">💪</div>
+            <h3>动作库</h3>
+            <p>内置力量举动作列表，支持自定义动作</p>
+          </div>
+        </a>
+
+        <a href="history.html" class="page-link">
+          <div class="page-link-card">
+            <div class="card-icon icon-blue">📊</div>
+            <h3>历史与进步</h3>
+            <p>训练历史、进步曲线、容量趋势、PR 追踪</p>
+          </div>
+        </a>
+
+        <a href="body-data.html" class="page-link">
+          <div class="page-link-card">
+            <div class="card-icon icon-green">👤</div>
+            <h3>身体数据</h3>
+            <p>记录体重和围度，查看变化趋势</p>
+          </div>
+        </a>
+
+        <a href="other-sport.html" class="page-link">
+          <div class="page-link-card">
+            <div class="card-icon icon-purple">🏊</div>
+            <h3>其他运动记录</h3>
+            <p>记录游泳、跑步等非力量训练数据</p>
+          </div>
+        </a>
+
+        <a href="feeling.html" class="page-link">
+          <div class="page-link-card">
+            <div class="card-icon icon-orange">📝</div>
+            <h3>训练感受</h3>
+            <p>训练后记录疲劳度、满意度和动作感受</p>
+          </div>
+        </a>
+
+        <a href="exercise-detail.html" class="page-link">
+          <div class="page-link-card">
+            <div class="card-icon icon-blue">📊</div>
+            <h3>动作详情</h3>
+            <p>单个动作的历史记录、PR、进步曲线</p>
+          </div>
+        </a>
+
+        <a href="settings.html" class="page-link">
+          <div class="page-link-card">
+            <div class="card-icon icon-gray">⚙️</div>
+            <h3>设置</h3>
+            <p>单位切换、提醒、数据导出/导入</p>
+          </div>
+        </a>
+      </div>
     </div>
-
-    <div class="page-grid">
-      <a href="calendar.html" class="page-link">
-        <div class="page-link-card">
-          <div class="card-icon icon-blue">📅</div>
-          <h3>训练日历</h3>
-          <p>首页，月视图展示训练安排和历史记录</p>
-          <div class="tag-row"><span class="tag tag-push" style="font-size:11px;padding:2px 8px">首页</span></div>
-        </div>
-      </a>
-
-      <a href="workout.html" class="page-link">
-        <div class="page-link-card">
-          <div class="card-icon icon-green">🏋️</div>
-          <h3>训练执行</h3>
-          <p>逐组记录重量和次数，组间休息计时器</p>
-          <div class="tag-row"><span class="tag tag-pull" style="font-size:11px;padding:2px 8px">核心流程</span></div>
-        </div>
-      </a>
-
-      <a href="plan.html" class="page-link">
-        <div class="page-link-card">
-          <div class="card-icon icon-orange">📋</div>
-          <h3>训练计划管理</h3>
-          <p>创建周期化训练计划，定义推/拉/蹲训练日</p>
-        </div>
-      </a>
-
-      <a href="exercise-library.html" class="page-link">
-        <div class="page-link-card">
-          <div class="card-icon icon-purple">💪</div>
-          <h3>动作库</h3>
-          <p>内置力量举动作列表，支持自定义动作</p>
-        </div>
-      </a>
-
-      <a href="history.html" class="page-link">
-        <div class="page-link-card">
-          <div class="card-icon icon-blue">📊</div>
-          <h3>历史与进步</h3>
-          <p>训练历史、进步曲线、容量趋势、PR 追踪</p>
-        </div>
-      </a>
-
-      <a href="body-data.html" class="page-link">
-        <div class="page-link-card">
-          <div class="card-icon icon-green">👤</div>
-          <h3>身体数据</h3>
-          <p>记录体重和围度，查看变化趋势</p>
-        </div>
-      </a>
-
-      <a href="other-sport.html" class="page-link">
-        <div class="page-link-card">
-          <div class="card-icon icon-purple">🏊</div>
-          <h3>其他运动记录</h3>
-          <p>记录游泳、跑步等非力量训练数据</p>
-        </div>
-      </a>
-
-      <a href="feeling.html" class="page-link">
-        <div class="page-link-card">
-          <div class="card-icon icon-orange">📝</div>
-          <h3>训练感受</h3>
-          <p>训练后记录疲劳度、满意度和动作感受</p>
-        </div>
-      </a>
-
-      <a href="exercise-detail.html" class="page-link">
-        <div class="page-link-card">
-          <div class="card-icon icon-blue">📊</div>
-          <h3>动作详情</h3>
-          <p>单个动作的历史记录、PR、进步曲线</p>
-        </div>
-      </a>
-
-      <a href="settings.html" class="page-link">
-        <div class="page-link-card">
-          <div class="card-icon icon-gray">⚙️</div>
-          <h3>设置</h3>
-          <p>单位切换、提醒、数据导出/导入</p>
-        </div>
-      </a>
-    </div>
-  </div>
-</body>
+  </body>
 </html>

@@ -241,21 +241,21 @@ export const CREATE_TABLE_STATEMENTS: string[] = [
 // ============================================================
 
 export const CREATE_INDEXES: string[] = [
-  'CREATE INDEX IF NOT EXISTS idx_ws_date ON workout_sessions(session_date);',
-  'CREATE INDEX IF NOT EXISTS idx_ws_type ON workout_sessions(training_type);',
-  'CREATE INDEX IF NOT EXISTS idx_we_session ON workout_exercises(workout_session_biz_key);',
-  'CREATE INDEX IF NOT EXISTS idx_we_exercise ON workout_exercises(exercise_biz_key);',
-  'CREATE INDEX IF NOT EXISTS idx_wset_exercise ON workout_sets(workout_exercise_biz_key);',
-  'CREATE INDEX IF NOT EXISTS idx_pr_exercise_type ON personal_records(exercise_biz_key, pr_type);',
-  'CREATE INDEX IF NOT EXISTS idx_pr_date ON personal_records(pr_date);',
-  'CREATE INDEX IF NOT EXISTS idx_bm_date ON body_measurements(record_date);',
-  'CREATE INDEX IF NOT EXISTS idx_exercises_category ON exercises(category);',
-  'CREATE INDEX IF NOT EXISTS idx_exercises_deleted ON exercises(is_deleted);',
-  'CREATE INDEX IF NOT EXISTS idx_pe_day ON plan_exercises(training_day_biz_key);',
-  'CREATE INDEX IF NOT EXISTS idx_td_plan ON training_days(plan_biz_key);',
-  'CREATE INDEX IF NOT EXISTS idx_tp_active ON training_plans(is_active);',
-  'CREATE INDEX IF NOT EXISTS idx_osr_date ON other_sport_records(record_date);',
-  'CREATE INDEX IF NOT EXISTS idx_smv_record ON sport_metric_values(sport_record_biz_key);',
+  "CREATE INDEX IF NOT EXISTS idx_ws_date ON workout_sessions(session_date);",
+  "CREATE INDEX IF NOT EXISTS idx_ws_type ON workout_sessions(training_type);",
+  "CREATE INDEX IF NOT EXISTS idx_we_session ON workout_exercises(workout_session_biz_key);",
+  "CREATE INDEX IF NOT EXISTS idx_we_exercise ON workout_exercises(exercise_biz_key);",
+  "CREATE INDEX IF NOT EXISTS idx_wset_exercise ON workout_sets(workout_exercise_biz_key);",
+  "CREATE INDEX IF NOT EXISTS idx_pr_exercise_type ON personal_records(exercise_biz_key, pr_type);",
+  "CREATE INDEX IF NOT EXISTS idx_pr_date ON personal_records(pr_date);",
+  "CREATE INDEX IF NOT EXISTS idx_bm_date ON body_measurements(record_date);",
+  "CREATE INDEX IF NOT EXISTS idx_exercises_category ON exercises(category);",
+  "CREATE INDEX IF NOT EXISTS idx_exercises_deleted ON exercises(is_deleted);",
+  "CREATE INDEX IF NOT EXISTS idx_pe_day ON plan_exercises(training_day_biz_key);",
+  "CREATE INDEX IF NOT EXISTS idx_td_plan ON training_days(plan_biz_key);",
+  "CREATE INDEX IF NOT EXISTS idx_tp_active ON training_plans(is_active);",
+  "CREATE INDEX IF NOT EXISTS idx_osr_date ON other_sport_records(record_date);",
+  "CREATE INDEX IF NOT EXISTS idx_smv_record ON sport_metric_values(sport_record_biz_key);",
 ];
 
 // ============================================================
@@ -271,32 +271,137 @@ export interface BuiltinExercise {
 
 export const BUILTIN_EXERCISES: BuiltinExercise[] = [
   // 核心力量举 (core_powerlifting)
-  { exercise_name: '深蹲', category: 'core_powerlifting', increment: 2.5, default_rest: 300 },
-  { exercise_name: '卧推', category: 'core_powerlifting', increment: 2.5, default_rest: 300 },
-  { exercise_name: '硬拉', category: 'core_powerlifting', increment: 2.5, default_rest: 300 },
-  { exercise_name: '推举', category: 'core_powerlifting', increment: 2.5, default_rest: 300 },
+  {
+    exercise_name: "深蹲",
+    category: "core_powerlifting",
+    increment: 2.5,
+    default_rest: 300,
+  },
+  {
+    exercise_name: "卧推",
+    category: "core_powerlifting",
+    increment: 2.5,
+    default_rest: 300,
+  },
+  {
+    exercise_name: "硬拉",
+    category: "core_powerlifting",
+    increment: 2.5,
+    default_rest: 300,
+  },
+  {
+    exercise_name: "推举",
+    category: "core_powerlifting",
+    increment: 2.5,
+    default_rest: 300,
+  },
   // 上肢推 (upper_push)
-  { exercise_name: '上斜卧推', category: 'upper_push', increment: 2.5, default_rest: 240 },
-  { exercise_name: '哑铃卧推', category: 'upper_push', increment: 2.5, default_rest: 240 },
-  { exercise_name: '双杠臂屈伸', category: 'upper_push', increment: 2.5, default_rest: 240 },
+  {
+    exercise_name: "上斜卧推",
+    category: "upper_push",
+    increment: 2.5,
+    default_rest: 240,
+  },
+  {
+    exercise_name: "哑铃卧推",
+    category: "upper_push",
+    increment: 2.5,
+    default_rest: 240,
+  },
+  {
+    exercise_name: "双杠臂屈伸",
+    category: "upper_push",
+    increment: 2.5,
+    default_rest: 240,
+  },
   // 上肢拉 (upper_pull)
-  { exercise_name: '杠铃划船', category: 'upper_pull', increment: 2.5, default_rest: 240 },
-  { exercise_name: '引体向上', category: 'upper_pull', increment: 2.5, default_rest: 240 },
-  { exercise_name: '高位下拉', category: 'upper_pull', increment: 2.5, default_rest: 240 },
-  { exercise_name: '哑铃划船', category: 'upper_pull', increment: 2.5, default_rest: 240 },
+  {
+    exercise_name: "杠铃划船",
+    category: "upper_pull",
+    increment: 2.5,
+    default_rest: 240,
+  },
+  {
+    exercise_name: "引体向上",
+    category: "upper_pull",
+    increment: 2.5,
+    default_rest: 240,
+  },
+  {
+    exercise_name: "高位下拉",
+    category: "upper_pull",
+    increment: 2.5,
+    default_rest: 240,
+  },
+  {
+    exercise_name: "哑铃划船",
+    category: "upper_pull",
+    increment: 2.5,
+    default_rest: 240,
+  },
   // 下肢 (lower)
-  { exercise_name: '前蹲', category: 'lower', increment: 2.5, default_rest: 300 },
-  { exercise_name: '腿举', category: 'lower', increment: 5.0, default_rest: 240 },
-  { exercise_name: '罗马尼亚硬拉', category: 'lower', increment: 2.5, default_rest: 300 },
-  { exercise_name: '腿弯举', category: 'lower', increment: 2.5, default_rest: 180 },
+  {
+    exercise_name: "前蹲",
+    category: "lower",
+    increment: 2.5,
+    default_rest: 300,
+  },
+  {
+    exercise_name: "腿举",
+    category: "lower",
+    increment: 5.0,
+    default_rest: 240,
+  },
+  {
+    exercise_name: "罗马尼亚硬拉",
+    category: "lower",
+    increment: 2.5,
+    default_rest: 300,
+  },
+  {
+    exercise_name: "腿弯举",
+    category: "lower",
+    increment: 2.5,
+    default_rest: 180,
+  },
   // 核心 (core)
-  { exercise_name: '卷腹', category: 'core', increment: 2.5, default_rest: 120 },
-  { exercise_name: '平板支撑', category: 'core', increment: 5.0, default_rest: 120 },
-  { exercise_name: '健腹轮', category: 'core', increment: 2.5, default_rest: 120 },
+  {
+    exercise_name: "卷腹",
+    category: "core",
+    increment: 2.5,
+    default_rest: 120,
+  },
+  {
+    exercise_name: "平板支撑",
+    category: "core",
+    increment: 5.0,
+    default_rest: 120,
+  },
+  {
+    exercise_name: "健腹轮",
+    category: "core",
+    increment: 2.5,
+    default_rest: 120,
+  },
   // 肩部 (shoulder)
-  { exercise_name: '侧平举', category: 'shoulder', increment: 1.25, default_rest: 120 },
-  { exercise_name: '面拉', category: 'shoulder', increment: 2.5, default_rest: 120 },
-  { exercise_name: '推举（哑铃）', category: 'shoulder', increment: 2.5, default_rest: 180 },
+  {
+    exercise_name: "侧平举",
+    category: "shoulder",
+    increment: 1.25,
+    default_rest: 120,
+  },
+  {
+    exercise_name: "面拉",
+    category: "shoulder",
+    increment: 2.5,
+    default_rest: 120,
+  },
+  {
+    exercise_name: "推举（哑铃）",
+    category: "shoulder",
+    increment: 2.5,
+    default_rest: 180,
+  },
 ];
 
 // ============================================================
@@ -304,22 +409,22 @@ export const BUILTIN_EXERCISES: BuiltinExercise[] = [
 // ============================================================
 
 export const TABLE_NAMES = [
-  'training_plans',
-  'training_days',
-  'exercises',
-  'plan_exercises',
-  'workout_sessions',
-  'workout_exercises',
-  'workout_sets',
-  'feelings',
-  'exercise_feelings',
-  'personal_records',
-  'body_measurements',
-  'other_sport_records',
-  'sport_types',
-  'sport_metrics',
-  'sport_metric_values',
-  'user_settings',
+  "training_plans",
+  "training_days",
+  "exercises",
+  "plan_exercises",
+  "workout_sessions",
+  "workout_exercises",
+  "workout_sets",
+  "feelings",
+  "exercise_feelings",
+  "personal_records",
+  "body_measurements",
+  "other_sport_records",
+  "sport_types",
+  "sport_metrics",
+  "sport_metric_values",
+  "user_settings",
 ] as const;
 
 export type TableName = (typeof TABLE_NAMES)[number];

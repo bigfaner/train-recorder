@@ -6,7 +6,7 @@
  * Re-running is idempotent (no errors, no data loss).
  */
 
-import type { SQLiteDatabase } from 'expo-sqlite';
+import type { SQLiteDatabase } from "expo-sqlite";
 
 export interface Migration {
   version: number;
@@ -14,7 +14,7 @@ export interface Migration {
   up: (db: SQLiteDatabase) => void;
 }
 
-export const SCHEMA_VERSION_KEY = 'schema_version';
+export const SCHEMA_VERSION_KEY = "schema_version";
 export const INITIAL_VERSION = 0;
 
 /**
@@ -23,7 +23,7 @@ export const INITIAL_VERSION = 0;
  */
 export function getCurrentVersion(db: SQLiteDatabase): number {
   const result = db.getFirstSync<{ setting_value: string }>(
-    'SELECT setting_value FROM user_settings WHERE setting_key = ?',
+    "SELECT setting_value FROM user_settings WHERE setting_key = ?",
     [SCHEMA_VERSION_KEY],
   );
   if (result === null) {
@@ -36,10 +36,14 @@ export function getCurrentVersion(db: SQLiteDatabase): number {
  * Set the schema version in user_settings.
  * Uses INSERT OR REPLACE to handle both insert and update.
  */
-export function setSchemaVersion(db: SQLiteDatabase, version: number, bizKey: number): void {
+export function setSchemaVersion(
+  db: SQLiteDatabase,
+  version: number,
+  bizKey: number,
+): void {
   const now = new Date().toISOString();
   db.runSync(
-    'INSERT OR REPLACE INTO user_settings (biz_key, setting_key, setting_value, updated_at) VALUES (?, ?, ?, ?)',
+    "INSERT OR REPLACE INTO user_settings (biz_key, setting_key, setting_value, updated_at) VALUES (?, ?, ?, ?)",
     [bizKey, SCHEMA_VERSION_KEY, String(version), now],
   );
 }

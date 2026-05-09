@@ -3,9 +3,9 @@
  * Provides in-memory SQLite for integration testing of repositories.
  */
 
-import initSqlJs, { type Database as SqlJsDatabase } from 'sql.js';
-import type { DatabaseAdapter } from '../../src/db/database-adapter';
-import { CREATE_TABLE_STATEMENTS, CREATE_INDEXES } from '../../src/db/schema';
+import initSqlJs, { type Database as SqlJsDatabase } from "sql.js";
+import type { DatabaseAdapter } from "../../src/db/database-adapter";
+import { CREATE_TABLE_STATEMENTS, CREATE_INDEXES } from "../../src/db/schema";
 
 /**
  * Sql.js based adapter for testing.
@@ -44,11 +44,15 @@ class SqlJsAdapter implements DatabaseAdapter {
     return results;
   }
 
-  runSync(sql: string, params?: unknown[]): { lastInsertRowId: number; changes: number } {
+  runSync(
+    sql: string,
+    params?: unknown[],
+  ): { lastInsertRowId: number; changes: number } {
     this.db.run(sql, params as (string | number | null | Uint8Array)[]);
-    const result = this.getFirstSync<{ last_insert_rowid: number; changes: number }>(
-      'SELECT last_insert_rowid() as last_insert_rowid, changes() as changes',
-    );
+    const result = this.getFirstSync<{
+      last_insert_rowid: number;
+      changes: number;
+    }>("SELECT last_insert_rowid() as last_insert_rowid, changes() as changes");
     return {
       lastInsertRowId: result?.last_insert_rowid ?? 0,
       changes: result?.changes ?? 0,
@@ -56,13 +60,13 @@ class SqlJsAdapter implements DatabaseAdapter {
   }
 
   withTransactionSync<T>(fn: () => T): T {
-    this.db.run('BEGIN TRANSACTION');
+    this.db.run("BEGIN TRANSACTION");
     try {
       const result = fn();
-      this.db.run('COMMIT');
+      this.db.run("COMMIT");
       return result;
     } catch (e) {
-      this.db.run('ROLLBACK');
+      this.db.run("ROLLBACK");
       throw e;
     }
   }

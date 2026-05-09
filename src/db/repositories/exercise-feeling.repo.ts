@@ -4,30 +4,39 @@
  * ExerciseFeeling (one-to-one via workout_exercise_biz_key).
  */
 
-import type { DatabaseAdapter } from '../database-adapter';
-import type { ExerciseFeeling } from '../../types';
-import { createBaseRepository, type BaseRepo } from './base.repository';
+import type { DatabaseAdapter } from "../database-adapter";
+import type { ExerciseFeeling } from "../../types";
+import { createBaseRepository, type BaseRepo } from "./base.repository";
 
-const TABLE_NAME = 'exercise_feelings';
+const TABLE_NAME = "exercise_feelings";
 const COLUMNS = [
-  'id', 'biz_key', 'feeling_biz_key', 'exercise_biz_key',
-  'workout_exercise_biz_key', 'feeling_note', 'created_at',
+  "id",
+  "biz_key",
+  "feeling_biz_key",
+  "exercise_biz_key",
+  "workout_exercise_biz_key",
+  "feeling_note",
+  "created_at",
 ];
 
 export interface ExerciseFeelingRepo extends BaseRepo<ExerciseFeeling> {
-  createExerciseFeeling(data: Omit<ExerciseFeeling, 'id'>): ExerciseFeeling;
+  createExerciseFeeling(data: Omit<ExerciseFeeling, "id">): ExerciseFeeling;
   findByFeelingBizKey(feelingBizKey: bigint): ExerciseFeeling[];
-  findByWorkoutExerciseBizKey(workoutExerciseBizKey: bigint): ExerciseFeeling | null;
+  findByWorkoutExerciseBizKey(
+    workoutExerciseBizKey: bigint,
+  ): ExerciseFeeling | null;
 }
 
-export function createExerciseFeelingRepo(db: DatabaseAdapter): ExerciseFeelingRepo {
+export function createExerciseFeelingRepo(
+  db: DatabaseAdapter,
+): ExerciseFeelingRepo {
   const base = createBaseRepository<ExerciseFeeling>(db, TABLE_NAME, COLUMNS);
-  const columnsStr = COLUMNS.join(', ');
+  const columnsStr = COLUMNS.join(", ");
 
   return {
     ...base,
 
-    createExerciseFeeling(data: Omit<ExerciseFeeling, 'id'>): ExerciseFeeling {
+    createExerciseFeeling(data: Omit<ExerciseFeeling, "id">): ExerciseFeeling {
       return base.create(data);
     },
 
@@ -38,7 +47,9 @@ export function createExerciseFeelingRepo(db: DatabaseAdapter): ExerciseFeelingR
       );
     },
 
-    findByWorkoutExerciseBizKey(workoutExerciseBizKey: bigint): ExerciseFeeling | null {
+    findByWorkoutExerciseBizKey(
+      workoutExerciseBizKey: bigint,
+    ): ExerciseFeeling | null {
       return db.getFirstSync<ExerciseFeeling>(
         `SELECT ${columnsStr} FROM exercise_feelings WHERE workout_exercise_biz_key = ?`,
         [Number(workoutExerciseBizKey)],

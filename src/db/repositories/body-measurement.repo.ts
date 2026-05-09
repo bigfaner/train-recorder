@@ -4,31 +4,41 @@
  * record_date entry.
  */
 
-import type { DatabaseAdapter } from '../database-adapter';
-import type { BodyMeasurement } from '../../types';
-import { createBaseRepository, type BaseRepo } from './base.repository';
+import type { DatabaseAdapter } from "../database-adapter";
+import type { BodyMeasurement } from "../../types";
+import { createBaseRepository, type BaseRepo } from "./base.repository";
 
-const TABLE_NAME = 'body_measurements';
+const TABLE_NAME = "body_measurements";
 const COLUMNS = [
-  'id', 'biz_key', 'record_date', 'body_weight',
-  'chest_circumference', 'waist_circumference', 'arm_circumference',
-  'thigh_circumference', 'body_note', 'created_at', 'updated_at',
+  "id",
+  "biz_key",
+  "record_date",
+  "body_weight",
+  "chest_circumference",
+  "waist_circumference",
+  "arm_circumference",
+  "thigh_circumference",
+  "body_note",
+  "created_at",
+  "updated_at",
 ];
 
 export interface BodyMeasurementRepo extends BaseRepo<BodyMeasurement> {
-  createMeasurement(data: Omit<BodyMeasurement, 'id'>): BodyMeasurement;
+  createMeasurement(data: Omit<BodyMeasurement, "id">): BodyMeasurement;
   findByDateRange(startDate: string, endDate: string): BodyMeasurement[];
   findLatest(): BodyMeasurement | null;
 }
 
-export function createBodyMeasurementRepo(db: DatabaseAdapter): BodyMeasurementRepo {
+export function createBodyMeasurementRepo(
+  db: DatabaseAdapter,
+): BodyMeasurementRepo {
   const base = createBaseRepository<BodyMeasurement>(db, TABLE_NAME, COLUMNS);
-  const columnsStr = COLUMNS.join(', ');
+  const columnsStr = COLUMNS.join(", ");
 
   return {
     ...base,
 
-    createMeasurement(data: Omit<BodyMeasurement, 'id'>): BodyMeasurement {
+    createMeasurement(data: Omit<BodyMeasurement, "id">): BodyMeasurement {
       return base.create(data);
     },
 

@@ -34,6 +34,7 @@ No direct user story mapping. This is a standard test execution task.
 3. Run: `just test-e2e --feature train-recorder`
 
 **If tests fail**:
+
 - Mark this task `blocked`: `task status T-test-3 blocked`
 - Create fix tasks per root cause
 - After fix tasks complete, T-test-3 re-runs

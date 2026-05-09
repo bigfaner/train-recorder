@@ -6,15 +6,23 @@
  * Computed on create when actual_reps is provided.
  */
 
-import type { DatabaseAdapter } from '../database-adapter';
-import type { WorkoutSet } from '../../types';
-import { createBaseRepository, type BaseRepo } from './base.repository';
+import type { DatabaseAdapter } from "../database-adapter";
+import type { WorkoutSet } from "../../types";
+import { createBaseRepository, type BaseRepo } from "./base.repository";
 
-const TABLE_NAME = 'workout_sets';
+const TABLE_NAME = "workout_sets";
 const COLUMNS = [
-  'id', 'biz_key', 'workout_exercise_biz_key', 'set_index',
-  'target_weight', 'target_reps', 'actual_weight', 'actual_reps',
-  'is_completed', 'completed_at', 'is_target_met',
+  "id",
+  "biz_key",
+  "workout_exercise_biz_key",
+  "set_index",
+  "target_weight",
+  "target_reps",
+  "actual_weight",
+  "actual_reps",
+  "is_completed",
+  "completed_at",
+  "is_target_met",
 ];
 
 function computeIsTargetMet(
@@ -27,8 +35,10 @@ function computeIsTargetMet(
   return actualReps >= targetReps ? 1 : 0;
 }
 
-export interface WorkoutSetCreateData
-  extends Omit<WorkoutSet, 'id' | 'is_target_met'> {
+export interface WorkoutSetCreateData extends Omit<
+  WorkoutSet,
+  "id" | "is_target_met"
+> {
   is_target_met?: 0 | 1 | null;
 }
 
@@ -39,7 +49,7 @@ export interface WorkoutSetRepo extends BaseRepo<WorkoutSet> {
 
 export function createWorkoutSetRepo(db: DatabaseAdapter): WorkoutSetRepo {
   const base = createBaseRepository<WorkoutSet>(db, TABLE_NAME, COLUMNS);
-  const columnsStr = COLUMNS.join(', ');
+  const columnsStr = COLUMNS.join(", ");
 
   return {
     ...base,
@@ -52,7 +62,7 @@ export function createWorkoutSetRepo(db: DatabaseAdapter): WorkoutSetRepo {
           is_target_met: computeIsTargetMet(data.actual_reps, data.target_reps),
         };
       }
-      return base.create(data as Omit<WorkoutSet, 'id'>);
+      return base.create(data as Omit<WorkoutSet, "id">);
     },
 
     findByWorkoutExerciseBizKey(workoutExerciseBizKey: bigint): WorkoutSet[] {

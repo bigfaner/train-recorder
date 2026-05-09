@@ -63,9 +63,15 @@ The `summary` field in `record.json` MUST follow this exact template:
   "testsFailed": 0,
   "coverage": -1.0,
   "acceptanceCriteria": [
-    {"criterion": "All phase task records read and analyzed", "met": true},
-    {"criterion": "Summary follows the exact template with all 5 sections", "met": true},
-    {"criterion": "Types & Interfaces table lists every changed type", "met": true}
+    { "criterion": "All phase task records read and analyzed", "met": true },
+    {
+      "criterion": "Summary follows the exact template with all 5 sections",
+      "met": true
+    },
+    {
+      "criterion": "Types & Interfaces table lists every changed type",
+      "met": true
+    }
   ]
 }
 ```

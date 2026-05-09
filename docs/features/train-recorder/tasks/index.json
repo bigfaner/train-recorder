@@ -493,7 +493,7 @@
       "dependencies": [
         "4.gate"
       ],
-      "status": "pending",
+      "status": "in_progress",
       "file": "gen-test-cases.md",
       "record": "records/gen-test-cases.md",
       "scope": "all"

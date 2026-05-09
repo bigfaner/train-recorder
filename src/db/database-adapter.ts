@@ -7,7 +7,10 @@
 export interface DatabaseAdapter {
   getFirstSync<T>(sql: string, params?: unknown[]): T | null;
   getAllSync<T>(sql: string, params?: unknown[]): T[];
-  runSync(sql: string, params?: unknown[]): { lastInsertRowId: number; changes: number };
+  runSync(
+    sql: string,
+    params?: unknown[],
+  ): { lastInsertRowId: number; changes: number };
   withTransactionSync<T>(fn: () => T): T;
   execSync(sql: string): void;
 }

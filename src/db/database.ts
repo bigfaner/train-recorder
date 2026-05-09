@@ -6,17 +6,26 @@
  * All initialization is idempotent (IF NOT EXISTS).
  */
 
-import { openDatabaseSync, type SQLiteDatabase } from 'expo-sqlite';
+import { openDatabaseSync, type SQLiteDatabase } from "expo-sqlite";
 import {
   CREATE_TABLE_STATEMENTS,
   CREATE_INDEXES,
   BUILTIN_EXERCISES,
   TABLE_NAMES,
-} from './schema';
-import { applyMigrations, getCurrentVersion, isDatabaseInitialized, setSchemaVersion, type Migration } from './migrations';
-import { createSnowflakeGenerator, type SnowflakeIdGenerator } from '../services/snowflake';
+} from "./schema";
+import {
+  applyMigrations,
+  getCurrentVersion,
+  isDatabaseInitialized,
+  setSchemaVersion,
+  type Migration,
+} from "./migrations";
+import {
+  createSnowflakeGenerator,
+  type SnowflakeIdGenerator,
+} from "../services/snowflake";
 
-export const DATABASE_NAME = 'train_recorder.db';
+export const DATABASE_NAME = "train_recorder.db";
 export const CURRENT_SCHEMA_VERSION = 1;
 
 /** Singleton database instance */
@@ -81,7 +90,11 @@ export function initializeDatabase(): number {
   // If no migrations ran and this is fresh, set version to current
   if (version === 0 && getCurrentVersion(db) === 0) {
     db.withTransactionSync(() => {
-      setSchemaVersion(db, CURRENT_SCHEMA_VERSION, Number(snowflake.generate()));
+      setSchemaVersion(
+        db,
+        CURRENT_SCHEMA_VERSION,
+        Number(snowflake.generate()),
+      );
     });
   }
 
@@ -92,10 +105,13 @@ export function initializeDatabase(): number {
  * Seed the exercises table with built-in exercises from PRD 5.5.
  * Only runs on first initialization (when exercises table is empty).
  */
-function seedBuiltinExercises(db: SQLiteDatabase, snowflake: SnowflakeIdGenerator): void {
+function seedBuiltinExercises(
+  db: SQLiteDatabase,
+  snowflake: SnowflakeIdGenerator,
+): void {
   // Check if exercises already exist
   const result = db.getFirstSync<{ count: number }>(
-    'SELECT count(*) as count FROM exercises WHERE is_custom = 0',
+    "SELECT count(*) as count FROM exercises WHERE is_custom = 0",
   );
   if (result !== null && result.count > 0) {
     return;
@@ -109,7 +125,15 @@ function seedBuiltinExercises(db: SQLiteDatabase, snowflake: SnowflakeIdGenerato
         `INSERT OR IGNORE INTO exercises
           (biz_key, exercise_name, category, increment, default_rest, is_custom, is_deleted, created_at, updated_at)
          VALUES (?, ?, ?, ?, ?, 0, 0, ?, ?)`,
-        [bizKey, exercise.exercise_name, exercise.category, exercise.increment, exercise.default_rest, now, now],
+        [
+          bizKey,
+          exercise.exercise_name,
+          exercise.category,
+          exercise.increment,
+          exercise.default_rest,
+          now,
+          now,
+        ],
       );
     }
   });

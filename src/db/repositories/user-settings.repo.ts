@@ -4,14 +4,12 @@
  * setting_key is UNIQUE, enabling upsert by key.
  */
 
-import type { DatabaseAdapter } from '../database-adapter';
-import type { UserSettings } from '../../types';
-import { createBaseRepository, type BaseRepo } from './base.repository';
+import type { DatabaseAdapter } from "../database-adapter";
+import type { UserSettings } from "../../types";
+import { createBaseRepository, type BaseRepo } from "./base.repository";
 
-const TABLE_NAME = 'user_settings';
-const COLUMNS = [
-  'id', 'biz_key', 'setting_key', 'setting_value', 'updated_at',
-];
+const TABLE_NAME = "user_settings";
+const COLUMNS = ["id", "biz_key", "setting_key", "setting_value", "updated_at"];
 
 export interface UserSettingsRepo extends BaseRepo<UserSettings> {
   getValue(key: string): string | null;
@@ -20,7 +18,7 @@ export interface UserSettingsRepo extends BaseRepo<UserSettings> {
 
 export function createUserSettingsRepo(db: DatabaseAdapter): UserSettingsRepo {
   const base = createBaseRepository<UserSettings>(db, TABLE_NAME, COLUMNS);
-  const columnsStr = COLUMNS.join(', ');
+  const columnsStr = COLUMNS.join(", ");
 
   let bizKeyCounter = 1n;
 

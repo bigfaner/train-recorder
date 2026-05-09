@@ -1,1273 +1,2510 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>训练计划 — Train Recorder</title>
-  <link rel="stylesheet" href="styles.css">
-  <style>
-    /* Plan-specific styles */
-    .mode-toggle {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 8px 16px;
-      background: var(--bg-alt);
-      border-radius: var(--radius-md);
-      margin-bottom: 16px;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    .mode-toggle:active { background: var(--border); }
-    .mode-toggle .toggle-label {
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--text-secondary);
-    }
-    .mode-toggle .toggle-switch {
-      position: relative;
-      width: 44px;
-      height: 26px;
-      background: var(--border);
-      border-radius: 13px;
-      transition: background 0.3s;
-    }
-    .mode-toggle .toggle-switch.active {
-      background: var(--accent);
-    }
-    .mode-toggle .toggle-switch::after {
-      content: '';
-      position: absolute;
-      top: 2px;
-      left: 2px;
-      width: 22px;
-      height: 22px;
-      background: white;
-      border-radius: 50%;
-      transition: transform 0.3s;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.15);
-    }
-    .mode-toggle .toggle-switch.active::after {
-      transform: translateX(18px);
-    }
-
-    /* Active plan card */
-    .active-plan-card {
-      background: linear-gradient(135deg, #1d1d1f 0%, #3a3a3c 100%);
-      border-radius: var(--radius-lg);
-      padding: 20px;
-      color: white;
-      margin-bottom: 16px;
-      position: relative;
-      overflow: hidden;
-    }
-    .active-plan-card::before {
-      content: '';
-      position: absolute;
-      top: -30px;
-      right: -30px;
-      width: 100px;
-      height: 100px;
-      background: rgba(255,255,255,0.06);
-      border-radius: 50%;
-    }
-    .active-plan-card .plan-name {
-      font-family: var(--font-display);
-      font-weight: 600;
-      font-size: 20px;
-      margin-bottom: 8px;
-    }
-    .active-plan-card .plan-meta {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-size: 13px;
-      color: rgba(255,255,255,0.6);
-      flex-wrap: wrap;
-    }
-    .active-plan-card .plan-meta .meta-item {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-    .active-plan-card .plan-tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      padding: 4px 10px;
-      border-radius: 100px;
-      font-size: 12px;
-      font-weight: 600;
-      background: rgba(48,209,88,0.2);
-      color: #30d158;
-    }
-    .active-plan-card .plan-tag .dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: #30d158;
-      animation: pulse 2s infinite;
-    }
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.4; }
-    }
-
-    /* Training day card */
-    .day-card {
-      background: var(--surface);
-      border-radius: var(--radius-lg);
-      padding: 16px;
-      box-shadow: var(--shadow-sm);
-      margin-bottom: 12px;
-    }
-    .day-card-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 12px;
-    }
-    .day-card-header .day-info {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .day-card-header .day-number {
-      font-weight: 600;
-      font-size: 17px;
-      color: var(--text-primary);
-    }
-    .day-card-header .day-label {
-      font-size: 15px;
-      color: var(--text-secondary);
-    }
-    .day-card-header .edit-btn {
-      color: var(--accent);
-      font-size: 15px;
-      font-weight: 500;
-      padding: 4px 8px;
-    }
-    .exercise-list {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-    .exercise-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 6px 0;
-    }
-    .exercise-row .exercise-name-text {
-      font-size: 15px;
-      color: var(--text-primary);
-    }
-    .exercise-row .exercise-volume {
-      font-size: 13px;
-      color: var(--text-tertiary);
-      font-weight: 500;
-    }
-    /* View mode exercise detail */
-    .view-exercise {
-      margin-bottom: 10px;
-    }
-    .view-exercise:last-child { margin-bottom: 0; }
-    .view-ex-name {
-      font-size: 15px;
-      font-weight: 600;
-      color: var(--text-primary);
-      margin-bottom: 3px;
-    }
-    .view-ex-detail {
-      font-size: 13px;
-      color: var(--text-secondary);
-      line-height: 1.6;
-    }
-    .view-ex-detail .set-line {
-      display: flex;
-      gap: 2px;
-    }
-    .view-ex-detail .fixed-summary {
-      display: flex;
-      gap: 4px;
-      align-items: center;
-    }
-    .view-ex-detail .unit {
-      color: var(--text-tertiary);
-    }
-
-    /* Edit mode styles */
-    .edit-form { display: none; }
-    .edit-form.visible { display: block; }
-    .view-mode { display: block; }
-    .view-mode.hidden { display: none; }
-
-    .form-group {
-      margin-bottom: 16px;
-    }
-    .form-label {
-      display: block;
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--text-secondary);
-      text-transform: uppercase;
-      letter-spacing: 0.02em;
-      margin-bottom: 8px;
-    }
-
-    /* Edit mode day card */
-    .edit-day-card {
-      background: var(--surface);
-      border-radius: var(--radius-lg);
-      padding: 16px;
-      box-shadow: var(--shadow-sm);
-      margin-bottom: 12px;
-      border: 1.5px solid transparent;
-      transition: border-color 0.2s;
-    }
-    .edit-day-card:focus-within {
-      border-color: var(--accent);
-    }
-    /* Global input styles inside edit mode */
-    #editMode input[type="text"],
-    #editMode input[type="number"] {
-      height: 36px;
-      background: var(--bg-alt);
-      border: none;
-      border-radius: var(--radius-sm);
-      padding: 0 8px;
-      font-size: 14px;
-      color: var(--text-primary);
-      outline: none;
-      -webkit-appearance: none;
-    }
-    #editMode input:focus {
-      box-shadow: 0 0 0 3px rgba(0,113,227,0.15);
-      background: var(--bg);
-    }
-    #editMode input[type="number"] {
-      text-align: center;
-      -moz-appearance: textfield;
-    }
-    #editMode input[type="number"]::-webkit-outer-spin-button,
-    #editMode input[type="number"]::-webkit-inner-spin-button {
-      -webkit-appearance: none;
-      margin: 0;
-    }
-    /* Exercise select component */
-    .exercise-select {
-      position: relative;
-      flex: 1;
-    }
-    .exercise-select .select-trigger {
-      height: 36px;
-      background: var(--bg-alt);
-      border: none;
-      border-radius: var(--radius-sm);
-      padding: 0 28px 0 10px;
-      font-size: 14px;
-      color: var(--text-primary);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      position: relative;
-    }
-    .exercise-select .select-trigger::after {
-      content: '';
-      position: absolute;
-      right: 10px;
-      top: 50%;
-      transform: translateY(-50%);
-      border-left: 4px solid transparent;
-      border-right: 4px solid transparent;
-      border-top: 5px solid var(--text-tertiary);
-    }
-    .exercise-select .select-options {
-      position: absolute;
-      top: 100%;
-      left: 0;
-      right: 0;
-      background: var(--surface);
-      border-radius: var(--radius-md);
-      box-shadow: 0 4px 20px rgba(0,0,0,0.12);
-      z-index: 100;
-      max-height: 200px;
-      overflow-y: auto;
-      display: none;
-      margin-top: 4px;
-    }
-    .exercise-select.open .select-options {
-      display: block;
-    }
-    .exercise-select .select-option {
-      padding: 10px 12px;
-      font-size: 14px;
-      color: var(--text-primary);
-      cursor: pointer;
-    }
-    .exercise-select .select-option:hover {
-      background: var(--bg-alt);
-    }
-    .exercise-select .select-option.selected {
-      color: var(--accent);
-      font-weight: 600;
-    }
-    .exercise-select .select-option .opt-cat {
-      font-size: 11px;
-      color: var(--text-tertiary);
-      margin-left: 6px;
-    }
-    .delete-exercise-btn {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      background: rgba(255,59,48,0.1);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      transition: background 0.2s;
-    }
-    .delete-exercise-btn:hover {
-      background: rgba(255,59,48,0.2);
-    }
-    .delete-exercise-btn svg {
-      width: 14px;
-      height: 14px;
-      color: var(--error);
-    }
-    .add-exercise-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-      width: 100%;
-      padding: 8px;
-      border: 1.5px dashed var(--border);
-      border-radius: var(--radius-sm);
-      color: var(--text-tertiary);
-      font-size: 13px;
-      font-weight: 500;
-      transition: all 0.2s;
-      margin-top: 4px;
-    }
-    .add-exercise-btn:hover {
-      border-color: var(--accent);
-      color: var(--accent);
-      background: var(--accent-light);
-    }
-    .add-exercise-btn svg {
-      width: 16px;
-      height: 16px;
-      flex-shrink: 0;
-    }
-    .delete-day-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-      width: 100%;
-      padding: 10px;
-      border-radius: var(--radius-sm);
-      color: var(--error);
-      font-size: 14px;
-      font-weight: 500;
-      background: rgba(255,59,48,0.06);
-      margin-top: 12px;
-      transition: background 0.2s;
-    }
-    .delete-day-btn:hover {
-      background: rgba(255,59,48,0.12);
-    }
-    .add-day-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      width: 100%;
-      height: 52px;
-      border: 2px dashed var(--border);
-      border-radius: var(--radius-lg);
-      color: var(--accent);
-      font-size: 15px;
-      font-weight: 600;
-      transition: all 0.2s;
-      margin-top: 12px;
-    }
-    .add-day-btn:hover {
-      border-color: var(--accent);
-      background: var(--accent-light);
-    }
-    .add-day-btn svg {
-      width: 20px;
-      height: 20px;
-    }
-
-    /* Weekday selector buttons */
-    .weekday-btn {
-      padding: 8px 14px;
-      border-radius: var(--radius-md);
-      font-size: 14px;
-      font-weight: 500;
-      color: var(--text-secondary);
-      background: var(--bg-alt);
-      transition: all 0.15s;
-    }
-    .weekday-btn.active {
-      background: var(--accent);
-      color: white;
-    }
-    .weekday-btn:active { transform: scale(0.95); }
-
-    /* Interval stepper buttons */
-    .interval-btn {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: var(--bg-alt);
-      font-size: 22px;
-      font-weight: 600;
-      color: var(--text-primary);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: background 0.15s;
-    }
-    .interval-btn:active { background: var(--border); }
-
-    /* Day name inline input */
-    .day-name-input {
-      width: 80px;
-      height: 30px;
-      background: var(--bg-alt);
-      border: none;
-      border-radius: var(--radius-sm);
-      padding: 0 8px;
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--text-primary);
-      outline: none;
-      text-align: center;
-    }
-    .day-name-input:focus {
-      box-shadow: 0 0 0 3px rgba(0,113,227,0.15);
-      background: var(--bg);
-    }
-
-    /* Exercise block */
-    .exercise-block { margin-bottom: 12px; }
-    .exercise-header {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .mode-chip {
-      font-size: 11px;
-      padding: 2px 8px;
-      border-radius: 100px;
-      background: var(--bg-alt);
-      color: var(--text-tertiary);
-      cursor: pointer;
-      white-space: nowrap;
-      transition: all 0.15s;
-    }
-    .mode-chip:hover { background: var(--border); }
-    .mode-chip.active-mode {
-      background: var(--accent);
-      color: white;
-    }
-    .set-row {
-      display: flex;
-      gap: 4px;
-      align-items: center;
-      margin: 4px 0;
-      padding-left: 4px;
-    }
-    .set-row .set-num {
-      font-size: 12px;
-      color: var(--text-tertiary);
-      width: 18px;
-      text-align: right;
-    }
-    .set-row .unit {
-      font-size: 12px;
-      color: var(--text-tertiary);
-    }
-    .fixed-row {
-      display: flex;
-      gap: 6px;
-      align-items: center;
-      margin: 6px 0 0 4px;
-    }
-    .fixed-row span { font-size: 12px; color: var(--text-tertiary); }
-  </style>
-</head>
-<body>
-
-<div class="phone-frame">
-  <div class="app-container">
-
-    <!-- Status Bar -->
-    <div class="status-bar">
-      <span class="time">9:41</span>
-      <div class="icons">
-        <svg width="17" height="12" viewBox="0 0 17 12" fill="none"><path d="M1 8.5C3.5 4 6 2 8.5 2s5 2 7.5 6.5" stroke="#1d1d1f" stroke-width="1.5" stroke-linecap="round"/><path d="M4 10c1.5-2.5 3-3.5 4.5-3.5S11.5 7.5 13 10" stroke="#1d1d1f" stroke-width="1.5" stroke-linecap="round"/></svg>
-        <svg width="16" height="12" viewBox="0 0 16 12" fill="none"><rect x=".5" y="3" width="3" height="9" rx="1" fill="#1d1d1f"/><rect x="4.5" y="1" width="3" height="11" rx="1" fill="#1d1d1f"/><rect x="8.5" y="4" width="3" height="8" rx="1" fill="#1d1d1f"/><rect x="12.5" y="0" width="3" height="12" rx="1" fill="#1d1d1f"/></svg>
-        <svg width="27" height="13" viewBox="0 0 27 13" fill="none"><rect x=".5" y=".5" width="22" height="12" rx="3.5" stroke="#1d1d1f"/><rect x="2" y="2" width="16" height="9" rx="2" fill="#1d1d1f"/><path d="M24 4.5v4a2.5 2.5 0 000-4z" fill="#1d1d1f"/></svg>
-      </div>
-    </div>
-
-    <!-- Nav Bar -->
-    <div class="nav-bar">
-      <div style="width:60px"></div>
-      <span class="nav-title">训练计划</span>
-      <div style="width:60px"></div>
-    </div>
-
-    <!-- Scrollable Content -->
-    <div class="page-content" style="padding-top: 8px;">
-
-      <!-- ============ VIEW MODE ============ -->
-      <div class="view-mode" id="viewMode">
-
-        <!-- Active Plan Card -->
-        <div class="active-plan-card fade-in">
-          <div class="plan-name">推/拉/蹲 3日循环</div>
-          <div class="plan-meta">
-            <span class="meta-item">每周固定日</span>
-            <span>&#183;</span>
-            <span class="meta-item">周一/三/五</span>
-            <span>&#183;</span>
-            <span class="meta-item">已使用 28 天</span>
-          </div>
-          <div style="margin-top:12px;">
-            <span class="plan-tag">
-              <span class="dot"></span>
-              活跃中
-            </span>
-          </div>
-        </div>
-
-        <!-- New Plan Link -->
-        <div style="margin-bottom:16px;">
-          <a href="#" class="btn-secondary" onclick="event.preventDefault(); toggleEditMode();">+ 新建计划</a>
-        </div>
-
-        <!-- Section Title -->
-        <div class="section-title">训练日安排</div>
-
-        <!-- Day 1 - Push -->
-        <div class="day-card card-interactive fade-in">
-          <div class="day-card-header">
-            <div class="day-info">
-              <span class="day-number">周一</span>
-              <span class="tag tag-push">推日</span>
-              <span class="text-secondary" style="font-size:13px">📅 5月12日 周一</span>
-            </div>
-            <button class="edit-btn" onclick="event.stopPropagation(); toggleEditMode();">编辑</button>
-          </div>
-          <div class="exercise-list">
-            <div class="view-exercise">
-              <div class="view-ex-name">卧推</div>
-              <div class="view-ex-detail"><span class="fixed-summary">4<span class="unit">组</span> × 60<span class="unit">kg</span> × 8<span class="unit">次</span></span></div>
-            </div>
-            <div class="view-exercise">
-              <div class="view-ex-name">推举</div>
-              <div class="view-ex-detail"><span class="fixed-summary">3<span class="unit">组</span> × 30<span class="unit">kg</span> × 10<span class="unit">次</span></span></div>
-            </div>
-            <div class="view-exercise">
-              <div class="view-ex-name">三头下压</div>
-              <div class="view-ex-detail">
-                <div class="set-line">1<span class="unit">:</span> 20<span class="unit">kg</span> × 15<span class="unit">次</span></div>
-                <div class="set-line">2<span class="unit">:</span> 22.5<span class="unit">kg</span> × 12<span class="unit">次</span></div>
-                <div class="set-line">3<span class="unit">:</span> 25<span class="unit">kg</span> × 10<span class="unit">次</span></div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Day 2 - Pull -->
-        <div class="day-card card-interactive fade-in" style="border-left:3px solid var(--pull-color);">
-          <div class="day-card-header">
-            <div class="day-info">
-              <span class="day-number">周三</span>
-              <span class="tag tag-pull">拉日</span>
-              <span style="font-size:13px; color:var(--accent); font-weight:600">📅 今天 5月7日</span>
-            </div>
-            <button class="edit-btn" onclick="event.stopPropagation(); toggleEditMode();">编辑</button>
-          </div>
-          <div class="exercise-list">
-            <div class="view-exercise">
-              <div class="view-ex-name">划船</div>
-              <div class="view-ex-detail"><span class="fixed-summary">4<span class="unit">组</span> × 60<span class="unit">kg</span> × 8<span class="unit">次</span></span></div>
-            </div>
-            <div class="view-exercise">
-              <div class="view-ex-name">引体向上</div>
-              <div class="view-ex-detail"><span class="fixed-summary">3<span class="unit">组</span> × 0<span class="unit">kg</span> × 10<span class="unit">次</span></span></div>
-            </div>
-            <div class="view-exercise">
-              <div class="view-ex-name">二头弯举</div>
-              <div class="view-ex-detail"><span class="fixed-summary">3<span class="unit">组</span> × 12.5<span class="unit">kg</span> × 12<span class="unit">次</span></span></div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Day 3 - Leg -->
-        <div class="day-card card-interactive fade-in">
-          <div class="day-card-header">
-            <div class="day-info">
-              <span class="day-number">周五</span>
-              <span class="tag tag-leg">蹲日</span>
-              <span class="text-secondary" style="font-size:13px">📅 5月9日 周五</span>
-            </div>
-            <button class="edit-btn" onclick="event.stopPropagation(); toggleEditMode();">编辑</button>
-          </div>
-          <div class="exercise-list">
-            <div class="view-exercise">
-              <div class="view-ex-name">深蹲</div>
-              <div class="view-ex-detail">
-                <div class="set-line">1<span class="unit">:</span> 60<span class="unit">kg</span> × 5<span class="unit">次</span></div>
-                <div class="set-line">2<span class="unit">:</span> 70<span class="unit">kg</span> × 5<span class="unit">次</span></div>
-                <div class="set-line">3<span class="unit">:</span> 80<span class="unit">kg</span> × 5<span class="unit">次</span></div>
-                <div class="set-line">4<span class="unit">:</span> 90<span class="unit">kg</span> × 3<span class="unit">次</span></div>
-                <div class="set-line">5<span class="unit">:</span> 100<span class="unit">kg</span> × 1<span class="unit">次</span></div>
-              </div>
-            </div>
-            <div class="view-exercise">
-              <div class="view-ex-name">腿举</div>
-              <div class="view-ex-detail"><span class="fixed-summary">3<span class="unit">组</span> × 120<span class="unit">kg</span> × 10<span class="unit">次</span></span></div>
-            </div>
-            <div class="view-exercise">
-              <div class="view-ex-name">罗马尼亚硬拉</div>
-              <div class="view-ex-detail"><span class="fixed-summary">3<span class="unit">组</span> × 80<span class="unit">kg</span> × 8<span class="unit">次</span></span></div>
-            </div>
-          </div>
-        </div>
-
-      </div>
-      <!-- /VIEW MODE -->
-
-      <!-- ============ EDIT MODE ============ -->
-      <div class="edit-form" id="editMode">
-
-        <!-- Plan Name -->
-        <div class="form-group">
-          <label class="form-label">计划名称</label>
-          <input type="text" class="input-field" value="推/拉/蹲 3日循环" placeholder="输入计划名称">
-        </div>
-
-        <!-- Cycle Mode Selector -->
-        <div class="form-group">
-          <label class="form-label">循环模式</label>
-          <div class="segmented">
-            <div class="seg-option active" data-target="panel-infinite">无限循环</div>
-            <div class="seg-option" data-target="panel-fixed">固定周期</div>
-          </div>
-          <div id="panel-infinite" class="tab-panel" style="font-size:13px; color:var(--text-tertiary); margin-top:4px;">
-            计划将按照训练日顺序无限循环执行
-          </div>
-          <div id="panel-fixed" class="tab-panel hidden" style="margin-top:4px;">
-            <div class="flex items-center gap-8">
-              <input type="number" class="input-field" style="width:80px; text-align:center;" value="4" min="1" max="52">
-              <span style="font-size:15px; color:var(--text-secondary);">周</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Schedule: weekly fixed days -->
-        <div class="form-group">
-          <label class="form-label">训练日</label>
-          <div style="display:flex; gap:6px; flex-wrap:wrap;">
-            <button class="weekday-btn active" onclick="toggleWeekday(this)" data-day="1">周一</button>
-            <button class="weekday-btn" onclick="toggleWeekday(this)" data-day="2">周二</button>
-            <button class="weekday-btn active" onclick="toggleWeekday(this)" data-day="3">周三</button>
-            <button class="weekday-btn" onclick="toggleWeekday(this)" data-day="4">周四</button>
-            <button class="weekday-btn active" onclick="toggleWeekday(this)" data-day="5">周五</button>
-            <button class="weekday-btn" onclick="toggleWeekday(this)" data-day="6">周六</button>
-            <button class="weekday-btn" onclick="toggleWeekday(this)" data-day="0">周日</button>
-          </div>
-        </div>
-
-        <!-- Section Title -->
-        <div class="section-title" style="margin-top:8px;">训练日</div>
-
-        <div id="dayCardsContainer">
-
-        <!-- Edit Day 1 -->
-        <div class="edit-day-card" data-day="1">
-          <div class="day-card-header" style="margin-bottom:12px;">
-            <div class="day-info" style="gap:8px;">
-              <span class="day-number">周一</span>
-              <input type="text" class="day-name-input" value="推日" placeholder="名称">
-            </div>
-            <button class="delete-exercise-btn" title="删除训练日" onclick="removeDayCard(this, 1)">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-            </button>
-          </div>
-          <!-- Exercise: 卧推 (fixed mode) -->
-          <div class="exercise-block" data-mode="fixed">
-            <div class="exercise-header">
-              <div class="exercise-select" onclick="toggleExSelect(this)">
-                <div class="select-trigger">卧推</div>
-                <div class="select-options">
-                  <div class="select-option selected" onclick="pickEx(this,'卧推')">卧推 <span class="opt-cat">上肢推</span></div>
-                  <div class="select-option" onclick="pickEx(this,'上斜卧推')">上斜卧推 <span class="opt-cat">上肢推</span></div>
-                  <div class="select-option" onclick="pickEx(this,'哑铃卧推')">哑铃卧推 <span class="opt-cat">上肢推</span></div>
-                  <div class="select-option" onclick="pickEx(this,'推举')">推举 <span class="opt-cat">上肢推</span></div>
-                  <div class="select-option" onclick="pickEx(this,'双杠臂屈伸')">双杠臂屈伸 <span class="opt-cat">上肢推</span></div>
-                  <div class="select-option" onclick="pickEx(this,'深蹲')">深蹲 <span class="opt-cat">下肢</span></div>
-                  <div class="select-option" onclick="pickEx(this,'腿举')">腿举 <span class="opt-cat">下肢</span></div>
-                  <div class="select-option" onclick="pickEx(this,'划船')">划船 <span class="opt-cat">上肢拉</span></div>
-                  <div class="select-option" onclick="pickEx(this,'引体向上')">引体向上 <span class="opt-cat">上肢拉</span></div>
-                  <div class="select-option" onclick="pickEx(this,'硬拉')">硬拉 <span class="opt-cat">核心</span></div>
-                </div>
-              </div>
-              <button class="mode-chip active-mode" onclick="switchExMode(this,'fixed')">固定</button>
-              <button class="mode-chip" onclick="switchExMode(this,'custom')">自定义</button>
-              <button class="delete-exercise-btn" title="删除动作">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-              </button>
-            </div>
-            <div class="fixed-row">
-              <input type="number" class="volume-field" style="width:52px;" value="4" placeholder="组">
-              <span>组</span>
-              <input type="number" class="volume-field" style="width:52px;" value="8" placeholder="次">
-              <span>次</span>
-              <span>@</span>
-              <input type="number" class="volume-field" style="width:64px;" value="60" placeholder="kg">
-              <span>kg</span>
-            </div>
-          </div>
-          <!-- Exercise: 推举 (fixed mode) -->
-          <div class="exercise-block" data-mode="fixed">
-            <div class="exercise-header">
-              <div class="exercise-select" onclick="toggleExSelect(this)">
-                <div class="select-trigger">推举</div>
-                <div class="select-options">
-                  <div class="select-option" onclick="pickEx(this,'卧推')">卧推 <span class="opt-cat">上肢推</span></div>
-                  <div class="select-option" onclick="pickEx(this,'上斜卧推')">上斜卧推 <span class="opt-cat">上肢推</span></div>
-                  <div class="select-option" onclick="pickEx(this,'哑铃卧推')">哑铃卧推 <span class="opt-cat">上肢推</span></div>
-                  <div class="select-option selected" onclick="pickEx(this,'推举')">推举 <span class="opt-cat">上肢推</span></div>
-                  <div class="select-option" onclick="pickEx(this,'双杠臂屈伸')">双杠臂屈伸 <span class="opt-cat">上肢推</span></div>
-                  <div class="select-option" onclick="pickEx(this,'深蹲')">深蹲 <span class="opt-cat">下肢</span></div>
-                  <div class="select-option" onclick="pickEx(this,'腿举')">腿举 <span class="opt-cat">下肢</span></div>
-                  <div class="select-option" onclick="pickEx(this,'划船')">划船 <span class="opt-cat">上肢拉</span></div>
-                  <div class="select-option" onclick="pickEx(this,'引体向上')">引体向上 <span class="opt-cat">上肢拉</span></div>
-                  <div class="select-option" onclick="pickEx(this,'硬拉')">硬拉 <span class="opt-cat">核心</span></div>
-                </div>
-              </div>
-              <button class="mode-chip active-mode" onclick="switchExMode(this,'fixed')">固定</button>
-              <button class="mode-chip" onclick="switchExMode(this,'custom')">自定义</button>
-              <button class="delete-exercise-btn" title="删除动作">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-              </button>
-            </div>
-            <div class="fixed-row">
-              <input type="number" class="volume-field" style="width:52px;" value="3" placeholder="组">
-              <span>组</span>
-              <input type="number" class="volume-field" style="width:52px;" value="10" placeholder="次">
-              <span>次</span>
-              <span>@</span>
-              <input type="number" class="volume-field" style="width:64px;" value="30" placeholder="kg">
-              <span>kg</span>
-            </div>
-          </div>
-          <!-- Exercise: 三头下压 (custom mode) -->
-          <div class="exercise-block" data-mode="custom">
-            <div class="exercise-header">
-              <div class="exercise-select" onclick="toggleExSelect(this)">
-                <div class="select-trigger">三头下压</div>
-                <div class="select-options">
-                  <div class="select-option" onclick="pickEx(this,'卧推')">卧推 <span class="opt-cat">上肢推</span></div>
-                  <div class="select-option" onclick="pickEx(this,'推举')">推举 <span class="opt-cat">上肢推</span></div>
-                  <div class="select-option selected" onclick="pickEx(this,'三头下压')">三头下压 <span class="opt-cat">上肢推</span></div>
-                  <div class="select-option" onclick="pickEx(this,'侧平举')">侧平举 <span class="opt-cat">肩部</span></div>
-                  <div class="select-option" onclick="pickEx(this,'面拉')">面拉 <span class="opt-cat">肩部</span></div>
-                  <div class="select-option" onclick="pickEx(this,'深蹲')">深蹲 <span class="opt-cat">下肢</span></div>
-                  <div class="select-option" onclick="pickEx(this,'划船')">划船 <span class="opt-cat">上肢拉</span></div>
-                  <div class="select-option" onclick="pickEx(this,'二头弯举')">二头弯举 <span class="opt-cat">上肢拉</span></div>
-                </div>
-              </div>
-              <button class="mode-chip" onclick="switchExMode(this,'fixed')">固定</button>
-              <button class="mode-chip active-mode" onclick="switchExMode(this,'custom')">自定义</button>
-              <button class="delete-exercise-btn" title="删除动作">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-              </button>
-            </div>
-            <div class="sets-list">
-              <div class="set-row"><span class="set-num">1</span><input type="number" style="width:64px;" value="20" placeholder="kg"><span class="unit">kg</span><span class="unit">x</span><input type="number" style="width:48px;" value="15" placeholder="次"><span class="unit">次</span></div>
-              <div class="set-row"><span class="set-num">2</span><input type="number" style="width:64px;" value="22.5" placeholder="kg"><span class="unit">kg</span><span class="unit">x</span><input type="number" style="width:48px;" value="12" placeholder="次"><span class="unit">次</span></div>
-              <div class="set-row"><span class="set-num">3</span><input type="number" style="width:64px;" value="25" placeholder="kg"><span class="unit">kg</span><span class="unit">x</span><input type="number" style="width:48px;" value="10" placeholder="次"><span class="unit">次</span></div>
-            </div>
-            <button class="add-exercise-btn" onclick="addExercise(this)">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-              添加动作
-            </button>
-          </div>
-        </div>
-
-        <!-- Edit Day 2 -->
-        <div class="edit-day-card" data-day="3">
-          <div class="day-card-header" style="margin-bottom:12px;">
-            <div class="day-info" style="gap:8px;">
-              <span class="day-number">周三</span>
-              <input type="text" class="day-name-input" value="拉日" placeholder="名称">
-            </div>
-            <button class="delete-exercise-btn" title="删除训练日" onclick="removeDayCard(this, 3)">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-            </button>
-          </div>
-          <div class="exercise-block" data-mode="fixed">
-            <div class="exercise-header">
-              <div class="exercise-select" onclick="toggleExSelect(this)">
-                <div class="select-trigger">划船</div>
-                <div class="select-options">
-                  <div class="select-option selected" onclick="pickEx(this,'划船')">划船 <span class="opt-cat">上肢拉</span></div>
-                  <div class="select-option" onclick="pickEx(this,'引体向上')">引体向上 <span class="opt-cat">上肢拉</span></div>
-                  <div class="select-option" onclick="pickEx(this,'高位下拉')">高位下拉 <span class="opt-cat">上肢拉</span></div>
-                  <div class="select-option" onclick="pickEx(this,'哑铃划船')">哑铃划船 <span class="opt-cat">上肢拉</span></div>
-                  <div class="select-option" onclick="pickEx(this,'二头弯举')">二头弯举 <span class="opt-cat">上肢拉</span></div>
-                  <div class="select-option" onclick="pickEx(this,'卧推')">卧推 <span class="opt-cat">上肢推</span></div>
-                  <div class="select-option" onclick="pickEx(this,'深蹲')">深蹲 <span class="opt-cat">下肢</span></div>
-                  <div class="select-option" onclick="pickEx(this,'硬拉')">硬拉 <span class="opt-cat">核心</span></div>
-                </div>
-              </div>
-              <button class="mode-chip active-mode" onclick="switchExMode(this,'fixed')">固定</button>
-              <button class="mode-chip" onclick="switchExMode(this,'custom')">自定义</button>
-              <button class="delete-exercise-btn" title="删除动作">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-              </button>
-            </div>
-            <div class="fixed-row">
-              <input type="number" class="volume-field" style="width:52px;" value="4" placeholder="组">
-              <span>组</span>
-              <input type="number" class="volume-field" style="width:52px;" value="8" placeholder="次">
-              <span>次</span>
-              <span>@</span>
-              <input type="number" class="volume-field" style="width:64px;" value="60" placeholder="kg">
-              <span>kg</span>
-            </div>
-          </div>
-          <div class="exercise-block" data-mode="fixed">
-            <div class="exercise-header">
-              <div class="exercise-select" onclick="toggleExSelect(this)">
-                <div class="select-trigger">引体向上</div>
-                <div class="select-options">
-                  <div class="select-option" onclick="pickEx(this,'划船')">划船 <span class="opt-cat">上肢拉</span></div>
-                  <div class="select-option selected" onclick="pickEx(this,'引体向上')">引体向上 <span class="opt-cat">上肢拉</span></div>
-                  <div class="select-option" onclick="pickEx(this,'高位下拉')">高位下拉 <span class="opt-cat">上肢拉</span></div>
-                  <div class="select-option" onclick="pickEx(this,'哑铃划船')">哑铃划船 <span class="opt-cat">上肢拉</span></div>
-                  <div class="select-option" onclick="pickEx(this,'二头弯举')">二头弯举 <span class="opt-cat">上肢拉</span></div>
-                  <div class="select-option" onclick="pickEx(this,'卧推')">卧推 <span class="opt-cat">上肢推</span></div>
-                  <div class="select-option" onclick="pickEx(this,'深蹲')">深蹲 <span class="opt-cat">下肢</span></div>
-                </div>
-              </div>
-              <button class="mode-chip active-mode" onclick="switchExMode(this,'fixed')">固定</button>
-              <button class="mode-chip" onclick="switchExMode(this,'custom')">自定义</button>
-              <button class="delete-exercise-btn" title="删除动作">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-              </button>
-            </div>
-            <div class="fixed-row">
-              <input type="number" class="volume-field" style="width:52px;" value="3" placeholder="组">
-              <span>组</span>
-              <input type="number" class="volume-field" style="width:52px;" value="10" placeholder="次">
-              <span>次</span>
-              <span>@</span>
-              <input type="number" class="volume-field" style="width:64px;" value="0" placeholder="kg">
-              <span>kg</span>
-            </div>
-          </div>
-          <div class="exercise-block" data-mode="fixed">
-            <div class="exercise-header">
-              <div class="exercise-select" onclick="toggleExSelect(this)">
-                <div class="select-trigger">二头弯举</div>
-                <div class="select-options">
-                  <div class="select-option" onclick="pickEx(this,'划船')">划船 <span class="opt-cat">上肢拉</span></div>
-                  <div class="select-option" onclick="pickEx(this,'引体向上')">引体向上 <span class="opt-cat">上肢拉</span></div>
-                  <div class="select-option" onclick="pickEx(this,'高位下拉')">高位下拉 <span class="opt-cat">上肢拉</span></div>
-                  <div class="select-option selected" onclick="pickEx(this,'二头弯举')">二头弯举 <span class="opt-cat">上肢拉</span></div>
-                  <div class="select-option" onclick="pickEx(this,'三头下压')">三头下压 <span class="opt-cat">上肢推</span></div>
-                  <div class="select-option" onclick="pickEx(this,'卧推')">卧推 <span class="opt-cat">上肢推</span></div>
-                  <div class="select-option" onclick="pickEx(this,'深蹲')">深蹲 <span class="opt-cat">下肢</span></div>
-                </div>
-              </div>
-              <button class="mode-chip active-mode" onclick="switchExMode(this,'fixed')">固定</button>
-              <button class="mode-chip" onclick="switchExMode(this,'custom')">自定义</button>
-              <button class="delete-exercise-btn" title="删除动作">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-              </button>
-            </div>
-            <div class="fixed-row">
-              <input type="number" class="volume-field" style="width:52px;" value="3" placeholder="组">
-              <span>组</span>
-              <input type="number" class="volume-field" style="width:52px;" value="12" placeholder="次">
-              <span>次</span>
-              <span>@</span>
-              <input type="number" class="volume-field" style="width:64px;" value="12.5" placeholder="kg">
-              <span>kg</span>
-            </div>
-          </div>
-          <button class="add-exercise-btn" onclick="addExercise(this)">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            添加动作
-          </button>
-        </div>
-
-        <!-- Edit Day 3 -->
-        <div class="edit-day-card" data-day="5">
-          <div class="day-card-header" style="margin-bottom:12px;">
-            <div class="day-info" style="gap:8px;">
-              <span class="day-number">周五</span>
-              <input type="text" class="day-name-input" value="蹲日" placeholder="名称">
-            </div>
-            <button class="delete-exercise-btn" title="删除训练日" onclick="removeDayCard(this, 5)">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-            </button>
-          </div>
-          <!-- Exercise: 深蹲 (custom mode — 5/3/1 style) -->
-          <div class="exercise-block" data-mode="custom">
-            <div class="exercise-header">
-              <div class="exercise-select" onclick="toggleExSelect(this)">
-                <div class="select-trigger">深蹲</div>
-                <div class="select-options">
-                  <div class="select-option selected" onclick="pickEx(this,'深蹲')">深蹲 <span class="opt-cat">下肢</span></div>
-                  <div class="select-option" onclick="pickEx(this,'前蹲')">前蹲 <span class="opt-cat">下肢</span></div>
-                  <div class="select-option" onclick="pickEx(this,'腿举')">腿举 <span class="opt-cat">下肢</span></div>
-                  <div class="select-option" onclick="pickEx(this,'罗马尼亚硬拉')">罗马尼亚硬拉 <span class="opt-cat">下肢</span></div>
-                  <div class="select-option" onclick="pickEx(this,'腿弯举')">腿弯举 <span class="opt-cat">下肢</span></div>
-                  <div class="select-option" onclick="pickEx(this,'硬拉')">硬拉 <span class="opt-cat">核心</span></div>
-                  <div class="select-option" onclick="pickEx(this,'卧推')">卧推 <span class="opt-cat">上肢推</span></div>
-                  <div class="select-option" onclick="pickEx(this,'划船')">划船 <span class="opt-cat">上肢拉</span></div>
-                </div>
-              </div>
-              <button class="mode-chip" onclick="switchExMode(this,'fixed')">固定</button>
-              <button class="mode-chip active-mode" onclick="switchExMode(this,'custom')">自定义</button>
-              <button class="delete-exercise-btn" title="删除动作">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-              </button>
-            </div>
-            <div class="sets-list">
-              <div class="set-row"><span class="set-num">1</span><input type="number" style="width:64px;" value="60" placeholder="kg"><span class="unit">kg</span><span class="unit">x</span><input type="number" style="width:48px;" value="5" placeholder="次"><span class="unit">次</span></div>
-              <div class="set-row"><span class="set-num">2</span><input type="number" style="width:64px;" value="70" placeholder="kg"><span class="unit">kg</span><span class="unit">x</span><input type="number" style="width:48px;" value="5" placeholder="次"><span class="unit">次</span></div>
-              <div class="set-row"><span class="set-num">3</span><input type="number" style="width:64px;" value="80" placeholder="kg"><span class="unit">kg</span><span class="unit">x</span><input type="number" style="width:48px;" value="5" placeholder="次"><span class="unit">次</span></div>
-              <div class="set-row"><span class="set-num">4</span><input type="number" style="width:64px;" value="90" placeholder="kg"><span class="unit">kg</span><span class="unit">x</span><input type="number" style="width:48px;" value="3" placeholder="次"><span class="unit">次</span></div>
-              <div class="set-row"><span class="set-num">5</span><input type="number" style="width:64px;" value="100" placeholder="kg"><span class="unit">kg</span><span class="unit">x</span><input type="number" style="width:48px;" value="1" placeholder="次"><span class="unit">次</span></div>
-            </div>
-          </div>
-          <div class="exercise-block" data-mode="fixed">
-            <div class="exercise-header">
-              <div class="exercise-select" onclick="toggleExSelect(this)">
-                <div class="select-trigger">腿举</div>
-                <div class="select-options">
-                  <div class="select-option" onclick="pickEx(this,'深蹲')">深蹲 <span class="opt-cat">下肢</span></div>
-                  <div class="select-option" onclick="pickEx(this,'前蹲')">前蹲 <span class="opt-cat">下肢</span></div>
-                  <div class="select-option selected" onclick="pickEx(this,'腿举')">腿举 <span class="opt-cat">下肢</span></div>
-                  <div class="select-option" onclick="pickEx(this,'罗马尼亚硬拉')">罗马尼亚硬拉 <span class="opt-cat">下肢</span></div>
-                  <div class="select-option" onclick="pickEx(this,'腿弯举')">腿弯举 <span class="opt-cat">下肢</span></div>
-                  <div class="select-option" onclick="pickEx(this,'硬拉')">硬拉 <span class="opt-cat">核心</span></div>
-                  <div class="select-option" onclick="pickEx(this,'卧推')">卧推 <span class="opt-cat">上肢推</span></div>
-                </div>
-              </div>
-              <button class="mode-chip active-mode" onclick="switchExMode(this,'fixed')">固定</button>
-              <button class="mode-chip" onclick="switchExMode(this,'custom')">自定义</button>
-              <button class="delete-exercise-btn" title="删除动作">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-              </button>
-            </div>
-            <div class="fixed-row">
-              <input type="number" class="volume-field" style="width:52px;" value="3" placeholder="组">
-              <span>组</span>
-              <input type="number" class="volume-field" style="width:52px;" value="10" placeholder="次">
-              <span>次</span>
-              <span>@</span>
-              <input type="number" class="volume-field" style="width:64px;" value="120" placeholder="kg">
-              <span>kg</span>
-            </div>
-          </div>
-          <div class="exercise-block" data-mode="fixed">
-            <div class="exercise-header">
-              <div class="exercise-select" onclick="toggleExSelect(this)">
-                <div class="select-trigger">罗马尼亚硬拉</div>
-                <div class="select-options">
-                  <div class="select-option" onclick="pickEx(this,'深蹲')">深蹲 <span class="opt-cat">下肢</span></div>
-                  <div class="select-option" onclick="pickEx(this,'前蹲')">前蹲 <span class="opt-cat">下肢</span></div>
-                  <div class="select-option" onclick="pickEx(this,'腿举')">腿举 <span class="opt-cat">下肢</span></div>
-                  <div class="select-option selected" onclick="pickEx(this,'罗马尼亚硬拉')">罗马尼亚硬拉 <span class="opt-cat">下肢</span></div>
-                  <div class="select-option" onclick="pickEx(this,'腿弯举')">腿弯举 <span class="opt-cat">下肢</span></div>
-                  <div class="select-option" onclick="pickEx(this,'硬拉')">硬拉 <span class="opt-cat">核心</span></div>
-                  <div class="select-option" onclick="pickEx(this,'卧推')">卧推 <span class="opt-cat">上肢推</span></div>
-                </div>
-              </div>
-              <button class="mode-chip active-mode" onclick="switchExMode(this,'fixed')">固定</button>
-              <button class="mode-chip" onclick="switchExMode(this,'custom')">自定义</button>
-              <button class="delete-exercise-btn" title="删除动作">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-              </button>
-            </div>
-            <div class="fixed-row">
-              <input type="number" class="volume-field" style="width:52px;" value="3" placeholder="组">
-              <span>组</span>
-              <input type="number" class="volume-field" style="width:52px;" value="8" placeholder="次">
-              <span>次</span>
-              <span>@</span>
-              <input type="number" class="volume-field" style="width:64px;" value="80" placeholder="kg">
-              <span>kg</span>
-            </div>
-          </div>
-          <button class="add-exercise-btn" onclick="addExercise(this)">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            添加动作
-          </button>
-        </div>
-
-        <!-- Add Day Button -->
-        <button class="add-day-btn" onclick="addDayFromUnused()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          添加训练日
-        </button>
-
-        </div><!-- /dayCardsContainer -->
-
-        <!-- Save Button -->
-        <div style="margin-top:24px; margin-bottom:24px;">
-          <button class="btn-primary" onclick="toggleEditMode(); showToast('计划已保存');">保存计划</button>
-        </div>
-
-      </div>
-      <!-- /EDIT MODE -->
-
-    </div>
-
-    <!-- Tab Bar -->
-    <div class="tab-bar">
-      <a class="tab-item" href="calendar.html">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/></svg>
-        <span>日历</span>
-      </a>
-      <a class="tab-item active" href="plan.html">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>
-        <span>计划</span>
-      </a>
-      <a class="tab-item" href="history.html">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-        <span>历史</span>
-      </a>
-      <a class="tab-item" href="stats.html">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-        <span>统计</span>
-      </a>
-      <a class="tab-item" href="settings.html">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-        <span>设置</span>
-      </a>
-    </div>
-
-  </div>
-</div>
-
-<script>
-  // Toggle between view and edit mode
-  let isEditMode = false;
-
-  function toggleEditMode() {
-    isEditMode = !isEditMode;
-    const viewMode = document.getElementById('viewMode');
-    const editMode = document.getElementById('editMode');
-
-    if (isEditMode) {
-      viewMode.classList.add('hidden');
-      editMode.classList.add('visible');
-    } else {
-      viewMode.classList.remove('hidden');
-      editMode.classList.remove('visible');
-    }
-  }
-
-  // Schedule type switching
-  let currentSchedule = 'weekly';
-  function switchSchedule(type) {
-    currentSchedule = type;
-  }
-
-  // Exercise mode toggle: fixed ↔ custom
-  function switchExMode(btn, mode) {
-    const block = btn.closest('.exercise-block');
-    const chips = block.querySelectorAll('.mode-chip');
-    const fixedRow = block.querySelector('.fixed-row');
-    const setsList = block.querySelector('.sets-list');
-
-    if (mode === 'fixed') {
-      chips[0].classList.add('active-mode');
-      chips[1].classList.remove('active-mode');
-      if (setsList) setsList.style.display = 'none';
-      if (fixedRow) fixedRow.style.display = 'flex';
-      else {
-        // create fixed row from first set values
-        const sets = block.querySelectorAll('.set-row');
-        const w = sets[0] ? sets[0].querySelector('input[type="number"]').value : '';
-        const r = sets[0] ? sets[0].querySelectorAll('input[type="number"]')[1].value : '';
-        const html = '<div class="fixed-row">' +
-          '<input type="number" class="volume-field" style="width:52px;" value="' + sets.length + '" placeholder="组"><span>组</span>' +
-          '<input type="number" class="volume-field" style="width:52px;" value="' + r + '" placeholder="次"><span>次</span>' +
-          '<span>@</span>' +
-          '<input type="number" class="volume-field" style="width:64px;" value="' + w + '" placeholder="kg"><span>kg</span>' +
-        '</div>';
-        block.insertAdjacentHTML('beforeend', html);
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>训练计划 — Train Recorder</title>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      /* Plan-specific styles */
+      .mode-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 8px 16px;
+        background: var(--bg-alt);
+        border-radius: var(--radius-md);
+        margin-bottom: 16px;
+        cursor: pointer;
+        transition: background 0.2s;
       }
-      block.dataset.mode = 'fixed';
-    } else {
-      chips[0].classList.remove('active-mode');
-      chips[1].classList.add('active-mode');
-      if (fixedRow) fixedRow.style.display = 'none';
-      if (setsList) setsList.style.display = 'block';
-      else {
-        // create sets from fixed values
-        const fInputs = fixedRow.querySelectorAll('input[type="number"]');
-        const sets = +fInputs[0].value || 3;
-        const reps = fInputs[1].value;
-        const weight = fInputs[2].value;
-        let html = '<div class="sets-list">';
-        for (let i = 1; i <= sets; i++) {
-          html += '<div class="set-row"><span class="set-num">' + i + '</span><input type="number" style="width:64px;" value="' + weight + '" placeholder="kg"><span class="unit">kg</span><span class="unit">x</span><input type="number" style="width:48px;" value="' + reps + '" placeholder="次"><span class="unit">次</span></div>';
+      .mode-toggle:active {
+        background: var(--border);
+      }
+      .mode-toggle .toggle-label {
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--text-secondary);
+      }
+      .mode-toggle .toggle-switch {
+        position: relative;
+        width: 44px;
+        height: 26px;
+        background: var(--border);
+        border-radius: 13px;
+        transition: background 0.3s;
+      }
+      .mode-toggle .toggle-switch.active {
+        background: var(--accent);
+      }
+      .mode-toggle .toggle-switch::after {
+        content: "";
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        width: 22px;
+        height: 22px;
+        background: white;
+        border-radius: 50%;
+        transition: transform 0.3s;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+      }
+      .mode-toggle .toggle-switch.active::after {
+        transform: translateX(18px);
+      }
+
+      /* Active plan card */
+      .active-plan-card {
+        background: linear-gradient(135deg, #1d1d1f 0%, #3a3a3c 100%);
+        border-radius: var(--radius-lg);
+        padding: 20px;
+        color: white;
+        margin-bottom: 16px;
+        position: relative;
+        overflow: hidden;
+      }
+      .active-plan-card::before {
+        content: "";
+        position: absolute;
+        top: -30px;
+        right: -30px;
+        width: 100px;
+        height: 100px;
+        background: rgba(255, 255, 255, 0.06);
+        border-radius: 50%;
+      }
+      .active-plan-card .plan-name {
+        font-family: var(--font-display);
+        font-weight: 600;
+        font-size: 20px;
+        margin-bottom: 8px;
+      }
+      .active-plan-card .plan-meta {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.6);
+        flex-wrap: wrap;
+      }
+      .active-plan-card .plan-meta .meta-item {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+      .active-plan-card .plan-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 4px 10px;
+        border-radius: 100px;
+        font-size: 12px;
+        font-weight: 600;
+        background: rgba(48, 209, 88, 0.2);
+        color: #30d158;
+      }
+      .active-plan-card .plan-tag .dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #30d158;
+        animation: pulse 2s infinite;
+      }
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
         }
-        html += '</div>';
-        block.insertAdjacentHTML('beforeend', html);
+        50% {
+          opacity: 0.4;
+        }
       }
-      block.dataset.mode = 'custom';
-    }
-  }
 
-  // Weekday toggle — bidirectional sync with day cards
-  const dayLabels = {1:'周一',2:'周二',3:'周三',4:'周四',5:'周五',6:'周六',0:'周日'};
+      /* Training day card */
+      .day-card {
+        background: var(--surface);
+        border-radius: var(--radius-lg);
+        padding: 16px;
+        box-shadow: var(--shadow-sm);
+        margin-bottom: 12px;
+      }
+      .day-card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 12px;
+      }
+      .day-card-header .day-info {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .day-card-header .day-number {
+        font-weight: 600;
+        font-size: 17px;
+        color: var(--text-primary);
+      }
+      .day-card-header .day-label {
+        font-size: 15px;
+        color: var(--text-secondary);
+      }
+      .day-card-header .edit-btn {
+        color: var(--accent);
+        font-size: 15px;
+        font-weight: 500;
+        padding: 4px 8px;
+      }
+      .exercise-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .exercise-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 6px 0;
+      }
+      .exercise-row .exercise-name-text {
+        font-size: 15px;
+        color: var(--text-primary);
+      }
+      .exercise-row .exercise-volume {
+        font-size: 13px;
+        color: var(--text-tertiary);
+        font-weight: 500;
+      }
+      /* View mode exercise detail */
+      .view-exercise {
+        margin-bottom: 10px;
+      }
+      .view-exercise:last-child {
+        margin-bottom: 0;
+      }
+      .view-ex-name {
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 3px;
+      }
+      .view-ex-detail {
+        font-size: 13px;
+        color: var(--text-secondary);
+        line-height: 1.6;
+      }
+      .view-ex-detail .set-line {
+        display: flex;
+        gap: 2px;
+      }
+      .view-ex-detail .fixed-summary {
+        display: flex;
+        gap: 4px;
+        align-items: center;
+      }
+      .view-ex-detail .unit {
+        color: var(--text-tertiary);
+      }
 
-  function toggleWeekday(btn) {
-    btn.classList.toggle('active');
-    const day = btn.dataset.day;
-    const card = document.querySelector('.edit-day-card[data-day="' + day + '"]');
-    if (btn.classList.contains('active')) {
-      if (!card) addDayCard(day);
-    } else {
-      if (card) card.remove();
-    }
-  }
+      /* Edit mode styles */
+      .edit-form {
+        display: none;
+      }
+      .edit-form.visible {
+        display: block;
+      }
+      .view-mode {
+        display: block;
+      }
+      .view-mode.hidden {
+        display: none;
+      }
 
-  function removeDayCard(btn, day) {
-    const card = btn.closest('.edit-day-card');
-    card.remove();
-    const wkBtn = document.querySelector('.weekday-btn[data-day="' + day + '"]');
-    if (wkBtn) wkBtn.classList.remove('active');
-  }
+      .form-group {
+        margin-bottom: 16px;
+      }
+      .form-label {
+        display: block;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.02em;
+        margin-bottom: 8px;
+      }
 
-  function addDayCard(day) {
-    const label = dayLabels[day];
-    const container = document.getElementById('dayCardsContainer');
-    const html =
-      '<div class="edit-day-card" data-day="' + day + '">' +
-        '<div class="day-card-header" style="margin-bottom:12px;">' +
+      /* Edit mode day card */
+      .edit-day-card {
+        background: var(--surface);
+        border-radius: var(--radius-lg);
+        padding: 16px;
+        box-shadow: var(--shadow-sm);
+        margin-bottom: 12px;
+        border: 1.5px solid transparent;
+        transition: border-color 0.2s;
+      }
+      .edit-day-card:focus-within {
+        border-color: var(--accent);
+      }
+      /* Global input styles inside edit mode */
+      #editMode input[type="text"],
+      #editMode input[type="number"] {
+        height: 36px;
+        background: var(--bg-alt);
+        border: none;
+        border-radius: var(--radius-sm);
+        padding: 0 8px;
+        font-size: 14px;
+        color: var(--text-primary);
+        outline: none;
+        -webkit-appearance: none;
+      }
+      #editMode input:focus {
+        box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.15);
+        background: var(--bg);
+      }
+      #editMode input[type="number"] {
+        text-align: center;
+        -moz-appearance: textfield;
+      }
+      #editMode input[type="number"]::-webkit-outer-spin-button,
+      #editMode input[type="number"]::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+      /* Exercise select component */
+      .exercise-select {
+        position: relative;
+        flex: 1;
+      }
+      .exercise-select .select-trigger {
+        height: 36px;
+        background: var(--bg-alt);
+        border: none;
+        border-radius: var(--radius-sm);
+        padding: 0 28px 0 10px;
+        font-size: 14px;
+        color: var(--text-primary);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        position: relative;
+      }
+      .exercise-select .select-trigger::after {
+        content: "";
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        border-left: 4px solid transparent;
+        border-right: 4px solid transparent;
+        border-top: 5px solid var(--text-tertiary);
+      }
+      .exercise-select .select-options {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: var(--surface);
+        border-radius: var(--radius-md);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+        z-index: 100;
+        max-height: 200px;
+        overflow-y: auto;
+        display: none;
+        margin-top: 4px;
+      }
+      .exercise-select.open .select-options {
+        display: block;
+      }
+      .exercise-select .select-option {
+        padding: 10px 12px;
+        font-size: 14px;
+        color: var(--text-primary);
+        cursor: pointer;
+      }
+      .exercise-select .select-option:hover {
+        background: var(--bg-alt);
+      }
+      .exercise-select .select-option.selected {
+        color: var(--accent);
+        font-weight: 600;
+      }
+      .exercise-select .select-option .opt-cat {
+        font-size: 11px;
+        color: var(--text-tertiary);
+        margin-left: 6px;
+      }
+      .delete-exercise-btn {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: rgba(255, 59, 48, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        transition: background 0.2s;
+      }
+      .delete-exercise-btn:hover {
+        background: rgba(255, 59, 48, 0.2);
+      }
+      .delete-exercise-btn svg {
+        width: 14px;
+        height: 14px;
+        color: var(--error);
+      }
+      .add-exercise-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        width: 100%;
+        padding: 8px;
+        border: 1.5px dashed var(--border);
+        border-radius: var(--radius-sm);
+        color: var(--text-tertiary);
+        font-size: 13px;
+        font-weight: 500;
+        transition: all 0.2s;
+        margin-top: 4px;
+      }
+      .add-exercise-btn:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+        background: var(--accent-light);
+      }
+      .add-exercise-btn svg {
+        width: 16px;
+        height: 16px;
+        flex-shrink: 0;
+      }
+      .delete-day-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        width: 100%;
+        padding: 10px;
+        border-radius: var(--radius-sm);
+        color: var(--error);
+        font-size: 14px;
+        font-weight: 500;
+        background: rgba(255, 59, 48, 0.06);
+        margin-top: 12px;
+        transition: background 0.2s;
+      }
+      .delete-day-btn:hover {
+        background: rgba(255, 59, 48, 0.12);
+      }
+      .add-day-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        width: 100%;
+        height: 52px;
+        border: 2px dashed var(--border);
+        border-radius: var(--radius-lg);
+        color: var(--accent);
+        font-size: 15px;
+        font-weight: 600;
+        transition: all 0.2s;
+        margin-top: 12px;
+      }
+      .add-day-btn:hover {
+        border-color: var(--accent);
+        background: var(--accent-light);
+      }
+      .add-day-btn svg {
+        width: 20px;
+        height: 20px;
+      }
+
+      /* Weekday selector buttons */
+      .weekday-btn {
+        padding: 8px 14px;
+        border-radius: var(--radius-md);
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--text-secondary);
+        background: var(--bg-alt);
+        transition: all 0.15s;
+      }
+      .weekday-btn.active {
+        background: var(--accent);
+        color: white;
+      }
+      .weekday-btn:active {
+        transform: scale(0.95);
+      }
+
+      /* Interval stepper buttons */
+      .interval-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: var(--bg-alt);
+        font-size: 22px;
+        font-weight: 600;
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.15s;
+      }
+      .interval-btn:active {
+        background: var(--border);
+      }
+
+      /* Day name inline input */
+      .day-name-input {
+        width: 80px;
+        height: 30px;
+        background: var(--bg-alt);
+        border: none;
+        border-radius: var(--radius-sm);
+        padding: 0 8px;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text-primary);
+        outline: none;
+        text-align: center;
+      }
+      .day-name-input:focus {
+        box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.15);
+        background: var(--bg);
+      }
+
+      /* Exercise block */
+      .exercise-block {
+        margin-bottom: 12px;
+      }
+      .exercise-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .mode-chip {
+        font-size: 11px;
+        padding: 2px 8px;
+        border-radius: 100px;
+        background: var(--bg-alt);
+        color: var(--text-tertiary);
+        cursor: pointer;
+        white-space: nowrap;
+        transition: all 0.15s;
+      }
+      .mode-chip:hover {
+        background: var(--border);
+      }
+      .mode-chip.active-mode {
+        background: var(--accent);
+        color: white;
+      }
+      .set-row {
+        display: flex;
+        gap: 4px;
+        align-items: center;
+        margin: 4px 0;
+        padding-left: 4px;
+      }
+      .set-row .set-num {
+        font-size: 12px;
+        color: var(--text-tertiary);
+        width: 18px;
+        text-align: right;
+      }
+      .set-row .unit {
+        font-size: 12px;
+        color: var(--text-tertiary);
+      }
+      .fixed-row {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+        margin: 6px 0 0 4px;
+      }
+      .fixed-row span {
+        font-size: 12px;
+        color: var(--text-tertiary);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="phone-frame">
+      <div class="app-container">
+        <!-- Status Bar -->
+        <div class="status-bar">
+          <span class="time">9:41</span>
+          <div class="icons">
+            <svg width="17" height="12" viewBox="0 0 17 12" fill="none">
+              <path
+                d="M1 8.5C3.5 4 6 2 8.5 2s5 2 7.5 6.5"
+                stroke="#1d1d1f"
+                stroke-width="1.5"
+                stroke-linecap="round"
+              />
+              <path
+                d="M4 10c1.5-2.5 3-3.5 4.5-3.5S11.5 7.5 13 10"
+                stroke="#1d1d1f"
+                stroke-width="1.5"
+                stroke-linecap="round"
+              />
+            </svg>
+            <svg width="16" height="12" viewBox="0 0 16 12" fill="none">
+              <rect x=".5" y="3" width="3" height="9" rx="1" fill="#1d1d1f" />
+              <rect x="4.5" y="1" width="3" height="11" rx="1" fill="#1d1d1f" />
+              <rect x="8.5" y="4" width="3" height="8" rx="1" fill="#1d1d1f" />
+              <rect
+                x="12.5"
+                y="0"
+                width="3"
+                height="12"
+                rx="1"
+                fill="#1d1d1f"
+              />
+            </svg>
+            <svg width="27" height="13" viewBox="0 0 27 13" fill="none">
+              <rect
+                x=".5"
+                y=".5"
+                width="22"
+                height="12"
+                rx="3.5"
+                stroke="#1d1d1f"
+              />
+              <rect x="2" y="2" width="16" height="9" rx="2" fill="#1d1d1f" />
+              <path d="M24 4.5v4a2.5 2.5 0 000-4z" fill="#1d1d1f" />
+            </svg>
+          </div>
+        </div>
+
+        <!-- Nav Bar -->
+        <div class="nav-bar">
+          <div style="width: 60px"></div>
+          <span class="nav-title">训练计划</span>
+          <div style="width: 60px"></div>
+        </div>
+
+        <!-- Scrollable Content -->
+        <div class="page-content" style="padding-top: 8px">
+          <!-- ============ VIEW MODE ============ -->
+          <div class="view-mode" id="viewMode">
+            <!-- Active Plan Card -->
+            <div class="active-plan-card fade-in">
+              <div class="plan-name">推/拉/蹲 3日循环</div>
+              <div class="plan-meta">
+                <span class="meta-item">每周固定日</span>
+                <span>&#183;</span>
+                <span class="meta-item">周一/三/五</span>
+                <span>&#183;</span>
+                <span class="meta-item">已使用 28 天</span>
+              </div>
+              <div style="margin-top: 12px">
+                <span class="plan-tag">
+                  <span class="dot"></span>
+                  活跃中
+                </span>
+              </div>
+            </div>
+
+            <!-- New Plan Link -->
+            <div style="margin-bottom: 16px">
+              <a
+                href="#"
+                class="btn-secondary"
+                onclick="
+                  event.preventDefault();
+                  toggleEditMode();
+                "
+                >+ 新建计划</a
+              >
+            </div>
+
+            <!-- Section Title -->
+            <div class="section-title">训练日安排</div>
+
+            <!-- Day 1 - Push -->
+            <div class="day-card card-interactive fade-in">
+              <div class="day-card-header">
+                <div class="day-info">
+                  <span class="day-number">周一</span>
+                  <span class="tag tag-push">推日</span>
+                  <span class="text-secondary" style="font-size: 13px"
+                    >📅 5月12日 周一</span
+                  >
+                </div>
+                <button
+                  class="edit-btn"
+                  onclick="
+                    event.stopPropagation();
+                    toggleEditMode();
+                  "
+                >
+                  编辑
+                </button>
+              </div>
+              <div class="exercise-list">
+                <div class="view-exercise">
+                  <div class="view-ex-name">卧推</div>
+                  <div class="view-ex-detail">
+                    <span class="fixed-summary"
+                      >4<span class="unit">组</span> × 60<span class="unit"
+                        >kg</span
+                      >
+                      × 8<span class="unit">次</span></span
+                    >
+                  </div>
+                </div>
+                <div class="view-exercise">
+                  <div class="view-ex-name">推举</div>
+                  <div class="view-ex-detail">
+                    <span class="fixed-summary"
+                      >3<span class="unit">组</span> × 30<span class="unit"
+                        >kg</span
+                      >
+                      × 10<span class="unit">次</span></span
+                    >
+                  </div>
+                </div>
+                <div class="view-exercise">
+                  <div class="view-ex-name">三头下压</div>
+                  <div class="view-ex-detail">
+                    <div class="set-line">
+                      1<span class="unit">:</span> 20<span class="unit"
+                        >kg</span
+                      >
+                      × 15<span class="unit">次</span>
+                    </div>
+                    <div class="set-line">
+                      2<span class="unit">:</span> 22.5<span class="unit"
+                        >kg</span
+                      >
+                      × 12<span class="unit">次</span>
+                    </div>
+                    <div class="set-line">
+                      3<span class="unit">:</span> 25<span class="unit"
+                        >kg</span
+                      >
+                      × 10<span class="unit">次</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Day 2 - Pull -->
+            <div
+              class="day-card card-interactive fade-in"
+              style="border-left: 3px solid var(--pull-color)"
+            >
+              <div class="day-card-header">
+                <div class="day-info">
+                  <span class="day-number">周三</span>
+                  <span class="tag tag-pull">拉日</span>
+                  <span
+                    style="
+                      font-size: 13px;
+                      color: var(--accent);
+                      font-weight: 600;
+                    "
+                    >📅 今天 5月7日</span
+                  >
+                </div>
+                <button
+                  class="edit-btn"
+                  onclick="
+                    event.stopPropagation();
+                    toggleEditMode();
+                  "
+                >
+                  编辑
+                </button>
+              </div>
+              <div class="exercise-list">
+                <div class="view-exercise">
+                  <div class="view-ex-name">划船</div>
+                  <div class="view-ex-detail">
+                    <span class="fixed-summary"
+                      >4<span class="unit">组</span> × 60<span class="unit"
+                        >kg</span
+                      >
+                      × 8<span class="unit">次</span></span
+                    >
+                  </div>
+                </div>
+                <div class="view-exercise">
+                  <div class="view-ex-name">引体向上</div>
+                  <div class="view-ex-detail">
+                    <span class="fixed-summary"
+                      >3<span class="unit">组</span> × 0<span class="unit"
+                        >kg</span
+                      >
+                      × 10<span class="unit">次</span></span
+                    >
+                  </div>
+                </div>
+                <div class="view-exercise">
+                  <div class="view-ex-name">二头弯举</div>
+                  <div class="view-ex-detail">
+                    <span class="fixed-summary"
+                      >3<span class="unit">组</span> × 12.5<span class="unit"
+                        >kg</span
+                      >
+                      × 12<span class="unit">次</span></span
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Day 3 - Leg -->
+            <div class="day-card card-interactive fade-in">
+              <div class="day-card-header">
+                <div class="day-info">
+                  <span class="day-number">周五</span>
+                  <span class="tag tag-leg">蹲日</span>
+                  <span class="text-secondary" style="font-size: 13px"
+                    >📅 5月9日 周五</span
+                  >
+                </div>
+                <button
+                  class="edit-btn"
+                  onclick="
+                    event.stopPropagation();
+                    toggleEditMode();
+                  "
+                >
+                  编辑
+                </button>
+              </div>
+              <div class="exercise-list">
+                <div class="view-exercise">
+                  <div class="view-ex-name">深蹲</div>
+                  <div class="view-ex-detail">
+                    <div class="set-line">
+                      1<span class="unit">:</span> 60<span class="unit"
+                        >kg</span
+                      >
+                      × 5<span class="unit">次</span>
+                    </div>
+                    <div class="set-line">
+                      2<span class="unit">:</span> 70<span class="unit"
+                        >kg</span
+                      >
+                      × 5<span class="unit">次</span>
+                    </div>
+                    <div class="set-line">
+                      3<span class="unit">:</span> 80<span class="unit"
+                        >kg</span
+                      >
+                      × 5<span class="unit">次</span>
+                    </div>
+                    <div class="set-line">
+                      4<span class="unit">:</span> 90<span class="unit"
+                        >kg</span
+                      >
+                      × 3<span class="unit">次</span>
+                    </div>
+                    <div class="set-line">
+                      5<span class="unit">:</span> 100<span class="unit"
+                        >kg</span
+                      >
+                      × 1<span class="unit">次</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="view-exercise">
+                  <div class="view-ex-name">腿举</div>
+                  <div class="view-ex-detail">
+                    <span class="fixed-summary"
+                      >3<span class="unit">组</span> × 120<span class="unit"
+                        >kg</span
+                      >
+                      × 10<span class="unit">次</span></span
+                    >
+                  </div>
+                </div>
+                <div class="view-exercise">
+                  <div class="view-ex-name">罗马尼亚硬拉</div>
+                  <div class="view-ex-detail">
+                    <span class="fixed-summary"
+                      >3<span class="unit">组</span> × 80<span class="unit"
+                        >kg</span
+                      >
+                      × 8<span class="unit">次</span></span
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- /VIEW MODE -->
+
+          <!-- ============ EDIT MODE ============ -->
+          <div class="edit-form" id="editMode">
+            <!-- Plan Name -->
+            <div class="form-group">
+              <label class="form-label">计划名称</label>
+              <input
+                type="text"
+                class="input-field"
+                value="推/拉/蹲 3日循环"
+                placeholder="输入计划名称"
+              />
+            </div>
+
+            <!-- Cycle Mode Selector -->
+            <div class="form-group">
+              <label class="form-label">循环模式</label>
+              <div class="segmented">
+                <div class="seg-option active" data-target="panel-infinite">
+                  无限循环
+                </div>
+                <div class="seg-option" data-target="panel-fixed">固定周期</div>
+              </div>
+              <div
+                id="panel-infinite"
+                class="tab-panel"
+                style="
+                  font-size: 13px;
+                  color: var(--text-tertiary);
+                  margin-top: 4px;
+                "
+              >
+                计划将按照训练日顺序无限循环执行
+              </div>
+              <div
+                id="panel-fixed"
+                class="tab-panel hidden"
+                style="margin-top: 4px"
+              >
+                <div class="flex items-center gap-8">
+                  <input
+                    type="number"
+                    class="input-field"
+                    style="width: 80px; text-align: center"
+                    value="4"
+                    min="1"
+                    max="52"
+                  />
+                  <span style="font-size: 15px; color: var(--text-secondary)"
+                    >周</span
+                  >
+                </div>
+              </div>
+            </div>
+
+            <!-- Schedule: weekly fixed days -->
+            <div class="form-group">
+              <label class="form-label">训练日</label>
+              <div style="display: flex; gap: 6px; flex-wrap: wrap">
+                <button
+                  class="weekday-btn active"
+                  onclick="toggleWeekday(this)"
+                  data-day="1"
+                >
+                  周一
+                </button>
+                <button
+                  class="weekday-btn"
+                  onclick="toggleWeekday(this)"
+                  data-day="2"
+                >
+                  周二
+                </button>
+                <button
+                  class="weekday-btn active"
+                  onclick="toggleWeekday(this)"
+                  data-day="3"
+                >
+                  周三
+                </button>
+                <button
+                  class="weekday-btn"
+                  onclick="toggleWeekday(this)"
+                  data-day="4"
+                >
+                  周四
+                </button>
+                <button
+                  class="weekday-btn active"
+                  onclick="toggleWeekday(this)"
+                  data-day="5"
+                >
+                  周五
+                </button>
+                <button
+                  class="weekday-btn"
+                  onclick="toggleWeekday(this)"
+                  data-day="6"
+                >
+                  周六
+                </button>
+                <button
+                  class="weekday-btn"
+                  onclick="toggleWeekday(this)"
+                  data-day="0"
+                >
+                  周日
+                </button>
+              </div>
+            </div>
+
+            <!-- Section Title -->
+            <div class="section-title" style="margin-top: 8px">训练日</div>
+
+            <div id="dayCardsContainer">
+              <!-- Edit Day 1 -->
+              <div class="edit-day-card" data-day="1">
+                <div class="day-card-header" style="margin-bottom: 12px">
+                  <div class="day-info" style="gap: 8px">
+                    <span class="day-number">周一</span>
+                    <input
+                      type="text"
+                      class="day-name-input"
+                      value="推日"
+                      placeholder="名称"
+                    />
+                  </div>
+                  <button
+                    class="delete-exercise-btn"
+                    title="删除训练日"
+                    onclick="removeDayCard(this, 1)"
+                  >
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                    >
+                      <line x1="18" y1="6" x2="6" y2="18" />
+                      <line x1="6" y1="6" x2="18" y2="18" />
+                    </svg>
+                  </button>
+                </div>
+                <!-- Exercise: 卧推 (fixed mode) -->
+                <div class="exercise-block" data-mode="fixed">
+                  <div class="exercise-header">
+                    <div class="exercise-select" onclick="toggleExSelect(this)">
+                      <div class="select-trigger">卧推</div>
+                      <div class="select-options">
+                        <div
+                          class="select-option selected"
+                          onclick="pickEx(this, '卧推')"
+                        >
+                          卧推 <span class="opt-cat">上肢推</span>
+                        </div>
+                        <div
+                          class="select-option"
+                          onclick="pickEx(this, '上斜卧推')"
+                        >
+                          上斜卧推 <span class="opt-cat">上肢推</span>
+                        </div>
+                        <div
+                          class="select-option"
+                          onclick="pickEx(this, '哑铃卧推')"
+                        >
+                          哑铃卧推 <span class="opt-cat">上肢推</span>
+                        </div>
+                        <div
+                          class="select-option"
+                          onclick="pickEx(this, '推举')"
+                        >
+                          推举 <span class="opt-cat">上肢推</span>
+                        </div>
+                        <div
+                          class="select-option"
+                          onclick="pickEx(this, '双杠臂屈伸')"
+                        >
+                          双杠臂屈伸 <span class="opt-cat">上肢推</span>
+                        </div>
+                        <div
+                          class="select-option"
+                          onclick="pickEx(this, '深蹲')"
+                        >
+                          深蹲 <span class="opt-cat">下肢</span>
+                        </div>
+                        <div
+                          class="select-option"
+                          onclick="pickEx(this, '腿举')"
+                        >
+                          腿举 <span class="opt-cat">下肢</span>
+                        </div>
+                        <div
+                          class="select-option"
+                          onclick="pickEx(this, '划船')"
+                        >
+                          划船 <span class="opt-cat">上肢拉</span>
+                        </div>
+                        <div
+                          class="select-option"
+                          onclick="pickEx(this, '引体向上')"
+                        >
+                          引体向上 <span class="opt-cat">上肢拉</span>
+                        </div>
+                        <div
+                          class="select-option"
+                          onclick="pickEx(this, '硬拉')"
+                        >
+                          硬拉 <span class="opt-cat">核心</span>
+                        </div>
+                      </div>
+                    </div>
+                    <button
+                      class="mode-chip active-mode"
+                      onclick="switchExMode(this, 'fixed')"
+                    >
+                      固定
+                    </button>
+                    <button
+                      class="mode-chip"
+                      onclick="switchExMode(this, 'custom')"
+                    >
+                      自定义
+                    </button>
+                    <button class="delete-exercise-btn" title="删除动作">
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                      >
+                        <line x1="18" y1="6" x2="6" y2="18" />
+                        <line x1="6" y1="6" x2="18" y2="18" />
+                      </svg>
+                    </button>
+                  </div>
+                  <div class="fixed-row">
+                    <input
+                      type="number"
+                      class="volume-field"
+                      style="width: 52px"
+                      value="4"
+                      placeholder="组"
+                    />
+                    <span>组</span>
+                    <input
+                      type="number"
+                      class="volume-field"
+                      style="width: 52px"
+                      value="8"
+                      placeholder="次"
+                    />
+                    <span>次</span>
+                    <span>@</span>
+                    <input
+                      type="number"
+                      class="volume-field"
+                      style="width: 64px"
+                      value="60"
+                      placeholder="kg"
+                    />
+                    <span>kg</span>
+                  </div>
+                </div>
+                <!-- Exercise: 推举 (fixed mode) -->
+                <div class="exercise-block" data-mode="fixed">
+                  <div class="exercise-header">
+                    <div class="exercise-select" onclick="toggleExSelect(this)">
+                      <div class="select-trigger">推举</div>
+                      <div class="select-options">
+                        <div
+                          class="select-option"
+                          onclick="pickEx(this, '卧推')"
+                        >
+                          卧推 <span class="opt-cat">上肢推</span>
+                        </div>
+                        <div
+                          class="select-option"
+                          onclick="pickEx(this, '上斜卧推')"
+                        >
+                          上斜卧推 <span class="opt-cat">上肢推</span>
+                        </div>
+                        <div
+                          class="select-option"
+                          onclick="pickEx(this, '哑铃卧推')"
+                        >
+                          哑铃卧推 <span class="opt-cat">上肢推</span>
+                        </div>
+                        <div
+                          class="select-option selected"
+                          onclick="pickEx(this, '推举')"
+                        >
+                          推举 <span class="opt-cat">上肢推</span>
+                        </div>
+                        <div
+                          class="select-option"
+                          onclick="pickEx(this, '双杠臂屈伸')"
+                        >
+                          双杠臂屈伸 <span class="opt-cat">上肢推</span>
+                        </div>
+                        <div
+                          class="select-option"
+                          onclick="pickEx(this, '深蹲')"
+                        >
+                          深蹲 <span class="opt-cat">下肢</span>
+                        </div>
+                        <div
+                          class="select-option"
+                          onclick="pickEx(this, '腿举')"
+                        >
+                          腿举 <span class="opt-cat">下肢</span>
+                        </div>
+                        <div
+                          class="select-option"
+                          onclick="pickEx(this, '划船')"
+                        >
+                          划船 <span class="opt-cat">上肢拉</span>
+                        </div>
+                        <div
+                          class="select-option"
+                          onclick="pickEx(this, '引体向上')"
+                        >
+                          引体向上 <span class="opt-cat">上肢拉</span>
+                        </div>
+                        <div
+                          class="select-option"
+                          onclick="pickEx(this, '硬拉')"
+                        >
+                          硬拉 <span class="opt-cat">核心</span>
+                        </div>
+                      </div>
+                    </div>
+                    <button
+                      class="mode-chip active-mode"
+                      onclick="switchExMode(this, 'fixed')"
+                    >
+                      固定
+                    </button>
+                    <button
+                      class="mode-chip"
+                      onclick="switchExMode(this, 'custom')"
+                    >
+                      自定义
+                    </button>
+                    <button class="delete-exercise-btn" title="删除动作">
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                      >
+                        <line x1="18" y1="6" x2="6" y2="18" />
+                        <line x1="6" y1="6" x2="18" y2="18" />
+                      </svg>
+                    </button>
+                  </div>
+                  <div class="fixed-row">
+                    <input
+                      type="number"
+                      class="volume-field"
+                      style="width: 52px"
+                      value="3"
+                      placeholder="组"
+                    />
+                    <span>组</span>
+                    <input
+                      type="number"
+                      class="volume-field"
+                      style="width: 52px"
+                      value="10"
+                      placeholder="次"
+                    />
+                    <span>次</span>
+                    <span>@</span>
+                    <input
+                      type="number"
+                      class="volume-field"
+                      style="width: 64px"
+                      value="30"
+                      placeholder="kg"
+                    />
+                    <span>kg</span>
+                  </div>
+                </div>
+                <!-- Exercise: 三头下压 (custom mode) -->
+                <div class="exercise-block" data-mode="custom">
+                  <div class="exercise-header">
+                    <div class="exercise-select" onclick="toggleExSelect(this)">
+                      <div class="select-trigger">三头下压</div>
+                      <div class="select-options">
+                        <div
+                          class="select-option"
+                          onclick="pickEx(this, '卧推')"
+                        >
+                          卧推 <span class="opt-cat">上肢推</span>
+                        </div>
+                        <div
+                          class="select-option"
+                          onclick="pickEx(this, '推举')"
+                        >
+                          推举 <span class="opt-cat">上肢推</span>
+                        </div>
+                        <div
+                          class="select-option selected"
+                          onclick="pickEx(this, '三头下压')"
+                        >
+                          三头下压 <span class="opt-cat">上肢推</span>
+                        </div>
+                        <div
+                          class="select-option"
+                          onclick="pickEx(this, '侧平举')"
+                        >
+                          侧平举 <span class="opt-cat">肩部</span>
+                        </div>
+                        <div
+                          class="select-option"
+                          onclick="pickEx(this, '面拉')"
+                        >
+                          面拉 <span class="opt-cat">肩部</span>
+                        </div>
+                        <div
+                          class="select-option"
+                          onclick="pickEx(this, '深蹲')"
+                        >
+                          深蹲 <span class="opt-cat">下肢</span>
+                        </div>
+                        <div
+                          class="select-option"
+                          onclick="pickEx(this, '划船')"
+                        >
+                          划船 <span class="opt-cat">上肢拉</span>
+                        </div>
+                        <div
+                          class="select-option"
+                          onclick="pickEx(this, '二头弯举')"
+                        >
+                          二头弯举 <span class="opt-cat">上肢拉</span>
+                        </div>
+                      </div>
+                    </div>
+                    <button
+                      class="mode-chip"
+                      onclick="switchExMode(this, 'fixed')"
+                    >
+                      固定
+                    </button>
+                    <button
+                      class="mode-chip active-mode"
+                      onclick="switchExMode(this, 'custom')"
+                    >
+                      自定义
+                    </button>
+                    <button class="delete-exercise-btn" title="删除动作">
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                      >
+                        <line x1="18" y1="6" x2="6" y2="18" />
+                        <line x1="6" y1="6" x2="18" y2="18" />
+                      </svg>
+                    </button>
+                  </div>
+                  <div class="sets-list">
+                    <div class="set-row">
+                      <span class="set-num">1</span
+                      ><input
+                        type="number"
+                        style="width: 64px"
+                        value="20"
+                        placeholder="kg"
+                      /><span class="unit">kg</span><span class="unit">x</span
+                      ><input
+                        type="number"
+                        style="width: 48px"
+                        value="15"
+                        placeholder="次"
+                      /><span class="unit">次</span>
+                    </div>
+                    <div class="set-row">
+                      <span class="set-num">2</span
+                      ><input
+                        type="number"
+                        style="width: 64px"
+                        value="22.5"
+                        placeholder="kg"
+                      /><span class="unit">kg</span><span class="unit">x</span
+                      ><input
+                        type="number"
+                        style="width: 48px"
+                        value="12"
+                        placeholder="次"
+                      /><span class="unit">次</span>
+                    </div>
+                    <div class="set-row">
+                      <span class="set-num">3</span
+                      ><input
+                        type="number"
+                        style="width: 64px"
+                        value="25"
+                        placeholder="kg"
+                      /><span class="unit">kg</span><span class="unit">x</span
+                      ><input
+                        type="number"
+                        style="width: 48px"
+                        value="10"
+                        placeholder="次"
+                      /><span class="unit">次</span>
+                    </div>
+                  </div>
+                  <button class="add-exercise-btn" onclick="addExercise(this)">
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                    >
+                      <line x1="12" y1="5" x2="12" y2="19" />
+                      <line x1="5" y1="12" x2="19" y2="12" />
+                    </svg>
+                    添加动作
+                  </button>
+                </div>
+              </div>
+
+              <!-- Edit Day 2 -->
+              <div class="edit-day-card" data-day="3">
+                <div class="day-card-header" style="margin-bottom: 12px">
+                  <div class="day-info" style="gap: 8px">
+                    <span class="day-number">周三</span>
+                    <input
+                      type="text"
+                      class="day-name-input"
+                      value="拉日"
+                      placeholder="名称"
+                    />
+                  </div>
+                  <button
+                    class="delete-exercise-btn"
+                    title="删除训练日"
+                    onclick="removeDayCard(this, 3)"
+                  >
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                    >
+                      <line x1="18" y1="6" x2="6" y2="18" />
+                      <line x1="6" y1="6" x2="18" y2="18" />
+                    </svg>
+                  </button>
+                </div>
+                <div class="exercise-block" data-mode="fixed">
+                  <div class="exercise-header">
+                    <div class="exercise-select" onclick="toggleExSelect(this)">
+                      <div class="select-trigger">划船</div>
+                      <div class="select-options">
+                        <div
+                          class="select-option selected"
+                          onclick="pickEx(this, '划船')"
+                        >
+                          划船 <span class="opt-cat">上肢拉</span>
+                        </div>
+                        <div
+                          class="select-option"
+                          onclick="pickEx(this, '引体向上')"
+                        >
+                          引体向上 <span class="opt-cat">上肢拉</span>
+                        </div>
+                        <div
+                          class="select-option"
+                          onclick="pickEx(this, '高位下拉')"
+                        >
+                          高位下拉 <span class="opt-cat">上肢拉</span>
+                        </div>
+                        <div
+                          class="select-option"
+                          onclick="pickEx(this, '哑铃划船')"
+                        >
+                          哑铃划船 <span class="opt-cat">上肢拉</span>
+                        </div>
+                        <div
+                          class="select-option"
+                          onclick="pickEx(this, '二头弯举')"
+                        >
+                          二头弯举 <span class="opt-cat">上肢拉</span>
+                        </div>
+                        <div
+                          class="select-option"
+                          onclick="pickEx(this, '卧推')"
+                        >
+                          卧推 <span class="opt-cat">上肢推</span>
+                        </div>
+                        <div
+                          class="select-option"
+                          onclick="pickEx(this, '深蹲')"
+                        >
+                          深蹲 <span class="opt-cat">下肢</span>
+                        </div>
+                        <div
+                          class="select-option"
+                          onclick="pickEx(this, '硬拉')"
+                        >
+                          硬拉 <span class="opt-cat">核心</span>
+                        </div>
+                      </div>
+                    </div>
+                    <button
+                      class="mode-chip active-mode"
+                      onclick="switchExMode(this, 'fixed')"
+                    >
+                      固定
+                    </button>
+                    <button
+                      class="mode-chip"
+                      onclick="switchExMode(this, 'custom')"
+                    >
+                      自定义
+                    </button>
+                    <button class="delete-exercise-btn" title="删除动作">
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                      >
+                        <line x1="18" y1="6" x2="6" y2="18" />
+                        <line x1="6" y1="6" x2="18" y2="18" />
+                      </svg>
+                    </button>
+                  </div>
+                  <div class="fixed-row">
+                    <input
+                      type="number"
+                      class="volume-field"
+                      style="width: 52px"
+                      value="4"
+                      placeholder="组"
+                    />
+                    <span>组</span>
+                    <input
+                      type="number"
+                      class="volume-field"
+                      style="width: 52px"
+                      value="8"
+                      placeholder="次"
+                    />
+                    <span>次</span>
+                    <span>@</span>
+                    <input
+                      type="number"
+                      class="volume-field"
+                      style="width: 64px"
+                      value="60"
+                      placeholder="kg"
+                    />
+                    <span>kg</span>
+                  </div>
+                </div>
+                <div class="exercise-block" data-mode="fixed">
+                  <div class="exercise-header">
+                    <div class="exercise-select" onclick="toggleExSelect(this)">
+                      <div class="select-trigger">引体向上</div>
+                      <div class="select-options">
+                        <div
+                          class="select-option"
+                          onclick="pickEx(this, '划船')"
+                        >
+                          划船 <span class="opt-cat">上肢拉</span>
+                        </div>
+                        <div
+                          class="select-option selected"
+                          onclick="pickEx(this, '引体向上')"
+                        >
+                          引体向上 <span class="opt-cat">上肢拉</span>
+                        </div>
+                        <div
+                          class="select-option"
+                          onclick="pickEx(this, '高位下拉')"
+                        >
+                          高位下拉 <span class="opt-cat">上肢拉</span>
+                        </div>
+                        <div
+                          class="select-option"
+                          onclick="pickEx(this, '哑铃划船')"
+                        >
+                          哑铃划船 <span class="opt-cat">上肢拉</span>
+                        </div>
+                        <div
+                          class="select-option"
+                          onclick="pickEx(this, '二头弯举')"
+                        >
+                          二头弯举 <span class="opt-cat">上肢拉</span>
+                        </div>
+                        <div
+                          class="select-option"
+                          onclick="pickEx(this, '卧推')"
+                        >
+                          卧推 <span class="opt-cat">上肢推</span>
+                        </div>
+                        <div
+                          class="select-option"
+                          onclick="pickEx(this, '深蹲')"
+                        >
+                          深蹲 <span class="opt-cat">下肢</span>
+                        </div>
+                      </div>
+                    </div>
+                    <button
+                      class="mode-chip active-mode"
+                      onclick="switchExMode(this, 'fixed')"
+                    >
+                      固定
+                    </button>
+                    <button
+                      class="mode-chip"
+                      onclick="switchExMode(this, 'custom')"
+                    >
+                      自定义
+                    </button>
+                    <button class="delete-exercise-btn" title="删除动作">
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                      >
+                        <line x1="18" y1="6" x2="6" y2="18" />
+                        <line x1="6" y1="6" x2="18" y2="18" />
+                      </svg>
+                    </button>
+                  </div>
+                  <div class="fixed-row">
+                    <input
+                      type="number"
+                      class="volume-field"
+                      style="width: 52px"
+                      value="3"
+                      placeholder="组"
+                    />
+                    <span>组</span>
+                    <input
+                      type="number"
+                      class="volume-field"
+                      style="width: 52px"
+                      value="10"
+                      placeholder="次"
+                    />
+                    <span>次</span>
+                    <span>@</span>
+                    <input
+                      type="number"
+                      class="volume-field"
+                      style="width: 64px"
+                      value="0"
+                      placeholder="kg"
+                    />
+                    <span>kg</span>
+                  </div>
+                </div>
+                <div class="exercise-block" data-mode="fixed">
+                  <div class="exercise-header">
+                    <div class="exercise-select" onclick="toggleExSelect(this)">
+                      <div class="select-trigger">二头弯举</div>
+                      <div class="select-options">
+                        <div
+                          class="select-option"
+                          onclick="pickEx(this, '划船')"
+                        >
+                          划船 <span class="opt-cat">上肢拉</span>
+                        </div>
+                        <div
+                          class="select-option"
+                          onclick="pickEx(this, '引体向上')"
+                        >
+                          引体向上 <span class="opt-cat">上肢拉</span>
+                        </div>
+                        <div
+                          class="select-option"
+                          onclick="pickEx(this, '高位下拉')"
+                        >
+                          高位下拉 <span class="opt-cat">上肢拉</span>
+                        </div>
+                        <div
+                          class="select-option selected"
+                          onclick="pickEx(this, '二头弯举')"
+                        >
+                          二头弯举 <span class="opt-cat">上肢拉</span>
+                        </div>
+                        <div
+                          class="select-option"
+                          onclick="pickEx(this, '三头下压')"
+                        >
+                          三头下压 <span class="opt-cat">上肢推</span>
+                        </div>
+                        <div
+                          class="select-option"
+                          onclick="pickEx(this, '卧推')"
+                        >
+                          卧推 <span class="opt-cat">上肢推</span>
+                        </div>
+                        <div
+                          class="select-option"
+                          onclick="pickEx(this, '深蹲')"
+                        >
+                          深蹲 <span class="opt-cat">下肢</span>
+                        </div>
+                      </div>
+                    </div>
+                    <button
+                      class="mode-chip active-mode"
+                      onclick="switchExMode(this, 'fixed')"
+                    >
+                      固定
+                    </button>
+                    <button
+                      class="mode-chip"
+                      onclick="switchExMode(this, 'custom')"
+                    >
+                      自定义
+                    </button>
+                    <button class="delete-exercise-btn" title="删除动作">
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                      >
+                        <line x1="18" y1="6" x2="6" y2="18" />
+                        <line x1="6" y1="6" x2="18" y2="18" />
+                      </svg>
+                    </button>
+                  </div>
+                  <div class="fixed-row">
+                    <input
+                      type="number"
+                      class="volume-field"
+                      style="width: 52px"
+                      value="3"
+                      placeholder="组"
+                    />
+                    <span>组</span>
+                    <input
+                      type="number"
+                      class="volume-field"
+                      style="width: 52px"
+                      value="12"
+                      placeholder="次"
+                    />
+                    <span>次</span>
+                    <span>@</span>
+                    <input
+                      type="number"
+                      class="volume-field"
+                      style="width: 64px"
+                      value="12.5"
+                      placeholder="kg"
+                    />
+                    <span>kg</span>
+                  </div>
+                </div>
+                <button class="add-exercise-btn" onclick="addExercise(this)">
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                  >
+                    <line x1="12" y1="5" x2="12" y2="19" />
+                    <line x1="5" y1="12" x2="19" y2="12" />
+                  </svg>
+                  添加动作
+                </button>
+              </div>
+
+              <!-- Edit Day 3 -->
+              <div class="edit-day-card" data-day="5">
+                <div class="day-card-header" style="margin-bottom: 12px">
+                  <div class="day-info" style="gap: 8px">
+                    <span class="day-number">周五</span>
+                    <input
+                      type="text"
+                      class="day-name-input"
+                      value="蹲日"
+                      placeholder="名称"
+                    />
+                  </div>
+                  <button
+                    class="delete-exercise-btn"
+                    title="删除训练日"
+                    onclick="removeDayCard(this, 5)"
+                  >
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                    >
+                      <line x1="18" y1="6" x2="6" y2="18" />
+                      <line x1="6" y1="6" x2="18" y2="18" />
+                    </svg>
+                  </button>
+                </div>
+                <!-- Exercise: 深蹲 (custom mode — 5/3/1 style) -->
+                <div class="exercise-block" data-mode="custom">
+                  <div class="exercise-header">
+                    <div class="exercise-select" onclick="toggleExSelect(this)">
+                      <div class="select-trigger">深蹲</div>
+                      <div class="select-options">
+                        <div
+                          class="select-option selected"
+                          onclick="pickEx(this, '深蹲')"
+                        >
+                          深蹲 <span class="opt-cat">下肢</span>
+                        </div>
+                        <div
+                          class="select-option"
+                          onclick="pickEx(this, '前蹲')"
+                        >
+                          前蹲 <span class="opt-cat">下肢</span>
+                        </div>
+                        <div
+                          class="select-option"
+                          onclick="pickEx(this, '腿举')"
+                        >
+                          腿举 <span class="opt-cat">下肢</span>
+                        </div>
+                        <div
+                          class="select-option"
+                          onclick="pickEx(this, '罗马尼亚硬拉')"
+                        >
+                          罗马尼亚硬拉 <span class="opt-cat">下肢</span>
+                        </div>
+                        <div
+                          class="select-option"
+                          onclick="pickEx(this, '腿弯举')"
+                        >
+                          腿弯举 <span class="opt-cat">下肢</span>
+                        </div>
+                        <div
+                          class="select-option"
+                          onclick="pickEx(this, '硬拉')"
+                        >
+                          硬拉 <span class="opt-cat">核心</span>
+                        </div>
+                        <div
+                          class="select-option"
+                          onclick="pickEx(this, '卧推')"
+                        >
+                          卧推 <span class="opt-cat">上肢推</span>
+                        </div>
+                        <div
+                          class="select-option"
+                          onclick="pickEx(this, '划船')"
+                        >
+                          划船 <span class="opt-cat">上肢拉</span>
+                        </div>
+                      </div>
+                    </div>
+                    <button
+                      class="mode-chip"
+                      onclick="switchExMode(this, 'fixed')"
+                    >
+                      固定
+                    </button>
+                    <button
+                      class="mode-chip active-mode"
+                      onclick="switchExMode(this, 'custom')"
+                    >
+                      自定义
+                    </button>
+                    <button class="delete-exercise-btn" title="删除动作">
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                      >
+                        <line x1="18" y1="6" x2="6" y2="18" />
+                        <line x1="6" y1="6" x2="18" y2="18" />
+                      </svg>
+                    </button>
+                  </div>
+                  <div class="sets-list">
+                    <div class="set-row">
+                      <span class="set-num">1</span
+                      ><input
+                        type="number"
+                        style="width: 64px"
+                        value="60"
+                        placeholder="kg"
+                      /><span class="unit">kg</span><span class="unit">x</span
+                      ><input
+                        type="number"
+                        style="width: 48px"
+                        value="5"
+                        placeholder="次"
+                      /><span class="unit">次</span>
+                    </div>
+                    <div class="set-row">
+                      <span class="set-num">2</span
+                      ><input
+                        type="number"
+                        style="width: 64px"
+                        value="70"
+                        placeholder="kg"
+                      /><span class="unit">kg</span><span class="unit">x</span
+                      ><input
+                        type="number"
+                        style="width: 48px"
+                        value="5"
+                        placeholder="次"
+                      /><span class="unit">次</span>
+                    </div>
+                    <div class="set-row">
+                      <span class="set-num">3</span
+                      ><input
+                        type="number"
+                        style="width: 64px"
+                        value="80"
+                        placeholder="kg"
+                      /><span class="unit">kg</span><span class="unit">x</span
+                      ><input
+                        type="number"
+                        style="width: 48px"
+                        value="5"
+                        placeholder="次"
+                      /><span class="unit">次</span>
+                    </div>
+                    <div class="set-row">
+                      <span class="set-num">4</span
+                      ><input
+                        type="number"
+                        style="width: 64px"
+                        value="90"
+                        placeholder="kg"
+                      /><span class="unit">kg</span><span class="unit">x</span
+                      ><input
+                        type="number"
+                        style="width: 48px"
+                        value="3"
+                        placeholder="次"
+                      /><span class="unit">次</span>
+                    </div>
+                    <div class="set-row">
+                      <span class="set-num">5</span
+                      ><input
+                        type="number"
+                        style="width: 64px"
+                        value="100"
+                        placeholder="kg"
+                      /><span class="unit">kg</span><span class="unit">x</span
+                      ><input
+                        type="number"
+                        style="width: 48px"
+                        value="1"
+                        placeholder="次"
+                      /><span class="unit">次</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="exercise-block" data-mode="fixed">
+                  <div class="exercise-header">
+                    <div class="exercise-select" onclick="toggleExSelect(this)">
+                      <div class="select-trigger">腿举</div>
+                      <div class="select-options">
+                        <div
+                          class="select-option"
+                          onclick="pickEx(this, '深蹲')"
+                        >
+                          深蹲 <span class="opt-cat">下肢</span>
+                        </div>
+                        <div
+                          class="select-option"
+                          onclick="pickEx(this, '前蹲')"
+                        >
+                          前蹲 <span class="opt-cat">下肢</span>
+                        </div>
+                        <div
+                          class="select-option selected"
+                          onclick="pickEx(this, '腿举')"
+                        >
+                          腿举 <span class="opt-cat">下肢</span>
+                        </div>
+                        <div
+                          class="select-option"
+                          onclick="pickEx(this, '罗马尼亚硬拉')"
+                        >
+                          罗马尼亚硬拉 <span class="opt-cat">下肢</span>
+                        </div>
+                        <div
+                          class="select-option"
+                          onclick="pickEx(this, '腿弯举')"
+                        >
+                          腿弯举 <span class="opt-cat">下肢</span>
+                        </div>
+                        <div
+                          class="select-option"
+                          onclick="pickEx(this, '硬拉')"
+                        >
+                          硬拉 <span class="opt-cat">核心</span>
+                        </div>
+                        <div
+                          class="select-option"
+                          onclick="pickEx(this, '卧推')"
+                        >
+                          卧推 <span class="opt-cat">上肢推</span>
+                        </div>
+                      </div>
+                    </div>
+                    <button
+                      class="mode-chip active-mode"
+                      onclick="switchExMode(this, 'fixed')"
+                    >
+                      固定
+                    </button>
+                    <button
+                      class="mode-chip"
+                      onclick="switchExMode(this, 'custom')"
+                    >
+                      自定义
+                    </button>
+                    <button class="delete-exercise-btn" title="删除动作">
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                      >
+                        <line x1="18" y1="6" x2="6" y2="18" />
+                        <line x1="6" y1="6" x2="18" y2="18" />
+                      </svg>
+                    </button>
+                  </div>
+                  <div class="fixed-row">
+                    <input
+                      type="number"
+                      class="volume-field"
+                      style="width: 52px"
+                      value="3"
+                      placeholder="组"
+                    />
+                    <span>组</span>
+                    <input
+                      type="number"
+                      class="volume-field"
+                      style="width: 52px"
+                      value="10"
+                      placeholder="次"
+                    />
+                    <span>次</span>
+                    <span>@</span>
+                    <input
+                      type="number"
+                      class="volume-field"
+                      style="width: 64px"
+                      value="120"
+                      placeholder="kg"
+                    />
+                    <span>kg</span>
+                  </div>
+                </div>
+                <div class="exercise-block" data-mode="fixed">
+                  <div class="exercise-header">
+                    <div class="exercise-select" onclick="toggleExSelect(this)">
+                      <div class="select-trigger">罗马尼亚硬拉</div>
+                      <div class="select-options">
+                        <div
+                          class="select-option"
+                          onclick="pickEx(this, '深蹲')"
+                        >
+                          深蹲 <span class="opt-cat">下肢</span>
+                        </div>
+                        <div
+                          class="select-option"
+                          onclick="pickEx(this, '前蹲')"
+                        >
+                          前蹲 <span class="opt-cat">下肢</span>
+                        </div>
+                        <div
+                          class="select-option"
+                          onclick="pickEx(this, '腿举')"
+                        >
+                          腿举 <span class="opt-cat">下肢</span>
+                        </div>
+                        <div
+                          class="select-option selected"
+                          onclick="pickEx(this, '罗马尼亚硬拉')"
+                        >
+                          罗马尼亚硬拉 <span class="opt-cat">下肢</span>
+                        </div>
+                        <div
+                          class="select-option"
+                          onclick="pickEx(this, '腿弯举')"
+                        >
+                          腿弯举 <span class="opt-cat">下肢</span>
+                        </div>
+                        <div
+                          class="select-option"
+                          onclick="pickEx(this, '硬拉')"
+                        >
+                          硬拉 <span class="opt-cat">核心</span>
+                        </div>
+                        <div
+                          class="select-option"
+                          onclick="pickEx(this, '卧推')"
+                        >
+                          卧推 <span class="opt-cat">上肢推</span>
+                        </div>
+                      </div>
+                    </div>
+                    <button
+                      class="mode-chip active-mode"
+                      onclick="switchExMode(this, 'fixed')"
+                    >
+                      固定
+                    </button>
+                    <button
+                      class="mode-chip"
+                      onclick="switchExMode(this, 'custom')"
+                    >
+                      自定义
+                    </button>
+                    <button class="delete-exercise-btn" title="删除动作">
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                      >
+                        <line x1="18" y1="6" x2="6" y2="18" />
+                        <line x1="6" y1="6" x2="18" y2="18" />
+                      </svg>
+                    </button>
+                  </div>
+                  <div class="fixed-row">
+                    <input
+                      type="number"
+                      class="volume-field"
+                      style="width: 52px"
+                      value="3"
+                      placeholder="组"
+                    />
+                    <span>组</span>
+                    <input
+                      type="number"
+                      class="volume-field"
+                      style="width: 52px"
+                      value="8"
+                      placeholder="次"
+                    />
+                    <span>次</span>
+                    <span>@</span>
+                    <input
+                      type="number"
+                      class="volume-field"
+                      style="width: 64px"
+                      value="80"
+                      placeholder="kg"
+                    />
+                    <span>kg</span>
+                  </div>
+                </div>
+                <button class="add-exercise-btn" onclick="addExercise(this)">
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                  >
+                    <line x1="12" y1="5" x2="12" y2="19" />
+                    <line x1="5" y1="12" x2="19" y2="12" />
+                  </svg>
+                  添加动作
+                </button>
+              </div>
+
+              <!-- Add Day Button -->
+              <button class="add-day-btn" onclick="addDayFromUnused()">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                >
+                  <line x1="12" y1="5" x2="12" y2="19" />
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+                添加训练日
+              </button>
+            </div>
+            <!-- /dayCardsContainer -->
+
+            <!-- Save Button -->
+            <div style="margin-top: 24px; margin-bottom: 24px">
+              <button
+                class="btn-primary"
+                onclick="
+                  toggleEditMode();
+                  showToast('计划已保存');
+                "
+              >
+                保存计划
+              </button>
+            </div>
+          </div>
+          <!-- /EDIT MODE -->
+        </div>
+
+        <!-- Tab Bar -->
+        <div class="tab-bar">
+          <a class="tab-item" href="calendar.html">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <rect x="3" y="4" width="18" height="18" rx="2" />
+              <line x1="3" y1="10" x2="21" y2="10" />
+              <line x1="16" y1="2" x2="16" y2="6" />
+              <line x1="8" y1="2" x2="8" y2="6" />
+            </svg>
+            <span>日历</span>
+          </a>
+          <a class="tab-item active" href="plan.html">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path
+                d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"
+              />
+              <rect x="9" y="3" width="6" height="4" rx="1" />
+              <line x1="9" y1="12" x2="15" y2="12" />
+              <line x1="9" y1="16" x2="13" y2="16" />
+            </svg>
+            <span>计划</span>
+          </a>
+          <a class="tab-item" href="history.html">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="12" cy="12" r="10" />
+              <polyline points="12 6 12 12 16 14" />
+            </svg>
+            <span>历史</span>
+          </a>
+          <a class="tab-item" href="stats.html">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <line x1="18" y1="20" x2="18" y2="10" />
+              <line x1="12" y1="20" x2="12" y2="4" />
+              <line x1="6" y1="20" x2="6" y2="14" />
+            </svg>
+            <span>统计</span>
+          </a>
+          <a class="tab-item" href="settings.html">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="12" cy="12" r="3" />
+              <path
+                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"
+              />
+            </svg>
+            <span>设置</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Toggle between view and edit mode
+      let isEditMode = false;
+
+      function toggleEditMode() {
+        isEditMode = !isEditMode;
+        const viewMode = document.getElementById("viewMode");
+        const editMode = document.getElementById("editMode");
+
+        if (isEditMode) {
+          viewMode.classList.add("hidden");
+          editMode.classList.add("visible");
+        } else {
+          viewMode.classList.remove("hidden");
+          editMode.classList.remove("visible");
+        }
+      }
+
+      // Schedule type switching
+      let currentSchedule = "weekly";
+      function switchSchedule(type) {
+        currentSchedule = type;
+      }
+
+      // Exercise mode toggle: fixed ↔ custom
+      function switchExMode(btn, mode) {
+        const block = btn.closest(".exercise-block");
+        const chips = block.querySelectorAll(".mode-chip");
+        const fixedRow = block.querySelector(".fixed-row");
+        const setsList = block.querySelector(".sets-list");
+
+        if (mode === "fixed") {
+          chips[0].classList.add("active-mode");
+          chips[1].classList.remove("active-mode");
+          if (setsList) setsList.style.display = "none";
+          if (fixedRow) fixedRow.style.display = "flex";
+          else {
+            // create fixed row from first set values
+            const sets = block.querySelectorAll(".set-row");
+            const w = sets[0]
+              ? sets[0].querySelector('input[type="number"]').value
+              : "";
+            const r = sets[0]
+              ? sets[0].querySelectorAll('input[type="number"]')[1].value
+              : "";
+            const html =
+              '<div class="fixed-row">' +
+              '<input type="number" class="volume-field" style="width:52px;" value="' +
+              sets.length +
+              '" placeholder="组"><span>组</span>' +
+              '<input type="number" class="volume-field" style="width:52px;" value="' +
+              r +
+              '" placeholder="次"><span>次</span>' +
+              "<span>@</span>" +
+              '<input type="number" class="volume-field" style="width:64px;" value="' +
+              w +
+              '" placeholder="kg"><span>kg</span>' +
+              "</div>";
+            block.insertAdjacentHTML("beforeend", html);
+          }
+          block.dataset.mode = "fixed";
+        } else {
+          chips[0].classList.remove("active-mode");
+          chips[1].classList.add("active-mode");
+          if (fixedRow) fixedRow.style.display = "none";
+          if (setsList) setsList.style.display = "block";
+          else {
+            // create sets from fixed values
+            const fInputs = fixedRow.querySelectorAll('input[type="number"]');
+            const sets = +fInputs[0].value || 3;
+            const reps = fInputs[1].value;
+            const weight = fInputs[2].value;
+            let html = '<div class="sets-list">';
+            for (let i = 1; i <= sets; i++) {
+              html +=
+                '<div class="set-row"><span class="set-num">' +
+                i +
+                '</span><input type="number" style="width:64px;" value="' +
+                weight +
+                '" placeholder="kg"><span class="unit">kg</span><span class="unit">x</span><input type="number" style="width:48px;" value="' +
+                reps +
+                '" placeholder="次"><span class="unit">次</span></div>';
+            }
+            html += "</div>";
+            block.insertAdjacentHTML("beforeend", html);
+          }
+          block.dataset.mode = "custom";
+        }
+      }
+
+      // Weekday toggle — bidirectional sync with day cards
+      const dayLabels = {
+        1: "周一",
+        2: "周二",
+        3: "周三",
+        4: "周四",
+        5: "周五",
+        6: "周六",
+        0: "周日",
+      };
+
+      function toggleWeekday(btn) {
+        btn.classList.toggle("active");
+        const day = btn.dataset.day;
+        const card = document.querySelector(
+          '.edit-day-card[data-day="' + day + '"]',
+        );
+        if (btn.classList.contains("active")) {
+          if (!card) addDayCard(day);
+        } else {
+          if (card) card.remove();
+        }
+      }
+
+      function removeDayCard(btn, day) {
+        const card = btn.closest(".edit-day-card");
+        card.remove();
+        const wkBtn = document.querySelector(
+          '.weekday-btn[data-day="' + day + '"]',
+        );
+        if (wkBtn) wkBtn.classList.remove("active");
+      }
+
+      function addDayCard(day) {
+        const label = dayLabels[day];
+        const container = document.getElementById("dayCardsContainer");
+        const html =
+          '<div class="edit-day-card" data-day="' +
+          day +
+          '">' +
+          '<div class="day-card-header" style="margin-bottom:12px;">' +
           '<div class="day-info" style="gap:8px;">' +
-            '<span class="day-number">' + label + '</span>' +
-            '<input type="text" class="day-name-input" value="" placeholder="名称">' +
-          '</div>' +
-          '<button class="delete-exercise-btn" title="删除训练日" onclick="removeDayCard(this, ' + day + ')">' +
-            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>' +
-          '</button>' +
-        '</div>' +
-        '<button class="add-exercise-btn" onclick="addExercise(this)">' +
+          '<span class="day-number">' +
+          label +
+          "</span>" +
+          '<input type="text" class="day-name-input" value="" placeholder="名称">' +
+          "</div>" +
+          '<button class="delete-exercise-btn" title="删除训练日" onclick="removeDayCard(this, ' +
+          day +
+          ')">' +
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>' +
+          "</button>" +
+          "</div>" +
+          '<button class="add-exercise-btn" onclick="addExercise(this)">' +
           '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>' +
-          '添加动作' +
-        '</button>' +
-      '</div>';
-    container.insertAdjacentHTML('beforeend', html);
-    sortDayCards();
-  }
-
-  function sortDayCards() {
-    const container = document.getElementById('dayCardsContainer');
-    const order = [1,2,3,4,5,6,0];
-    const cards = [...container.querySelectorAll('.edit-day-card')];
-    cards.sort((a, b) => order.indexOf(+a.dataset.day) - order.indexOf(+b.dataset.day));
-    cards.forEach(c => container.appendChild(c));
-  }
-
-  function addDayFromUnused() {
-    const order = [1,2,3,4,5,6,0];
-    for (const d of order) {
-      const btn = document.querySelector('.weekday-btn[data-day="' + d + '"]');
-      if (btn && !btn.classList.contains('active')) {
-        btn.classList.add('active');
-        addDayCard(d);
-        return;
+          "添加动作" +
+          "</button>" +
+          "</div>";
+        container.insertAdjacentHTML("beforeend", html);
+        sortDayCards();
       }
-    }
-    showToast('已选择全部训练日');
-  }
 
-  // Exercise select dropdown
-  function toggleExSelect(el) {
-    event.stopPropagation();
-    const wasOpen = el.classList.contains('open');
-    document.querySelectorAll('.exercise-select.open').forEach(s => s.classList.remove('open'));
-    if (!wasOpen) el.classList.add('open');
-  }
-  function pickEx(opt, name) {
-    event.stopPropagation();
-    const sel = opt.closest('.exercise-select');
-    sel.querySelectorAll('.select-option').forEach(o => o.classList.remove('selected'));
-    opt.classList.add('selected');
-    sel.querySelector('.select-trigger').textContent = name;
-    sel.classList.remove('open');
-  }
-  document.addEventListener('click', () => {
-    document.querySelectorAll('.exercise-select.open').forEach(s => s.classList.remove('open'));
-  });
+      function sortDayCards() {
+        const container = document.getElementById("dayCardsContainer");
+        const order = [1, 2, 3, 4, 5, 6, 0];
+        const cards = [...container.querySelectorAll(".edit-day-card")];
+        cards.sort(
+          (a, b) =>
+            order.indexOf(+a.dataset.day) - order.indexOf(+b.dataset.day),
+        );
+        cards.forEach((c) => container.appendChild(c));
+      }
 
-  // Add new exercise in fixed mode
-  function addExercise(btn) {
-    const card = btn.closest('.edit-day-card');
-    const html =
-      '<div class="exercise-block" data-mode="fixed" style="animation:fadeIn 0.2s;">' +
-        '<div class="exercise-header">' +
+      function addDayFromUnused() {
+        const order = [1, 2, 3, 4, 5, 6, 0];
+        for (const d of order) {
+          const btn = document.querySelector(
+            '.weekday-btn[data-day="' + d + '"]',
+          );
+          if (btn && !btn.classList.contains("active")) {
+            btn.classList.add("active");
+            addDayCard(d);
+            return;
+          }
+        }
+        showToast("已选择全部训练日");
+      }
+
+      // Exercise select dropdown
+      function toggleExSelect(el) {
+        event.stopPropagation();
+        const wasOpen = el.classList.contains("open");
+        document
+          .querySelectorAll(".exercise-select.open")
+          .forEach((s) => s.classList.remove("open"));
+        if (!wasOpen) el.classList.add("open");
+      }
+      function pickEx(opt, name) {
+        event.stopPropagation();
+        const sel = opt.closest(".exercise-select");
+        sel
+          .querySelectorAll(".select-option")
+          .forEach((o) => o.classList.remove("selected"));
+        opt.classList.add("selected");
+        sel.querySelector(".select-trigger").textContent = name;
+        sel.classList.remove("open");
+      }
+      document.addEventListener("click", () => {
+        document
+          .querySelectorAll(".exercise-select.open")
+          .forEach((s) => s.classList.remove("open"));
+      });
+
+      // Add new exercise in fixed mode
+      function addExercise(btn) {
+        const card = btn.closest(".edit-day-card");
+        const html =
+          '<div class="exercise-block" data-mode="fixed" style="animation:fadeIn 0.2s;">' +
+          '<div class="exercise-header">' +
           '<div class="exercise-select" onclick="toggleExSelect(this)">' +
-            '<div class="select-trigger">选择动作</div>' +
-            '<div class="select-options">' +
-              '<div class="select-option" onclick="pickEx(this,\'卧推\')">卧推 <span class="opt-cat">上肢推</span></div>' +
-              '<div class="select-option" onclick="pickEx(this,\'上斜卧推\')">上斜卧推 <span class="opt-cat">上肢推</span></div>' +
-              '<div class="select-option" onclick="pickEx(this,\'推举\')">推举 <span class="opt-cat">上肢推</span></div>' +
-              '<div class="select-option" onclick="pickEx(this,\'双杠臂屈伸\')">双杠臂屈伸 <span class="opt-cat">上肢推</span></div>' +
-              '<div class="select-option" onclick="pickEx(this,\'深蹲\')">深蹲 <span class="opt-cat">下肢</span></div>' +
-              '<div class="select-option" onclick="pickEx(this,\'前蹲\')">前蹲 <span class="opt-cat">下肢</span></div>' +
-              '<div class="select-option" onclick="pickEx(this,\'腿举\')">腿举 <span class="opt-cat">下肢</span></div>' +
-              '<div class="select-option" onclick="pickEx(this,\'罗马尼亚硬拉\')">罗马尼亚硬拉 <span class="opt-cat">下肢</span></div>' +
-              '<div class="select-option" onclick="pickEx(this,\'硬拉\')">硬拉 <span class="opt-cat">核心</span></div>' +
-              '<div class="select-option" onclick="pickEx(this,\'划船\')">划船 <span class="opt-cat">上肢拉</span></div>' +
-              '<div class="select-option" onclick="pickEx(this,\'引体向上\')">引体向上 <span class="opt-cat">上肢拉</span></div>' +
-              '<div class="select-option" onclick="pickEx(this,\'高位下拉\')">高位下拉 <span class="opt-cat">上肢拉</span></div>' +
-              '<div class="select-option" onclick="pickEx(this,\'二头弯举\')">二头弯举 <span class="opt-cat">上肢拉</span></div>' +
-              '<div class="select-option" onclick="pickEx(this,\'三头下压\')">三头下压 <span class="opt-cat">上肢推</span></div>' +
-              '<div class="select-option" onclick="pickEx(this,\'侧平举\')">侧平举 <span class="opt-cat">肩部</span></div>' +
-              '<div class="select-option" onclick="pickEx(this,\'面拉\')">面拉 <span class="opt-cat">肩部</span></div>' +
-            '</div>' +
-          '</div>' +
+          '<div class="select-trigger">选择动作</div>' +
+          '<div class="select-options">' +
+          '<div class="select-option" onclick="pickEx(this,\'卧推\')">卧推 <span class="opt-cat">上肢推</span></div>' +
+          '<div class="select-option" onclick="pickEx(this,\'上斜卧推\')">上斜卧推 <span class="opt-cat">上肢推</span></div>' +
+          '<div class="select-option" onclick="pickEx(this,\'推举\')">推举 <span class="opt-cat">上肢推</span></div>' +
+          '<div class="select-option" onclick="pickEx(this,\'双杠臂屈伸\')">双杠臂屈伸 <span class="opt-cat">上肢推</span></div>' +
+          '<div class="select-option" onclick="pickEx(this,\'深蹲\')">深蹲 <span class="opt-cat">下肢</span></div>' +
+          '<div class="select-option" onclick="pickEx(this,\'前蹲\')">前蹲 <span class="opt-cat">下肢</span></div>' +
+          '<div class="select-option" onclick="pickEx(this,\'腿举\')">腿举 <span class="opt-cat">下肢</span></div>' +
+          '<div class="select-option" onclick="pickEx(this,\'罗马尼亚硬拉\')">罗马尼亚硬拉 <span class="opt-cat">下肢</span></div>' +
+          '<div class="select-option" onclick="pickEx(this,\'硬拉\')">硬拉 <span class="opt-cat">核心</span></div>' +
+          '<div class="select-option" onclick="pickEx(this,\'划船\')">划船 <span class="opt-cat">上肢拉</span></div>' +
+          '<div class="select-option" onclick="pickEx(this,\'引体向上\')">引体向上 <span class="opt-cat">上肢拉</span></div>' +
+          '<div class="select-option" onclick="pickEx(this,\'高位下拉\')">高位下拉 <span class="opt-cat">上肢拉</span></div>' +
+          '<div class="select-option" onclick="pickEx(this,\'二头弯举\')">二头弯举 <span class="opt-cat">上肢拉</span></div>' +
+          '<div class="select-option" onclick="pickEx(this,\'三头下压\')">三头下压 <span class="opt-cat">上肢推</span></div>' +
+          '<div class="select-option" onclick="pickEx(this,\'侧平举\')">侧平举 <span class="opt-cat">肩部</span></div>' +
+          '<div class="select-option" onclick="pickEx(this,\'面拉\')">面拉 <span class="opt-cat">肩部</span></div>' +
+          "</div>" +
+          "</div>" +
           '<button class="mode-chip active-mode" onclick="switchExMode(this,\'fixed\')">固定</button>' +
           '<button class="mode-chip" onclick="switchExMode(this,\'custom\')">自定义</button>' +
           '<button class="delete-exercise-btn" title="删除动作">' +
-            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>' +
-          '</button>' +
-        '</div>' +
-        '<div class="fixed-row">' +
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>' +
+          "</button>" +
+          "</div>" +
+          '<div class="fixed-row">' +
           '<input type="number" style="width:52px;" value="3" placeholder="组"><span>组</span>' +
           '<input type="number" style="width:52px;" value="8" placeholder="次"><span>次</span>' +
-          '<span>@</span>' +
+          "<span>@</span>" +
           '<input type="number" style="width:64px;" placeholder="kg"><span>kg</span>' +
-        '</div>' +
-      '</div>';
-    btn.insertAdjacentHTML('beforebegin', html);
-  }
-</script>
-<script src="app.js"></script>
-
-</body>
+          "</div>" +
+          "</div>";
+        btn.insertAdjacentHTML("beforebegin", html);
+      }
+    </script>
+    <script src="app.js"></script>
+  </body>
 </html>

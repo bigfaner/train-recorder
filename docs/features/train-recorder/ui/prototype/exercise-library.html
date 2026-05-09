@@ -1,467 +1,883 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>动作库 — Train Recorder</title>
-  <link rel="stylesheet" href="styles.css">
-  <style>
-    /* Exercise Library — Page Specific */
-    .search-bar {
-      position: relative;
-      margin-bottom: 8px;
-    }
-    .search-bar svg {
-      position: absolute;
-      left: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 18px;
-      height: 18px;
-      color: var(--text-tertiary);
-      pointer-events: none;
-    }
-    .search-bar input {
-      width: 100%;
-      height: 40px;
-      background: var(--bg-alt);
-      border: none;
-      border-radius: 10px;
-      padding: 0 16px 0 38px;
-      font-size: 15px;
-      color: var(--text-primary);
-      outline: none;
-      transition: box-shadow 0.2s, background 0.2s;
-    }
-    .search-bar input:focus {
-      box-shadow: 0 0 0 3px rgba(0,113,227,0.15);
-      background: var(--bg);
-    }
-    .search-bar input::placeholder { color: var(--text-tertiary); }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>动作库 — Train Recorder</title>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      /* Exercise Library — Page Specific */
+      .search-bar {
+        position: relative;
+        margin-bottom: 8px;
+      }
+      .search-bar svg {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 18px;
+        height: 18px;
+        color: var(--text-tertiary);
+        pointer-events: none;
+      }
+      .search-bar input {
+        width: 100%;
+        height: 40px;
+        background: var(--bg-alt);
+        border: none;
+        border-radius: 10px;
+        padding: 0 16px 0 38px;
+        font-size: 15px;
+        color: var(--text-primary);
+        outline: none;
+        transition:
+          box-shadow 0.2s,
+          background 0.2s;
+      }
+      .search-bar input:focus {
+        box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.15);
+        background: var(--bg);
+      }
+      .search-bar input::placeholder {
+        color: var(--text-tertiary);
+      }
 
-    .category-section { margin-bottom: 4px; }
-    .category-header {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--text-secondary);
-      text-transform: uppercase;
-      letter-spacing: 0.02em;
-      padding: 16px 0 8px;
-    }
-    .category-header .category-en {
-      font-weight: 400;
-      color: var(--text-tertiary);
-      text-transform: none;
-      letter-spacing: 0;
-      font-size: 12px;
-      margin-left: 6px;
-    }
+      .category-section {
+        margin-bottom: 4px;
+      }
+      .category-header {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.02em;
+        padding: 16px 0 8px;
+      }
+      .category-header .category-en {
+        font-weight: 400;
+        color: var(--text-tertiary);
+        text-transform: none;
+        letter-spacing: 0;
+        font-size: 12px;
+        margin-left: 6px;
+      }
 
-    .exercise-list {
-      background: var(--surface);
-      border-radius: var(--radius-lg);
-      overflow: hidden;
-      box-shadow: var(--shadow-sm);
-    }
-    .exercise-row {
-      display: flex;
-      align-items: center;
-      padding: 14px 16px;
-      cursor: pointer;
-      transition: background 0.15s;
-      position: relative;
-    }
-    .exercise-row:active { background: var(--bg-alt); }
-    .exercise-row:not(:last-child)::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 16px;
-      right: 0;
-      height: 0.5px;
-      background: rgba(0,0,0,0.08);
-    }
-    .exercise-row .exercise-name {
-      flex: 1;
-      font-size: 17px;
-      font-weight: 500;
-      color: var(--text-primary);
-    }
-    .exercise-row .exercise-meta {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-right: 8px;
-    }
-    .exercise-row .meta-tag {
-      font-size: 13px;
-      font-weight: 500;
-      padding: 2px 8px;
-      border-radius: 6px;
-      white-space: nowrap;
-    }
-    .meta-increment {
-      background: var(--accent-light);
-      color: var(--accent);
-    }
-    .meta-rest {
-      background: rgba(134,134,139,0.08);
-      color: var(--text-secondary);
-    }
-    .exercise-row .arrow-icon {
-      width: 16px;
-      height: 16px;
-      color: var(--text-tertiary);
-      flex-shrink: 0;
-    }
+      .exercise-list {
+        background: var(--surface);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+      }
+      .exercise-row {
+        display: flex;
+        align-items: center;
+        padding: 14px 16px;
+        cursor: pointer;
+        transition: background 0.15s;
+        position: relative;
+      }
+      .exercise-row:active {
+        background: var(--bg-alt);
+      }
+      .exercise-row:not(:last-child)::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 16px;
+        right: 0;
+        height: 0.5px;
+        background: rgba(0, 0, 0, 0.08);
+      }
+      .exercise-row .exercise-name {
+        flex: 1;
+        font-size: 17px;
+        font-weight: 500;
+        color: var(--text-primary);
+      }
+      .exercise-row .exercise-meta {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-right: 8px;
+      }
+      .exercise-row .meta-tag {
+        font-size: 13px;
+        font-weight: 500;
+        padding: 2px 8px;
+        border-radius: 6px;
+        white-space: nowrap;
+      }
+      .meta-increment {
+        background: var(--accent-light);
+        color: var(--accent);
+      }
+      .meta-rest {
+        background: rgba(134, 134, 139, 0.08);
+        color: var(--text-secondary);
+      }
+      .exercise-row .arrow-icon {
+        width: 16px;
+        height: 16px;
+        color: var(--text-tertiary);
+        flex-shrink: 0;
+      }
 
-    .add-custom-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      width: 100%;
-      height: 48px;
-      background: var(--bg-alt);
-      border: 2px dashed var(--border);
-      border-radius: var(--radius-lg);
-      color: var(--accent);
-      font-size: 16px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: background 0.15s, border-color 0.15s;
-      margin-top: 16px;
-    }
-    .add-custom-btn:hover {
-      background: var(--accent-light);
-      border-color: var(--accent);
-    }
-    .add-custom-btn:active { transform: scale(0.98); }
-    .add-custom-btn svg {
-      width: 20px;
-      height: 20px;
-    }
+      .add-custom-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        width: 100%;
+        height: 48px;
+        background: var(--bg-alt);
+        border: 2px dashed var(--border);
+        border-radius: var(--radius-lg);
+        color: var(--accent);
+        font-size: 16px;
+        font-weight: 500;
+        cursor: pointer;
+        transition:
+          background 0.15s,
+          border-color 0.15s;
+        margin-top: 16px;
+      }
+      .add-custom-btn:hover {
+        background: var(--accent-light);
+        border-color: var(--accent);
+      }
+      .add-custom-btn:active {
+        transform: scale(0.98);
+      }
+      .add-custom-btn svg {
+        width: 20px;
+        height: 20px;
+      }
 
-    .results-hint {
-      font-size: 13px;
-      color: var(--text-tertiary);
-      padding: 8px 0;
-      text-align: center;
-    }
-  </style>
-</head>
-<body>
-  <div class="phone-frame">
-    <div class="app-container">
-
-      <!-- Status Bar -->
-      <div class="status-bar">
-        <span class="time">9:41</span>
-        <div class="icons">
-          <svg width="17" height="12" viewBox="0 0 17 12" fill="none"><rect x="0" y="4" width="3" height="8" rx="1" fill="#1d1d1f"/><rect x="4.5" y="3" width="3" height="9" rx="1" fill="#1d1d1f"/><rect x="9" y="1" width="3" height="11" rx="1" fill="#1d1d1f"/><rect x="13.5" y="0" width="3" height="12" rx="1" fill="#1d1d1f"/></svg>
-          <svg width="16" height="12" viewBox="0 0 16 12" fill="none"><path d="M8 2.5C5.8 2.5 3.8 3.3 2.3 4.7L0.8 3.2C2.7 1.4 5.2 0.3 8 0.3s5.3 1.1 7.2 2.9L13.7 4.7C12.2 3.3 10.2 2.5 8 2.5z" fill="#1d1d1f"/><path d="M8 6.5c-1.3 0-2.5.5-3.4 1.3L3.1 6.3C4.4 5.1 6.1 4.3 8 4.3s3.6.8 4.9 2L11.4 7.8C10.5 7 9.3 6.5 8 6.5z" fill="#1d1d1f"/><circle cx="8" cy="10.5" r="1.8" fill="#1d1d1f"/></svg>
-          <svg width="27" height="13" viewBox="0 0 27 13" fill="none"><rect x="0" y="1" width="23" height="11" rx="3.5" stroke="#1d1d1f" stroke-width="1"/><rect x="2" y="3" width="18" height="7" rx="1.5" fill="#1d1d1f"/><path d="M24.5 4.5v4a2 2 0 000-4z" fill="#1d1d1f" opacity="0.4"/></svg>
-        </div>
-      </div>
-
-      <!-- Nav Bar -->
-      <div class="nav-bar">
-        <a class="nav-back" href="index.html">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-        </a>
-        <span class="nav-title">动作库</span>
-        <span class="nav-action" style="visibility:hidden;">占位</span>
-      </div>
-
-      <!-- Page Content -->
-      <div class="page-content" style="padding-top: 12px;">
-
-        <!-- Search -->
-        <div class="search-bar">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <input type="text" id="exercise-search" placeholder="搜索动作名称..." oninput="filterExercises()">
-        </div>
-
-        <div id="exercise-container">
-
-          <!-- 核心力量举 (Core Powerlifting) -->
-          <div class="category-section" data-category>
-            <div class="category-header">
-              核心力量举<span class="category-en">Core Powerlifting</span>
-            </div>
-            <div class="exercise-list">
-              <div class="exercise-row" data-name="深蹲" onclick="navigateTo('exercise-detail.html')">
-                <span class="exercise-name">深蹲</span>
-                <div class="exercise-meta">
-                  <span class="meta-tag meta-increment">+5kg</span>
-                  <span class="meta-tag meta-rest">休180s</span>
-                </div>
-                <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-              </div>
-              <div class="exercise-row" data-name="卧推" onclick="navigateTo('exercise-detail.html')">
-                <span class="exercise-name">卧推</span>
-                <div class="exercise-meta">
-                  <span class="meta-tag meta-increment">+2.5kg</span>
-                  <span class="meta-tag meta-rest">休180s</span>
-                </div>
-                <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-              </div>
-              <div class="exercise-row" data-name="硬拉" onclick="navigateTo('exercise-detail.html')">
-                <span class="exercise-name">硬拉</span>
-                <div class="exercise-meta">
-                  <span class="meta-tag meta-increment">+5kg</span>
-                  <span class="meta-tag meta-rest">休180s</span>
-                </div>
-                <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-              </div>
-              <div class="exercise-row" data-name="推举" onclick="navigateTo('exercise-detail.html')">
-                <span class="exercise-name">推举</span>
-                <div class="exercise-meta">
-                  <span class="meta-tag meta-increment">+2.5kg</span>
-                  <span class="meta-tag meta-rest">休120s</span>
-                </div>
-                <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-              </div>
-            </div>
+      .results-hint {
+        font-size: 13px;
+        color: var(--text-tertiary);
+        padding: 8px 0;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="phone-frame">
+      <div class="app-container">
+        <!-- Status Bar -->
+        <div class="status-bar">
+          <span class="time">9:41</span>
+          <div class="icons">
+            <svg width="17" height="12" viewBox="0 0 17 12" fill="none">
+              <rect x="0" y="4" width="3" height="8" rx="1" fill="#1d1d1f" />
+              <rect x="4.5" y="3" width="3" height="9" rx="1" fill="#1d1d1f" />
+              <rect x="9" y="1" width="3" height="11" rx="1" fill="#1d1d1f" />
+              <rect
+                x="13.5"
+                y="0"
+                width="3"
+                height="12"
+                rx="1"
+                fill="#1d1d1f"
+              />
+            </svg>
+            <svg width="16" height="12" viewBox="0 0 16 12" fill="none">
+              <path
+                d="M8 2.5C5.8 2.5 3.8 3.3 2.3 4.7L0.8 3.2C2.7 1.4 5.2 0.3 8 0.3s5.3 1.1 7.2 2.9L13.7 4.7C12.2 3.3 10.2 2.5 8 2.5z"
+                fill="#1d1d1f"
+              />
+              <path
+                d="M8 6.5c-1.3 0-2.5.5-3.4 1.3L3.1 6.3C4.4 5.1 6.1 4.3 8 4.3s3.6.8 4.9 2L11.4 7.8C10.5 7 9.3 6.5 8 6.5z"
+                fill="#1d1d1f"
+              />
+              <circle cx="8" cy="10.5" r="1.8" fill="#1d1d1f" />
+            </svg>
+            <svg width="27" height="13" viewBox="0 0 27 13" fill="none">
+              <rect
+                x="0"
+                y="1"
+                width="23"
+                height="11"
+                rx="3.5"
+                stroke="#1d1d1f"
+                stroke-width="1"
+              />
+              <rect x="2" y="3" width="18" height="7" rx="1.5" fill="#1d1d1f" />
+              <path d="M24.5 4.5v4a2 2 0 000-4z" fill="#1d1d1f" opacity="0.4" />
+            </svg>
           </div>
-
-          <!-- 上肢推 (Upper Push) -->
-          <div class="category-section" data-category>
-            <div class="category-header">
-              上肢推<span class="category-en">Upper Push</span>
-            </div>
-            <div class="exercise-list">
-              <div class="exercise-row" data-name="上斜卧推" onclick="navigateTo('exercise-detail.html')">
-                <span class="exercise-name">上斜卧推</span>
-                <div class="exercise-meta">
-                  <span class="meta-tag meta-increment">+2.5kg</span>
-                  <span class="meta-tag meta-rest">休120s</span>
-                </div>
-                <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-              </div>
-              <div class="exercise-row" data-name="哑铃卧推" onclick="navigateTo('exercise-detail.html')">
-                <span class="exercise-name">哑铃卧推</span>
-                <div class="exercise-meta">
-                  <span class="meta-tag meta-increment">+2.5kg</span>
-                  <span class="meta-tag meta-rest">休90s</span>
-                </div>
-                <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-              </div>
-              <div class="exercise-row" data-name="双杠臂屈伸" onclick="navigateTo('exercise-detail.html')">
-                <span class="exercise-name">双杠臂屈伸</span>
-                <div class="exercise-meta">
-                  <span class="meta-tag meta-increment">+2.5kg</span>
-                  <span class="meta-tag meta-rest">休90s</span>
-                </div>
-                <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-              </div>
-            </div>
-          </div>
-
-          <!-- 上肢拉 (Upper Pull) -->
-          <div class="category-section" data-category>
-            <div class="category-header">
-              上肢拉<span class="category-en">Upper Pull</span>
-            </div>
-            <div class="exercise-list">
-              <div class="exercise-row" data-name="杠铃划船" onclick="navigateTo('exercise-detail.html')">
-                <span class="exercise-name">杠铃划船</span>
-                <div class="exercise-meta">
-                  <span class="meta-tag meta-increment">+2.5kg</span>
-                  <span class="meta-tag meta-rest">休120s</span>
-                </div>
-                <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-              </div>
-              <div class="exercise-row" data-name="引体向上" onclick="navigateTo('exercise-detail.html')">
-                <span class="exercise-name">引体向上</span>
-                <div class="exercise-meta">
-                  <span class="meta-tag meta-increment">+2kg</span>
-                  <span class="meta-tag meta-rest">休120s</span>
-                </div>
-                <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-              </div>
-              <div class="exercise-row" data-name="高位下拉" onclick="navigateTo('exercise-detail.html')">
-                <span class="exercise-name">高位下拉</span>
-                <div class="exercise-meta">
-                  <span class="meta-tag meta-increment">+2.5kg</span>
-                  <span class="meta-tag meta-rest">休90s</span>
-                </div>
-                <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-              </div>
-              <div class="exercise-row" data-name="哑铃划船" onclick="navigateTo('exercise-detail.html')">
-                <span class="exercise-name">哑铃划船</span>
-                <div class="exercise-meta">
-                  <span class="meta-tag meta-increment">+2.5kg</span>
-                  <span class="meta-tag meta-rest">休90s</span>
-                </div>
-                <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-              </div>
-            </div>
-          </div>
-
-          <!-- 下肢辅助 (Leg Accessories) -->
-          <div class="category-section" data-category>
-            <div class="category-header">
-              下肢辅助<span class="category-en">Leg Accessories</span>
-            </div>
-            <div class="exercise-list">
-              <div class="exercise-row" data-name="前蹲" onclick="navigateTo('exercise-detail.html')">
-                <span class="exercise-name">前蹲</span>
-                <div class="exercise-meta">
-                  <span class="meta-tag meta-increment">+2.5kg</span>
-                  <span class="meta-tag meta-rest">休120s</span>
-                </div>
-                <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-              </div>
-              <div class="exercise-row" data-name="腿举" onclick="navigateTo('exercise-detail.html')">
-                <span class="exercise-name">腿举</span>
-                <div class="exercise-meta">
-                  <span class="meta-tag meta-increment">+5kg</span>
-                  <span class="meta-tag meta-rest">休120s</span>
-                </div>
-                <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-              </div>
-              <div class="exercise-row" data-name="罗马尼亚硬拉" onclick="navigateTo('exercise-detail.html')">
-                <span class="exercise-name">罗马尼亚硬拉</span>
-                <div class="exercise-meta">
-                  <span class="meta-tag meta-increment">+2.5kg</span>
-                  <span class="meta-tag meta-rest">休120s</span>
-                </div>
-                <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-              </div>
-              <div class="exercise-row" data-name="腿弯举" onclick="navigateTo('exercise-detail.html')">
-                <span class="exercise-name">腿弯举</span>
-                <div class="exercise-meta">
-                  <span class="meta-tag meta-increment">+2.5kg</span>
-                  <span class="meta-tag meta-rest">休90s</span>
-                </div>
-                <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-              </div>
-            </div>
-          </div>
-
-          <!-- 其他 (Other) -->
-          <div class="category-section" data-category>
-            <div class="category-header">
-              其他<span class="category-en">Other</span>
-            </div>
-            <div class="exercise-list">
-              <div class="exercise-row" data-name="二头弯举" onclick="navigateTo('exercise-detail.html')">
-                <span class="exercise-name">二头弯举</span>
-                <div class="exercise-meta">
-                  <span class="meta-tag meta-increment">+1kg</span>
-                  <span class="meta-tag meta-rest">休60s</span>
-                </div>
-                <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-              </div>
-              <div class="exercise-row" data-name="三头下压" onclick="navigateTo('exercise-detail.html')">
-                <span class="exercise-name">三头下压</span>
-                <div class="exercise-meta">
-                  <span class="meta-tag meta-increment">+1kg</span>
-                  <span class="meta-tag meta-rest">休60s</span>
-                </div>
-                <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-              </div>
-              <div class="exercise-row" data-name="侧平举" onclick="navigateTo('exercise-detail.html')">
-                <span class="exercise-name">侧平举</span>
-                <div class="exercise-meta">
-                  <span class="meta-tag meta-increment">+1kg</span>
-                  <span class="meta-tag meta-rest">休60s</span>
-                </div>
-                <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-              </div>
-              <div class="exercise-row" data-name="面拉" onclick="navigateTo('exercise-detail.html')">
-                <span class="exercise-name">面拉</span>
-                <div class="exercise-meta">
-                  <span class="meta-tag meta-increment">+1kg</span>
-                  <span class="meta-tag meta-rest">休60s</span>
-                </div>
-                <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-              </div>
-            </div>
-          </div>
-
-        </div><!-- /exercise-container -->
-
-        <!-- No Results Hint -->
-        <div id="no-results" class="hidden" style="padding: 40px 0; text-align: center;">
-          <p class="text-tertiary" style="font-size: 15px;">未找到匹配的动作</p>
         </div>
 
-        <!-- Add Custom Exercise Button -->
-        <button class="add-custom-btn" onclick="navigateTo('exercise-custom.html')">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          自定义动作
-        </button>
+        <!-- Nav Bar -->
+        <div class="nav-bar">
+          <a class="nav-back" href="index.html">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
+          </a>
+          <span class="nav-title">动作库</span>
+          <span class="nav-action" style="visibility: hidden">占位</span>
+        </div>
 
-        <div style="height: 16px;"></div>
-      </div><!-- /page-content -->
+        <!-- Page Content -->
+        <div class="page-content" style="padding-top: 12px">
+          <!-- Search -->
+          <div class="search-bar">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+            <input
+              type="text"
+              id="exercise-search"
+              placeholder="搜索动作名称..."
+              oninput="filterExercises()"
+            />
+          </div>
 
-      <!-- Tab Bar -->
-      <div class="tab-bar">
-        <a class="tab-item" href="calendar.html">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/></svg>
-          <span>日历</span>
-        </a>
-        <a class="tab-item" href="plan.html">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>
-          <span>计划</span>
-        </a>
-        <a class="tab-item" href="history.html">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          <span>历史</span>
-        </a>
-        <a class="tab-item" href="stats.html">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-          <span>统计</span>
-        </a>
-        <a class="tab-item" href="settings.html">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-          <span>设置</span>
-        </a>
+          <div id="exercise-container">
+            <!-- 核心力量举 (Core Powerlifting) -->
+            <div class="category-section" data-category>
+              <div class="category-header">
+                核心力量举<span class="category-en">Core Powerlifting</span>
+              </div>
+              <div class="exercise-list">
+                <div
+                  class="exercise-row"
+                  data-name="深蹲"
+                  onclick="navigateTo('exercise-detail.html')"
+                >
+                  <span class="exercise-name">深蹲</span>
+                  <div class="exercise-meta">
+                    <span class="meta-tag meta-increment">+5kg</span>
+                    <span class="meta-tag meta-rest">休180s</span>
+                  </div>
+                  <svg
+                    class="arrow-icon"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <polyline points="9 18 15 12 9 6" />
+                  </svg>
+                </div>
+                <div
+                  class="exercise-row"
+                  data-name="卧推"
+                  onclick="navigateTo('exercise-detail.html')"
+                >
+                  <span class="exercise-name">卧推</span>
+                  <div class="exercise-meta">
+                    <span class="meta-tag meta-increment">+2.5kg</span>
+                    <span class="meta-tag meta-rest">休180s</span>
+                  </div>
+                  <svg
+                    class="arrow-icon"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <polyline points="9 18 15 12 9 6" />
+                  </svg>
+                </div>
+                <div
+                  class="exercise-row"
+                  data-name="硬拉"
+                  onclick="navigateTo('exercise-detail.html')"
+                >
+                  <span class="exercise-name">硬拉</span>
+                  <div class="exercise-meta">
+                    <span class="meta-tag meta-increment">+5kg</span>
+                    <span class="meta-tag meta-rest">休180s</span>
+                  </div>
+                  <svg
+                    class="arrow-icon"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <polyline points="9 18 15 12 9 6" />
+                  </svg>
+                </div>
+                <div
+                  class="exercise-row"
+                  data-name="推举"
+                  onclick="navigateTo('exercise-detail.html')"
+                >
+                  <span class="exercise-name">推举</span>
+                  <div class="exercise-meta">
+                    <span class="meta-tag meta-increment">+2.5kg</span>
+                    <span class="meta-tag meta-rest">休120s</span>
+                  </div>
+                  <svg
+                    class="arrow-icon"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <polyline points="9 18 15 12 9 6" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <!-- 上肢推 (Upper Push) -->
+            <div class="category-section" data-category>
+              <div class="category-header">
+                上肢推<span class="category-en">Upper Push</span>
+              </div>
+              <div class="exercise-list">
+                <div
+                  class="exercise-row"
+                  data-name="上斜卧推"
+                  onclick="navigateTo('exercise-detail.html')"
+                >
+                  <span class="exercise-name">上斜卧推</span>
+                  <div class="exercise-meta">
+                    <span class="meta-tag meta-increment">+2.5kg</span>
+                    <span class="meta-tag meta-rest">休120s</span>
+                  </div>
+                  <svg
+                    class="arrow-icon"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <polyline points="9 18 15 12 9 6" />
+                  </svg>
+                </div>
+                <div
+                  class="exercise-row"
+                  data-name="哑铃卧推"
+                  onclick="navigateTo('exercise-detail.html')"
+                >
+                  <span class="exercise-name">哑铃卧推</span>
+                  <div class="exercise-meta">
+                    <span class="meta-tag meta-increment">+2.5kg</span>
+                    <span class="meta-tag meta-rest">休90s</span>
+                  </div>
+                  <svg
+                    class="arrow-icon"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <polyline points="9 18 15 12 9 6" />
+                  </svg>
+                </div>
+                <div
+                  class="exercise-row"
+                  data-name="双杠臂屈伸"
+                  onclick="navigateTo('exercise-detail.html')"
+                >
+                  <span class="exercise-name">双杠臂屈伸</span>
+                  <div class="exercise-meta">
+                    <span class="meta-tag meta-increment">+2.5kg</span>
+                    <span class="meta-tag meta-rest">休90s</span>
+                  </div>
+                  <svg
+                    class="arrow-icon"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <polyline points="9 18 15 12 9 6" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <!-- 上肢拉 (Upper Pull) -->
+            <div class="category-section" data-category>
+              <div class="category-header">
+                上肢拉<span class="category-en">Upper Pull</span>
+              </div>
+              <div class="exercise-list">
+                <div
+                  class="exercise-row"
+                  data-name="杠铃划船"
+                  onclick="navigateTo('exercise-detail.html')"
+                >
+                  <span class="exercise-name">杠铃划船</span>
+                  <div class="exercise-meta">
+                    <span class="meta-tag meta-increment">+2.5kg</span>
+                    <span class="meta-tag meta-rest">休120s</span>
+                  </div>
+                  <svg
+                    class="arrow-icon"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <polyline points="9 18 15 12 9 6" />
+                  </svg>
+                </div>
+                <div
+                  class="exercise-row"
+                  data-name="引体向上"
+                  onclick="navigateTo('exercise-detail.html')"
+                >
+                  <span class="exercise-name">引体向上</span>
+                  <div class="exercise-meta">
+                    <span class="meta-tag meta-increment">+2kg</span>
+                    <span class="meta-tag meta-rest">休120s</span>
+                  </div>
+                  <svg
+                    class="arrow-icon"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <polyline points="9 18 15 12 9 6" />
+                  </svg>
+                </div>
+                <div
+                  class="exercise-row"
+                  data-name="高位下拉"
+                  onclick="navigateTo('exercise-detail.html')"
+                >
+                  <span class="exercise-name">高位下拉</span>
+                  <div class="exercise-meta">
+                    <span class="meta-tag meta-increment">+2.5kg</span>
+                    <span class="meta-tag meta-rest">休90s</span>
+                  </div>
+                  <svg
+                    class="arrow-icon"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <polyline points="9 18 15 12 9 6" />
+                  </svg>
+                </div>
+                <div
+                  class="exercise-row"
+                  data-name="哑铃划船"
+                  onclick="navigateTo('exercise-detail.html')"
+                >
+                  <span class="exercise-name">哑铃划船</span>
+                  <div class="exercise-meta">
+                    <span class="meta-tag meta-increment">+2.5kg</span>
+                    <span class="meta-tag meta-rest">休90s</span>
+                  </div>
+                  <svg
+                    class="arrow-icon"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <polyline points="9 18 15 12 9 6" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <!-- 下肢辅助 (Leg Accessories) -->
+            <div class="category-section" data-category>
+              <div class="category-header">
+                下肢辅助<span class="category-en">Leg Accessories</span>
+              </div>
+              <div class="exercise-list">
+                <div
+                  class="exercise-row"
+                  data-name="前蹲"
+                  onclick="navigateTo('exercise-detail.html')"
+                >
+                  <span class="exercise-name">前蹲</span>
+                  <div class="exercise-meta">
+                    <span class="meta-tag meta-increment">+2.5kg</span>
+                    <span class="meta-tag meta-rest">休120s</span>
+                  </div>
+                  <svg
+                    class="arrow-icon"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <polyline points="9 18 15 12 9 6" />
+                  </svg>
+                </div>
+                <div
+                  class="exercise-row"
+                  data-name="腿举"
+                  onclick="navigateTo('exercise-detail.html')"
+                >
+                  <span class="exercise-name">腿举</span>
+                  <div class="exercise-meta">
+                    <span class="meta-tag meta-increment">+5kg</span>
+                    <span class="meta-tag meta-rest">休120s</span>
+                  </div>
+                  <svg
+                    class="arrow-icon"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <polyline points="9 18 15 12 9 6" />
+                  </svg>
+                </div>
+                <div
+                  class="exercise-row"
+                  data-name="罗马尼亚硬拉"
+                  onclick="navigateTo('exercise-detail.html')"
+                >
+                  <span class="exercise-name">罗马尼亚硬拉</span>
+                  <div class="exercise-meta">
+                    <span class="meta-tag meta-increment">+2.5kg</span>
+                    <span class="meta-tag meta-rest">休120s</span>
+                  </div>
+                  <svg
+                    class="arrow-icon"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <polyline points="9 18 15 12 9 6" />
+                  </svg>
+                </div>
+                <div
+                  class="exercise-row"
+                  data-name="腿弯举"
+                  onclick="navigateTo('exercise-detail.html')"
+                >
+                  <span class="exercise-name">腿弯举</span>
+                  <div class="exercise-meta">
+                    <span class="meta-tag meta-increment">+2.5kg</span>
+                    <span class="meta-tag meta-rest">休90s</span>
+                  </div>
+                  <svg
+                    class="arrow-icon"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <polyline points="9 18 15 12 9 6" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <!-- 其他 (Other) -->
+            <div class="category-section" data-category>
+              <div class="category-header">
+                其他<span class="category-en">Other</span>
+              </div>
+              <div class="exercise-list">
+                <div
+                  class="exercise-row"
+                  data-name="二头弯举"
+                  onclick="navigateTo('exercise-detail.html')"
+                >
+                  <span class="exercise-name">二头弯举</span>
+                  <div class="exercise-meta">
+                    <span class="meta-tag meta-increment">+1kg</span>
+                    <span class="meta-tag meta-rest">休60s</span>
+                  </div>
+                  <svg
+                    class="arrow-icon"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <polyline points="9 18 15 12 9 6" />
+                  </svg>
+                </div>
+                <div
+                  class="exercise-row"
+                  data-name="三头下压"
+                  onclick="navigateTo('exercise-detail.html')"
+                >
+                  <span class="exercise-name">三头下压</span>
+                  <div class="exercise-meta">
+                    <span class="meta-tag meta-increment">+1kg</span>
+                    <span class="meta-tag meta-rest">休60s</span>
+                  </div>
+                  <svg
+                    class="arrow-icon"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <polyline points="9 18 15 12 9 6" />
+                  </svg>
+                </div>
+                <div
+                  class="exercise-row"
+                  data-name="侧平举"
+                  onclick="navigateTo('exercise-detail.html')"
+                >
+                  <span class="exercise-name">侧平举</span>
+                  <div class="exercise-meta">
+                    <span class="meta-tag meta-increment">+1kg</span>
+                    <span class="meta-tag meta-rest">休60s</span>
+                  </div>
+                  <svg
+                    class="arrow-icon"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <polyline points="9 18 15 12 9 6" />
+                  </svg>
+                </div>
+                <div
+                  class="exercise-row"
+                  data-name="面拉"
+                  onclick="navigateTo('exercise-detail.html')"
+                >
+                  <span class="exercise-name">面拉</span>
+                  <div class="exercise-meta">
+                    <span class="meta-tag meta-increment">+1kg</span>
+                    <span class="meta-tag meta-rest">休60s</span>
+                  </div>
+                  <svg
+                    class="arrow-icon"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <polyline points="9 18 15 12 9 6" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- /exercise-container -->
+
+          <!-- No Results Hint -->
+          <div
+            id="no-results"
+            class="hidden"
+            style="padding: 40px 0; text-align: center"
+          >
+            <p class="text-tertiary" style="font-size: 15px">
+              未找到匹配的动作
+            </p>
+          </div>
+
+          <!-- Add Custom Exercise Button -->
+          <button
+            class="add-custom-btn"
+            onclick="navigateTo('exercise-custom.html')"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+            自定义动作
+          </button>
+
+          <div style="height: 16px"></div>
+        </div>
+        <!-- /page-content -->
+
+        <!-- Tab Bar -->
+        <div class="tab-bar">
+          <a class="tab-item" href="calendar.html">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <rect x="3" y="4" width="18" height="18" rx="2" />
+              <line x1="3" y1="10" x2="21" y2="10" />
+              <line x1="16" y1="2" x2="16" y2="6" />
+              <line x1="8" y1="2" x2="8" y2="6" />
+            </svg>
+            <span>日历</span>
+          </a>
+          <a class="tab-item" href="plan.html">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path
+                d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"
+              />
+              <rect x="9" y="3" width="6" height="4" rx="1" />
+              <line x1="9" y1="12" x2="15" y2="12" />
+              <line x1="9" y1="16" x2="13" y2="16" />
+            </svg>
+            <span>计划</span>
+          </a>
+          <a class="tab-item" href="history.html">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="12" cy="12" r="10" />
+              <polyline points="12 6 12 12 16 14" />
+            </svg>
+            <span>历史</span>
+          </a>
+          <a class="tab-item" href="stats.html">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <line x1="18" y1="20" x2="18" y2="10" />
+              <line x1="12" y1="20" x2="12" y2="4" />
+              <line x1="6" y1="20" x2="6" y2="14" />
+            </svg>
+            <span>统计</span>
+          </a>
+          <a class="tab-item" href="settings.html">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="12" cy="12" r="3" />
+              <path
+                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"
+              />
+            </svg>
+            <span>设置</span>
+          </a>
+        </div>
       </div>
+      <!-- /app-container -->
+    </div>
+    <!-- /phone-frame -->
 
-    </div><!-- /app-container -->
-  </div><!-- /phone-frame -->
+    <script>
+      // Search / Filter exercises
+      function filterExercises() {
+        const query = document
+          .getElementById("exercise-search")
+          .value.trim()
+          .toLowerCase();
+        const sections = document.querySelectorAll("[data-category]");
+        let totalVisible = 0;
 
-  <script>
-    // Search / Filter exercises
-    function filterExercises() {
-      const query = document.getElementById('exercise-search').value.trim().toLowerCase();
-      const sections = document.querySelectorAll('[data-category]');
-      let totalVisible = 0;
+        sections.forEach((section) => {
+          const rows = section.querySelectorAll(".exercise-row");
+          let sectionVisible = 0;
 
-      sections.forEach(section => {
-        const rows = section.querySelectorAll('.exercise-row');
-        let sectionVisible = 0;
+          rows.forEach((row) => {
+            const name = (row.dataset.name || "").toLowerCase();
+            if (!query || name.includes(query)) {
+              row.style.display = "";
+              sectionVisible++;
+              totalVisible++;
+            } else {
+              row.style.display = "none";
+            }
+          });
 
-        rows.forEach(row => {
-          const name = (row.dataset.name || '').toLowerCase();
-          if (!query || name.includes(query)) {
-            row.style.display = '';
-            sectionVisible++;
-            totalVisible++;
-          } else {
-            row.style.display = 'none';
-          }
+          // Hide entire category if no matches
+          section.style.display = sectionVisible > 0 ? "" : "none";
         });
 
-        // Hide entire category if no matches
-        section.style.display = sectionVisible > 0 ? '' : 'none';
-      });
-
-      // Show/hide no-results hint
-      const noResults = document.getElementById('no-results');
-      const container = document.getElementById('exercise-container');
-      if (totalVisible === 0 && query) {
-        noResults.classList.remove('hidden');
-        container.classList.add('hidden');
-      } else {
-        noResults.classList.add('hidden');
-        container.classList.remove('hidden');
+        // Show/hide no-results hint
+        const noResults = document.getElementById("no-results");
+        const container = document.getElementById("exercise-container");
+        if (totalVisible === 0 && query) {
+          noResults.classList.remove("hidden");
+          container.classList.add("hidden");
+        } else {
+          noResults.classList.add("hidden");
+          container.classList.remove("hidden");
+        }
       }
-    }
-  </script>
-  <script src="app.js"></script>
-</body>
+    </script>
+    <script src="app.js"></script>
+  </body>
 </html>

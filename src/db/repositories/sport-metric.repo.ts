@@ -3,29 +3,34 @@
  * Metrics are ordered by order_index.
  */
 
-import type { DatabaseAdapter } from '../database-adapter';
-import type { SportMetric } from '../../types';
-import { createBaseRepository, type BaseRepo } from './base.repository';
+import type { DatabaseAdapter } from "../database-adapter";
+import type { SportMetric } from "../../types";
+import { createBaseRepository, type BaseRepo } from "./base.repository";
 
-const TABLE_NAME = 'sport_metrics';
+const TABLE_NAME = "sport_metrics";
 const COLUMNS = [
-  'id', 'biz_key', 'sport_type_biz_key', 'metric_name',
-  'metric_unit', 'is_custom', 'order_index',
+  "id",
+  "biz_key",
+  "sport_type_biz_key",
+  "metric_name",
+  "metric_unit",
+  "is_custom",
+  "order_index",
 ];
 
 export interface SportMetricRepo extends BaseRepo<SportMetric> {
-  createMetric(data: Omit<SportMetric, 'id'>): SportMetric;
+  createMetric(data: Omit<SportMetric, "id">): SportMetric;
   findBySportTypeBizKey(sportTypeBizKey: bigint): SportMetric[];
 }
 
 export function createSportMetricRepo(db: DatabaseAdapter): SportMetricRepo {
   const base = createBaseRepository<SportMetric>(db, TABLE_NAME, COLUMNS);
-  const columnsStr = COLUMNS.join(', ');
+  const columnsStr = COLUMNS.join(", ");
 
   return {
     ...base,
 
-    createMetric(data: Omit<SportMetric, 'id'>): SportMetric {
+    createMetric(data: Omit<SportMetric, "id">): SportMetric {
       return base.create(data);
     },
 

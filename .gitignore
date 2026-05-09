@@ -42,3 +42,7 @@ yarn-error.*
 .forge/state.json
 docs/features/*/tasks/process/*
 coverage/
+clover.xml
+coverage-*.json
+lcov.info
+lcov-report/

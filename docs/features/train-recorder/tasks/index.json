@@ -471,6 +471,17 @@
       "record": "records/consolidate-specs.md",
       "scope": "all"
     },
+    "disc-1": {
+      "id": "disc-1",
+      "title": "Fix: Install Expo web dependencies for e2e testing",
+      "priority": "P0",
+      "estimatedTime": "30min",
+      "status": "completed",
+      "file": "disc-1.md",
+      "record": "records/disc-1.md",
+      "breaking": true,
+      "sourceTaskID": "T-test-3"
+    },
     "eval-test-cases": {
       "id": "T-test-1b",
       "title": "Evaluate e2e Test Cases",
@@ -530,7 +541,8 @@
       "priority": "P1",
       "estimatedTime": "30min-1h",
       "dependencies": [
-        "T-test-2"
+        "T-test-2",
+        "disc-1"
       ],
       "status": "pending",
       "file": "run-e2e-tests.md",

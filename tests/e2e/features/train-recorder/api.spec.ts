@@ -1,4 +1,5 @@
 import { test } from "@playwright/test";
+import { baseUrl } from "../../helpers.js";
 
 /**
  * API E2E Tests — Service Layer
@@ -23,7 +24,7 @@ test.describe("API E2E Tests — Service Layer", () => {
       // Navigate to workout page to trigger service calculation
       // Precondition: last squat session all sets met, increment = 5kg
       // Expected: suggestedWeight = lastWeight + 5
-      await page.goto("/workout");
+      await page.goto(`${baseUrl()}/workout`);
       // Verify suggested weight in the UI reflects the calculation
       await screenshot(page, "TC-API-001");
     });
@@ -32,7 +33,7 @@ test.describe("API E2E Tests — Service Layer", () => {
     test("TC-API-002: Some sets missed — maintain weight", async ({ page }) => {
       // Precondition: last bench press had 1 set with reps < target
       // Expected: suggestedWeight = lastWeight (no change)
-      await page.goto("/workout");
+      await page.goto(`${baseUrl()}/workout`);
       await screenshot(page, "TC-API-002");
     });
 
@@ -42,7 +43,7 @@ test.describe("API E2E Tests — Service Layer", () => {
     }) => {
       // Precondition: bench press missed target for 2 consecutive sessions, last = 100kg
       // Expected: suggestedWeight = floor(100 * 0.9) = 90kg, warning shown
-      await page.goto("/workout");
+      await page.goto(`${baseUrl()}/workout`);
       await screenshot(page, "TC-API-003");
     });
 
@@ -50,7 +51,7 @@ test.describe("API E2E Tests — Service Layer", () => {
     test("TC-API-004: Independent increment per exercise", async ({ page }) => {
       // Precondition: squat increment 5kg (last 80kg), bench press increment 2.5kg (last 60kg)
       // Expected: squat suggestion = 85kg, bench suggestion = 62.5kg
-      await page.goto("/workout");
+      await page.goto(`${baseUrl()}/workout`);
       await screenshot(page, "TC-API-004");
     });
 
@@ -60,7 +61,7 @@ test.describe("API E2E Tests — Service Layer", () => {
     }) => {
       // Precondition: suggestion was 80kg, user used 75kg
       // Expected: next suggestion based on actual 75kg, not original 80kg
-      await page.goto("/workout");
+      await page.goto(`${baseUrl()}/workout`);
       await screenshot(page, "TC-API-005");
     });
 
@@ -70,7 +71,7 @@ test.describe("API E2E Tests — Service Layer", () => {
     }) => {
       // Precondition: exercise has no history
       // Expected: suggestedWeight = null, UI shows empty input with prompt
-      await page.goto("/workout");
+      await page.goto(`${baseUrl()}/workout`);
       await screenshot(page, "TC-API-006");
     });
 
@@ -78,7 +79,7 @@ test.describe("API E2E Tests — Service Layer", () => {
     test("TC-API-007: Decrease rounds to plate combo", async ({ page }) => {
       // Precondition: bench press last = 97.5kg, need to decrease 10%
       // Expected: roundToPlateCombo(87.75, 'kg') = 87.5
-      await page.goto("/workout");
+      await page.goto(`${baseUrl()}/workout`);
       await screenshot(page, "TC-API-007");
     });
 
@@ -88,7 +89,7 @@ test.describe("API E2E Tests — Service Layer", () => {
     }) => {
       // Precondition: exercise met target for 3 consecutive sessions
       // Expected: normal increment + tip "状态不错，考虑加大增量？"
-      await page.goto("/workout");
+      await page.goto(`${baseUrl()}/workout`);
       await screenshot(page, "TC-API-008");
     });
   });
@@ -102,7 +103,7 @@ test.describe("API E2E Tests — Service Layer", () => {
     }) => {
       // Precondition: exit mid-workout, completed squat 3/5 sets, bench 0 sets
       // Expected: squat overload based on 3 sets; bench unchanged
-      await page.goto("/workout");
+      await page.goto(`${baseUrl()}/workout`);
       await screenshot(page, "TC-API-009");
     });
 
@@ -110,7 +111,7 @@ test.describe("API E2E Tests — Service Layer", () => {
     test("TC-API-010: Mid-exit cancels running timer", async ({ page }) => {
       // Precondition: rest timer running during mid-workout exit
       // Expected: timer.status = 'cancelled', no notification fired
-      await page.goto("/workout");
+      await page.goto(`${baseUrl()}/workout`);
       await screenshot(page, "TC-API-010");
     });
   });
@@ -124,7 +125,7 @@ test.describe("API E2E Tests — Service Layer", () => {
     }) => {
       // Precondition: retroactive squat 85kg 3 days ago, then 1 session at 90kg
       // Expected: chain recalculated, subsequent suggestions unchanged
-      await page.goto("/workout");
+      await page.goto(`${baseUrl()}/workout`);
       await screenshot(page, "TC-API-011");
     });
   });
@@ -136,7 +137,7 @@ test.describe("API E2E Tests — Service Layer", () => {
     test("TC-API-012: 1RM estimation formula", async ({ page }) => {
       // Precondition: max set 100kg x 5 reps
       // Expected: estimated1RM = 100 * (1 + 5/30) = 116.7
-      await page.goto("/(tabs)/stats");
+      await page.goto(`${baseUrl()}/(tabs)/stats`);
       await screenshot(page, "TC-API-012");
     });
 
@@ -144,7 +145,7 @@ test.describe("API E2E Tests — Service Layer", () => {
     test("TC-API-013: Week-over-week calculation", async ({ page }) => {
       // Precondition: this week 12000kg, last week 10000kg
       // Expected: weekOverWeekChange = +20%
-      await page.goto("/(tabs)/stats");
+      await page.goto(`${baseUrl()}/(tabs)/stats`);
       await screenshot(page, "TC-API-013");
     });
 
@@ -154,7 +155,7 @@ test.describe("API E2E Tests — Service Layer", () => {
     }) => {
       // Precondition: 4 weeks of varied training data
       // Expected: rest=0.1, light=0.4-0.6, moderate=0.7-0.8, heavy>=0.9
-      await page.goto("/(tabs)/stats");
+      await page.goto(`${baseUrl()}/(tabs)/stats`);
       await screenshot(page, "TC-API-014");
     });
   });

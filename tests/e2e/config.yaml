@@ -1,0 +1,13 @@
+# E2E Test Environment Configuration
+# Train Recorder is a React Native / Expo mobile app.
+# For web-based e2e testing, Expo serves the app at localhost:8081 (default Expo dev server).
+# IMPORTANT: add config.yaml to .gitignore to prevent credential leaks
+
+# Application URL (Expo web dev server)
+baseUrl: http://localhost:8081
+
+# No backend API URL — this is a client-side SQLite app
+# apiBaseUrl is not applicable
+
+# Default timeout (ms)
+timeout: 30000

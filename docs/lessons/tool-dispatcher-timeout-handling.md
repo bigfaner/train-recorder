@@ -22,11 +22,11 @@ Task-executor subagent stalled twice during the run-tasks loop (task 4.3 and T-t
 
 **After agent timeout, check state first:**
 
-| State | Action |
-|-------|--------|
-| Files staged, commit pending | Dispatch error-fixer to complete (commit + verify + record) |
-| No useful partial work | Mark blocked, continue next task |
-| Record missing after normal completion | Dispatch error-fixer with record instruction |
+| State                                  | Action                                                      |
+| -------------------------------------- | ----------------------------------------------------------- |
+| Files staged, commit pending           | Dispatch error-fixer to complete (commit + verify + record) |
+| No useful partial work                 | Mark blocked, continue next task                            |
+| Record missing after normal completion | Dispatch error-fixer with record instruction                |
 
 ## Reusable Pattern
 

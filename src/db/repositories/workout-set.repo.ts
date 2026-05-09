@@ -35,10 +35,8 @@ function computeIsTargetMet(
   return actualReps >= targetReps ? 1 : 0;
 }
 
-export interface WorkoutSetCreateData extends Omit<
-  WorkoutSet,
-  "id" | "is_target_met"
-> {
+export interface WorkoutSetCreateData
+  extends Omit<WorkoutSet, "id" | "is_target_met"> {
   is_target_met?: 0 | 1 | null;
 }
 

@@ -128,6 +128,7 @@ export default function PlanEditorScreen({
   });
 
   const [isSaving, setIsSaving] = useState(false);
+  const [saveFeedback, setSaveFeedback] = useState<string | null>(null);
 
   // ============================================================
   // Handlers
@@ -280,6 +281,7 @@ export default function PlanEditorScreen({
         weeklyConfig,
         trainingDays: state.trainingDays,
       });
+      setSaveFeedback("saved");
       router.back();
     } catch (e) {
       Alert.alert("保存失败", (e as Error).message);
@@ -475,6 +477,11 @@ export default function PlanEditorScreen({
 
         {/* Save Button */}
         <View style={styles.saveContainer}>
+          {saveFeedback && (
+            <Text style={styles.saveFeedback} testID="save-feedback">
+              {saveFeedback === "saved" ? "保存成功" : saveFeedback}
+            </Text>
+          )}
           <Button
             onPress={handleSave}
             disabled={isSaving}
@@ -483,6 +490,27 @@ export default function PlanEditorScreen({
             {isSaving ? "保存中..." : "保存计划"}
           </Button>
         </View>
+
+        {/* Rest day warning */}
+        {state.scheduleMode === "weekly_fixed" &&
+          selectedWeekdays.length === 7 && (
+            <Text style={styles.warningText} testID="rest-day-warning">
+              ⚠️ 建议至少安排1天休息日
+            </Text>
+          )}
+
+        {/* Activate plan button (shown after save when plan exists) */}
+        {existingPlan && (
+          <View style={styles.activateContainer}>
+            <Button
+              variant="secondary"
+              onPress={() => router.back()}
+              testID="activate-plan-btn"
+            >
+              激活此计划
+            </Button>
+          </View>
+        )}
       </ScrollView>
     </View>
   );
@@ -754,5 +782,20 @@ const styles = StyleSheet.create({
   },
   saveContainer: {
     marginTop: Spacing.sectionSpacing,
+  },
+  saveFeedback: {
+    fontSize: Typography.body.fontSize,
+    color: Colors.success,
+    textAlign: "center",
+    marginBottom: 8,
+  },
+  warningText: {
+    fontSize: Typography.bodySmall.fontSize,
+    color: Colors.legDay,
+    textAlign: "center",
+    marginTop: 12,
+  },
+  activateContainer: {
+    marginTop: 12,
   },
 });

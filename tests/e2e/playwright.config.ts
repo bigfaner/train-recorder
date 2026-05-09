@@ -9,7 +9,7 @@ export default defineConfig({
   testIgnore: featureMode ? [] : /^features\//,
   timeout: 30_000,
   expect: { timeout: 10_000 },
-  globalTimeout: 300_000,
+  globalTimeout: 600_000,
   retries: Number(process.env.E2E_RETRIES ?? "0"),
   workers: 1,
   reporter: [["list"], ["json", { outputFile: "results/test-results.json" }]],

@@ -289,6 +289,18 @@ export function WorkoutScreen({
           );
         })}
       </ScrollView>
+
+      {/* Current set display for workout resumption */}
+      {currentExerciseBizKey !== null && (
+        <View style={styles.currentSetBar} testID="current-set-display">
+          <Text style={styles.currentSetText}>
+            当前组:{" "}
+            {exercises.find((e) => e.biz_key === currentExerciseBizKey)
+              ?.target_sets ?? 0}
+            组
+          </Text>
+        </View>
+      )}
     </View>
   );
 }
@@ -304,5 +316,17 @@ const styles = StyleSheet.create({
   scrollContent: {
     padding: Spacing.contentPadding,
     gap: Spacing.cardSpacing,
+  },
+  currentSetBar: {
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    backgroundColor: Colors.surface,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: Colors.border,
+  },
+  currentSetText: {
+    fontSize: 14,
+    color: Colors.textSecondary,
+    textAlign: "center",
   },
 });

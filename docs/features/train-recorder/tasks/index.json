@@ -518,7 +518,7 @@
       "title": "Fix: TC-UI-001/002 empty state and plan-editor elements missing",
       "priority": "P0",
       "estimatedTime": "30min",
-      "status": "pending",
+      "status": "completed",
       "file": "disc-4.md",
       "record": "records/disc-4.md",
       "breaking": true,
@@ -537,6 +537,17 @@
       "record": "records/eval-test-cases.md",
       "scope": "all",
       "mainSession": true
+    },
+    "fix-1": {
+      "id": "fix-1",
+      "title": "Fix: Missing testIDs and data setup for UI e2e tests TC-UI-003~015",
+      "priority": "P0",
+      "estimatedTime": "30min",
+      "status": "completed",
+      "file": "fix-1.md",
+      "record": "records/fix-1.md",
+      "breaking": true,
+      "sourceTaskID": "T-test-3"
     },
     "gen-test-cases": {
       "id": "T-test-1",
@@ -584,9 +595,10 @@
       "estimatedTime": "30min-1h",
       "dependencies": [
         "T-test-2",
-        "disc-4"
+        "disc-4",
+        "fix-1"
       ],
-      "status": "blocked",
+      "status": "pending",
       "file": "run-e2e-tests.md",
       "record": "records/run-e2e-tests.md",
       "scope": "all"

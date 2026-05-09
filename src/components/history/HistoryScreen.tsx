@@ -141,7 +141,9 @@ export function HistoryScreen({
     return (
       <View style={styles.container}>
         <View style={styles.navBar}>
-          <Text style={styles.navTitle}>训练记录</Text>
+          <Text style={styles.navTitle} testID="history-nav-title">
+            训练记录
+          </Text>
         </View>
         <EmptyHistory />
       </View>
@@ -151,7 +153,9 @@ export function HistoryScreen({
   return (
     <View style={styles.container}>
       <View style={styles.navBar}>
-        <Text style={styles.navTitle}>训练记录</Text>
+        <Text style={styles.navTitle} testID="history-nav-title">
+          训练记录
+        </Text>
       </View>
 
       <ScrollView

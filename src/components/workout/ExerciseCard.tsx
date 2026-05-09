@@ -244,13 +244,13 @@ function ActiveCard({
       {/* Weight + Reps inputs */}
       <View style={styles.inputRow}>
         <View style={styles.weightInputContainer}>
-          <Text style={styles.weightDisplay} testID="suggested-weight">
+          <Text style={styles.weightDisplay} testID="weight-display">
             {weightInput || "0"}
           </Text>
           <Text style={styles.inputUnit}> kg</Text>
         </View>
         <View style={styles.repsInputContainer}>
-          <Text style={styles.repsDisplay} testID="reps-input">
+          <Text style={styles.repsDisplay} testID="reps-display">
             {repsInput}
           </Text>
           <Text style={styles.inputUnit}> 次</Text>

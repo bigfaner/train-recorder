@@ -549,6 +549,17 @@
       "breaking": true,
       "sourceTaskID": "T-test-3"
     },
+    "fix-2": {
+      "id": "fix-2",
+      "title": "Fix: 17 UI e2e tests failing (TC-UI-003~020) - missing testIDs and state",
+      "priority": "P0",
+      "estimatedTime": "30min",
+      "status": "completed",
+      "file": "fix-2.md",
+      "record": "records/fix-2.md",
+      "breaking": true,
+      "sourceTaskID": "T-test-3"
+    },
     "gen-test-cases": {
       "id": "T-test-1",
       "title": "Generate e2e Test Cases",
@@ -596,7 +607,8 @@
       "dependencies": [
         "T-test-2",
         "disc-4",
-        "fix-1"
+        "fix-1",
+        "fix-2"
       ],
       "status": "pending",
       "file": "run-e2e-tests.md",

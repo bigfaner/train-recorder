@@ -46,3 +46,6 @@ clover.xml
 coverage-*.json
 lcov.info
 lcov-report/
+tests/e2e/results/.last-run.json
+tests/e2e/results/test-results.json
+tests/e2e/results/**/*.png

@@ -504,11 +504,25 @@
       "title": "Fix: UI e2e test failures - elements not found",
       "priority": "P0",
       "estimatedTime": "30min",
+      "dependencies": [
+        "disc-4"
+      ],
       "status": "completed",
       "file": "disc-3.md",
       "record": "records/disc-3.md",
       "breaking": true,
       "sourceTaskID": "disc-2"
+    },
+    "disc-4": {
+      "id": "disc-4",
+      "title": "Fix: TC-UI-001/002 empty state and plan-editor elements missing",
+      "priority": "P0",
+      "estimatedTime": "30min",
+      "status": "pending",
+      "file": "disc-4.md",
+      "record": "records/disc-4.md",
+      "breaking": true,
+      "sourceTaskID": "disc-3"
     },
     "eval-test-cases": {
       "id": "T-test-1b",
@@ -570,7 +584,7 @@
       "estimatedTime": "30min-1h",
       "dependencies": [
         "T-test-2",
-        "disc-3"
+        "disc-4"
       ],
       "status": "blocked",
       "file": "run-e2e-tests.md",

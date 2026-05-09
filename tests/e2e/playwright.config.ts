@@ -14,8 +14,15 @@ export default defineConfig({
   workers: 1,
   reporter: [["list"], ["json", { outputFile: "results/test-results.json" }]],
   use: {
+    baseURL: "http://localhost:8081",
     headless: true,
     screenshot: "only-on-failure",
   },
   outputDir: "results/",
+  webServer: {
+    command: "npx expo start --web --port 8081",
+    port: 8081,
+    timeout: 60_000,
+    reuseExistingServer: !process.env.CI,
+  },
 });

@@ -29,13 +29,18 @@ export function HeroCard({ data }: HeroCardProps) {
     weeklyChangePct === null ? "" : weeklyChangePct >= 0 ? " ↑" : " ↓";
 
   return (
-    <View style={styles.card}>
+    <View style={styles.card} testID="stats-hero-card">
       <Text style={styles.label}>本周训练容量</Text>
       <View style={styles.valueRow}>
-        <Text style={styles.value}>{formattedVolume}</Text>
+        <Text style={styles.value} testID="weekly-volume">
+          {formattedVolume}
+        </Text>
         <Text style={styles.unit}>kg</Text>
       </View>
-      <Text style={[styles.change, { color: changeColor }]}>
+      <Text
+        style={[styles.change, { color: changeColor }]}
+        testID="week-over-week-change"
+      >
         周环比 {changeDisplay}
         {changeArrow}
       </Text>

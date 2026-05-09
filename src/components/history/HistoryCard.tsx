@@ -41,6 +41,8 @@ export interface HistoryCardProps {
   onDelete: () => void;
   /** Card press handler */
   onPress: () => void;
+  /** Optional testID */
+  testID?: string;
 }
 
 export function HistoryCard({
@@ -52,6 +54,7 @@ export function HistoryCard({
   satisfaction,
   isBacklog,
   onPress,
+  testID,
 }: HistoryCardProps) {
   const typeColor = getTypeColor(trainingType);
 
@@ -61,6 +64,7 @@ export function HistoryCard({
       onPress={onPress}
       activeOpacity={0.7}
       accessibilityRole="button"
+      testID={testID}
     >
       <View style={styles.cardDate}>
         <View style={styles.dateInfo}>

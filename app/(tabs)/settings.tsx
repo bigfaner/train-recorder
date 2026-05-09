@@ -172,13 +172,13 @@ export default function SettingsScreen({
   const exportRangeOptions = getExportRangeOptions();
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container} testID="settings-list">
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
       >
         {/* Training Settings Group */}
-        <SettingsGroup title="训练设置">
+        <SettingsGroup title="训练设置" testID="settings-group-training">
           <NavigationRow label="动作库管理" onPress={handleExerciseLibrary} />
           <UnitToggleRow currentUnit={weightUnit} onToggle={handleUnitToggle} />
           <RestTimeRow
@@ -188,7 +188,7 @@ export default function SettingsScreen({
         </SettingsGroup>
 
         {/* Notifications Group */}
-        <SettingsGroup title="提醒">
+        <SettingsGroup title="提醒" testID="settings-group-reminder">
           <ToggleRow
             label="训练提醒"
             value={notificationsEnabled}
@@ -207,21 +207,31 @@ export default function SettingsScreen({
         </SettingsGroup>
 
         {/* Data Management Group */}
-        <SettingsGroup title="数据管理">
+        <SettingsGroup title="数据管理" testID="settings-group-data">
           <NavigationRow
             label="导出训练数据"
             onPress={() => setExportSheetVisible(true)}
+            testID="export-data-btn"
           />
           <NavigationRow
             label="导入训练数据"
             onPress={() => setImportSheetVisible(true)}
+            testID="import-data-btn"
           />
-          <DestructiveRow label="清除所有数据" onPress={handleClearPress} />
+          <DestructiveRow
+            label="清除所有数据"
+            onPress={handleClearPress}
+            testID="clear-data-btn"
+          />
         </SettingsGroup>
 
         {/* About Group */}
-        <SettingsGroup title="关于">
-          <NavigationRow label="新手引导" onPress={handleOnboarding} />
+        <SettingsGroup title="关于" testID="settings-group-about">
+          <NavigationRow
+            label="新手引导"
+            onPress={handleOnboarding}
+            testID="onboarding-link"
+          />
         </SettingsGroup>
       </ScrollView>
 

@@ -170,6 +170,7 @@ export function HistoryScreen({
               ]}
               onPress={() => setActiveSegment(segment.key)}
               activeOpacity={0.7}
+              testID={`${segment.key}-tab`}
             >
               <Text
                 style={[
@@ -185,11 +186,12 @@ export function HistoryScreen({
 
         {/* Panel Content */}
         {activeSegment === "history" && (
-          <View>
+          <View testID="history-list">
             {/* Training type filter */}
             <CalendarFilterTabs
               activeFilter={typeFilter}
               onFilterChange={setTypeFilter}
+              testID="type-filter-btn"
             />
 
             {filteredSessions.length === 0 ? (
@@ -242,6 +244,7 @@ export function HistoryScreen({
                 return (
                   <HistoryCard
                     key={String(session.biz_key)}
+                    testID={`history-record-${session.biz_key.toString()}`}
                     formattedDate={formatHistoryCardDate(session.session_date)}
                     typeLabel={getTrainingTypeLabel(session.training_type)}
                     trainingType={session.training_type}

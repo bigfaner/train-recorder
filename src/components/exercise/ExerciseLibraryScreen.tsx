@@ -128,6 +128,7 @@ export function ExerciseLibraryScreen({
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
+        testID="exercise-library-list"
       >
         {hasResults ? (
           exerciseGroups.map((group) => (
@@ -153,6 +154,7 @@ export function ExerciseLibraryScreen({
           onPress={onCreateCustom}
           accessibilityRole="button"
           accessibilityLabel="添加自定义动作"
+          testID="custom-exercise-btn"
         >
           <Text style={styles.addCustomIcon}>+</Text>
           <Text style={styles.addCustomText}>自定义动作</Text>
@@ -210,6 +212,7 @@ function CategorySection({
         onPress={onToggleCollapse}
         accessibilityRole="button"
         accessibilityLabel={`${group.category.labelZh} ${isCollapsed ? "展开" : "折叠"}`}
+        testID={`category-${group.category.key}`}
       >
         <Text style={styles.categoryTitle}>
           {group.category.labelZh}
@@ -260,6 +263,7 @@ function ExerciseRow({
       accessibilityRole={selectionMode ? "checkbox" : "button"}
       accessibilityLabel={exercise.exercise_name}
       accessibilityState={selectionMode ? { checked: isSelected } : undefined}
+      testID={`exercise-item-${exercise.exercise_name.toLowerCase()}`}
     >
       {selectionMode && (
         <View style={[styles.checkbox, isSelected && styles.checkboxSelected]}>

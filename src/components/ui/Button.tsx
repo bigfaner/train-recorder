@@ -16,6 +16,7 @@ export interface ButtonProps {
   variant?: ButtonVariant;
   disabled?: boolean;
   style?: ViewStyle;
+  testID?: string;
 }
 
 const variantStyles: Record<
@@ -54,6 +55,7 @@ export function Button({
   variant = "primary",
   disabled = false,
   style,
+  testID,
 }: ButtonProps) {
   const variantStyle = variantStyles[variant];
 
@@ -61,6 +63,7 @@ export function Button({
     <TouchableOpacity
       activeOpacity={disabled ? 1 : 0.7}
       onPress={disabled ? undefined : onPress}
+      testID={testID}
       style={[
         styles.wrapper,
         variantStyle.wrapper,

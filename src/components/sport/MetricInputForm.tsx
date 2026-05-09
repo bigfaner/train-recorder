@@ -59,6 +59,7 @@ export function MetricInputForm({
               placeholder="0"
               placeholderTextColor={Colors.textTertiary}
               keyboardType="numeric"
+              testID={`metric-${metric.metricName.toLowerCase()}-input`}
             />
             {metric.metricUnit && (
               <Text style={styles.suffix}>{metric.metricUnit}</Text>
@@ -100,6 +101,7 @@ export function MetricInputForm({
         onPress={onSave}
         activeOpacity={0.7}
         disabled={!validation.isValid}
+        testID="save-sport-btn"
       >
         <Text style={styles.saveBtnText}>保存</Text>
       </TouchableOpacity>

@@ -91,7 +91,11 @@ export function BodyEntryForm({
           <Text style={styles.cancelText}>取消</Text>
         </TouchableOpacity>
         <Text style={styles.title}>{title}</Text>
-        <TouchableOpacity onPress={handleSave} activeOpacity={0.7}>
+        <TouchableOpacity
+          onPress={handleSave}
+          activeOpacity={0.7}
+          testID="save-body-data-btn"
+        >
           <Text style={styles.saveText}>保存</Text>
         </TouchableOpacity>
       </View>
@@ -110,6 +114,7 @@ export function BodyEntryForm({
             onChangeText={formatDateInput}
             placeholder="YYYY-MM-DD"
             placeholderTextColor={Colors.textTertiary}
+            testID="date-picker"
           />
         </View>
 
@@ -127,6 +132,7 @@ export function BodyEntryForm({
             placeholder="输入体重"
             placeholderTextColor={Colors.textTertiary}
             keyboardType="decimal-pad"
+            testID="weight-input"
           />
         </View>
 
@@ -146,6 +152,7 @@ export function BodyEntryForm({
             placeholder="选填"
             placeholderTextColor={Colors.textTertiary}
             keyboardType="decimal-pad"
+            testID="chest-input"
           />
         </View>
 
@@ -164,6 +171,7 @@ export function BodyEntryForm({
             placeholder="选填"
             placeholderTextColor={Colors.textTertiary}
             keyboardType="decimal-pad"
+            testID="waist-input"
           />
         </View>
 
@@ -182,6 +190,7 @@ export function BodyEntryForm({
             placeholder="选填"
             placeholderTextColor={Colors.textTertiary}
             keyboardType="decimal-pad"
+            testID="arm-input"
           />
         </View>
 
@@ -200,6 +209,7 @@ export function BodyEntryForm({
             placeholder="选填"
             placeholderTextColor={Colors.textTertiary}
             keyboardType="decimal-pad"
+            testID="thigh-input"
           />
         </View>
 

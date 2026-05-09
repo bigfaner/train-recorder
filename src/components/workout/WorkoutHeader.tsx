@@ -62,6 +62,7 @@ export function WorkoutHeader({
         style={styles.backButton}
         accessibilityRole="button"
         accessibilityLabel="返回"
+        testID="back-btn"
       >
         <Text style={styles.backArrow}>←</Text>
       </TouchableOpacity>

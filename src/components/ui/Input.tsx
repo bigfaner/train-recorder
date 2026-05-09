@@ -9,6 +9,7 @@ export interface InputProps {
   keyboardType?: "default" | "numeric" | "number-pad" | "decimal-pad";
   style?: object;
   editable?: boolean;
+  testID?: string;
 }
 
 export function Input({
@@ -18,6 +19,7 @@ export function Input({
   keyboardType = "default",
   style,
   editable = true,
+  testID,
 }: InputProps) {
   return (
     <TextInput
@@ -28,6 +30,7 @@ export function Input({
       keyboardType={keyboardType}
       editable={editable}
       style={[styles.input, style]}
+      testID={testID}
     />
   );
 }

@@ -119,6 +119,7 @@ export function CustomSportEditor({
             placeholder="如：瑜伽、篮球"
             placeholderTextColor={Colors.textTertiary}
             maxLength={20}
+            testID="sport-name-input"
           />
         </View>
 
@@ -210,6 +211,7 @@ export function CustomSportEditor({
           style={styles.saveBtn}
           onPress={handleSave}
           activeOpacity={0.7}
+          testID="save-custom-sport-btn"
         >
           <Text style={styles.saveBtnText}>保存</Text>
         </TouchableOpacity>

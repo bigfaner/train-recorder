@@ -54,9 +54,20 @@ export function FourGridSummary({ data }: FourGridSummaryProps) {
   ];
 
   return (
-    <View style={styles.grid}>
+    <View style={styles.grid} testID="stats-grid">
       {cards.map((card, index) => (
-        <View key={index} style={[styles.card, { width: cardWidth }]}>
+        <View
+          key={index}
+          style={[styles.card, { width: cardWidth }]}
+          testID={
+            [
+              "weekly-session-count",
+              "monthly-session-count",
+              "weekly-duration",
+              "monthly-pr-count",
+            ][index]
+          }
+        >
           <Text style={styles.cardLabel}>{card.label}</Text>
           <Text style={styles.cardValue}>{card.value}</Text>
           {card.sublabel ? (

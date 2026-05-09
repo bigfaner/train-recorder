@@ -7,6 +7,7 @@
  */
 
 import React, { useCallback } from "react";
+import { View } from "react-native";
 import { useRouter } from "expo-router";
 import { WorkoutScreen } from "@components/workout/WorkoutScreen";
 
@@ -33,20 +34,22 @@ function WorkoutPlaceholder() {
   }, [router]);
 
   return (
-    <WorkoutScreen
-      trainingTypeLabel="推日"
-      exercises={[]}
-      setsByExercise={new Map()}
-      currentExerciseBizKey={null}
-      exerciseNames={{ get: () => undefined }}
-      exerciseIncrements={new Map()}
-      completedExercises={0}
-      totalExercises={0}
-      onRecordSet={() => {}}
-      onCompleteExercise={() => {}}
-      onExit={handleExit}
-      onAllCompleted={handleAllCompleted}
-      onSelectExercise={() => {}}
-    />
+    <View testID="workout-page">
+      <WorkoutScreen
+        trainingTypeLabel="推日"
+        exercises={[]}
+        setsByExercise={new Map()}
+        currentExerciseBizKey={null}
+        exerciseNames={{ get: () => undefined }}
+        exerciseIncrements={new Map()}
+        completedExercises={0}
+        totalExercises={0}
+        onRecordSet={() => {}}
+        onCompleteExercise={() => {}}
+        onExit={handleExit}
+        onAllCompleted={handleAllCompleted}
+        onSelectExercise={() => {}}
+      />
+    </View>
   );
 }

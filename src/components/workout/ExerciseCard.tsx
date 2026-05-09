@@ -77,7 +77,12 @@ export function ExerciseCard({
 
   if (cardState === "completed") {
     return (
-      <CompletedCard displayName={displayName} sets={sets} style={style} />
+      <CompletedCard
+        displayName={displayName}
+        sets={sets}
+        style={style}
+        exerciseBizKey={exercise.exercise_biz_key.toString()}
+      />
     );
   }
 
@@ -104,13 +109,22 @@ interface CompletedCardProps {
   displayName: string;
   sets: WorkoutSet[];
   style?: ViewStyle;
+  exerciseBizKey?: string;
 }
 
-function CompletedCard({ displayName, sets, style }: CompletedCardProps) {
+function CompletedCard({
+  displayName,
+  sets,
+  style,
+  exerciseBizKey,
+}: CompletedCardProps) {
   const summary = formatSetSummary(sets);
 
   return (
-    <View style={[styles.card, styles.completedCard, style]}>
+    <View
+      style={[styles.card, styles.completedCard, style]}
+      testID={exerciseBizKey ? `exercise-card-${exerciseBizKey}` : undefined}
+    >
       <View style={styles.completedHeader}>
         <Text style={styles.completedCheck}>✓</Text>
         <Text style={styles.completedName}>{displayName}</Text>
@@ -202,7 +216,10 @@ function ActiveCard({
   );
 
   return (
-    <View style={[styles.card, styles.activeCard, style]}>
+    <View
+      style={[styles.card, styles.activeCard, style]}
+      testID={`exercise-card-${exercise.exercise_biz_key.toString()}`}
+    >
       {/* Header: name + set progress */}
       <View style={styles.activeHeader}>
         <Text style={styles.activeName}>{displayName}</Text>
@@ -213,11 +230,13 @@ function ActiveCard({
       {suggestedWeight !== null && (
         <View style={styles.suggestionRow}>
           {weightLabelType === "suggested" ? (
-            <Text style={styles.suggestionText}>
+            <Text style={styles.suggestionText} testID="suggested-weight">
               建议: {formatWeightWithIncrement(suggestedWeight, increment)}
             </Text>
           ) : weightLabelType === "custom" ? (
-            <Text style={styles.customLabel}>自定义</Text>
+            <Text style={styles.customLabel} testID="custom-weight-badge">
+              自定义
+            </Text>
           ) : null}
         </View>
       )}
@@ -225,13 +244,24 @@ function ActiveCard({
       {/* Weight + Reps inputs */}
       <View style={styles.inputRow}>
         <View style={styles.weightInputContainer}>
-          <Text style={styles.weightDisplay}>{weightInput || "0"}</Text>
+          <Text style={styles.weightDisplay} testID="suggested-weight">
+            {weightInput || "0"}
+          </Text>
           <Text style={styles.inputUnit}> kg</Text>
         </View>
         <View style={styles.repsInputContainer}>
-          <Text style={styles.repsDisplay}>{repsInput}</Text>
+          <Text style={styles.repsDisplay} testID="reps-input">
+            {repsInput}
+          </Text>
           <Text style={styles.inputUnit}> 次</Text>
         </View>
+      </View>
+
+      {/* Target sets/reps display */}
+      <View style={styles.targetRow}>
+        <Text style={styles.targetText} testID="target-sets-reps">
+          目标: {exercise.target_sets}组 x {exercise.target_reps}次
+        </Text>
       </View>
 
       {/* Complete set button */}
@@ -240,6 +270,7 @@ function ActiveCard({
         onPress={handleCompleteSet}
         accessibilityRole="button"
         accessibilityLabel="完成本组"
+        testID="complete-set-btn"
       >
         <Text style={styles.completeButtonText}>完成本组</Text>
       </TouchableOpacity>
@@ -251,6 +282,7 @@ function ActiveCard({
           onPress={onAddExtraSet}
           accessibilityRole="button"
           accessibilityLabel="加一组"
+          testID="add-extra-set-btn"
         >
           <Text style={styles.extraSetButtonText}>加一组</Text>
         </TouchableOpacity>
@@ -354,7 +386,14 @@ const styles = StyleSheet.create({
   inputRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 16,
+    marginBottom: 12,
+  },
+  targetRow: {
+    marginBottom: 12,
+  },
+  targetText: {
+    fontSize: Typography.bodySmall.fontSize,
+    color: Colors.textTertiary,
   },
   weightInputContainer: {
     flexDirection: "row",

@@ -10,6 +10,7 @@ export interface SliderProps {
   step?: number;
   minLabel?: string;
   maxLabel?: string;
+  testID?: string;
 }
 
 export function Slider({
@@ -20,6 +21,7 @@ export function Slider({
   step = 1,
   minLabel,
   maxLabel,
+  testID,
 }: SliderProps) {
   const range = maximumValue - minimumValue;
   const progress = range > 0 ? (value - minimumValue) / range : 0;
@@ -35,7 +37,7 @@ export function Slider({
   }, [value, step, minimumValue, onValueChange]);
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container} testID={testID}>
       <View style={styles.labelsRow}>
         {minLabel && <Text style={styles.endLabel}>{minLabel}</Text>}
         <Text style={styles.valueLabel}>{value}</Text>

@@ -263,6 +263,7 @@ export function WorkoutScreen({
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
+        testID="exercise-list"
       >
         {exercises.map((exercise, index) => {
           const exerciseName =

@@ -83,6 +83,7 @@ export function TimerPanel({
       style={styles.panel}
       accessibilityRole="alert"
       accessibilityLabel={`休息计时器 ${displayTime}`}
+      testID="rest-timer"
     >
       {/* Circular progress with timer display */}
       <View style={styles.timerContainer}>
@@ -106,7 +107,9 @@ export function TimerPanel({
 
       {/* Expired recovery message */}
       {isExpired && (
-        <Text style={styles.expiredMessage}>{getExpiredMessage()}</Text>
+        <Text style={styles.expiredMessage} testID="overtime-message">
+          {getExpiredMessage()}
+        </Text>
       )}
 
       {/* Adjustment buttons (only during counting) */}
@@ -126,6 +129,7 @@ export function TimerPanel({
             onPress={onSkip}
             accessibilityRole="button"
             accessibilityLabel="跳过"
+            testID="skip-rest-btn"
           >
             <Text style={styles.skipButtonText}>跳过</Text>
           </TouchableOpacity>
@@ -148,6 +152,7 @@ export function TimerPanel({
           onPress={onStartNext}
           accessibilityRole="button"
           accessibilityLabel="开始下一组"
+          testID="next-set-btn"
         >
           <Text style={styles.nextSetButtonText}>开始下一组</Text>
         </TouchableOpacity>

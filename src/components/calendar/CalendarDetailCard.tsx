@@ -58,7 +58,7 @@ export function CalendarDetailCard({
   const showConsecutiveWarning = consecutiveSkips >= 3;
 
   return (
-    <Card style={styles.card}>
+    <Card style={styles.card} testID="workout-detail-panel">
       {/* Date header */}
       <View style={styles.header}>
         <Text style={styles.dateLabel}>{formatDateDisplay(date)}</Text>
@@ -84,7 +84,7 @@ export function CalendarDetailCard({
 
       {/* Consecutive skip warning */}
       {showConsecutiveWarning && (
-        <View style={styles.warningBanner}>
+        <View style={styles.warningBanner} testID="skip-streak-warning">
           <Text style={styles.warningText}>
             已连续跳过 {consecutiveSkips} 次训练，是否调整计划？
           </Text>
@@ -142,7 +142,11 @@ function renderContent(
             </Text>
           )}
           {onUnskipDay && (
-            <Button variant="secondary" onPress={() => onUnskipDay(date)}>
+            <Button
+              variant="secondary"
+              onPress={() => onUnskipDay(date)}
+              testID="undo-skip-btn"
+            >
               恢复训练
             </Button>
           )}
@@ -158,11 +162,17 @@ function renderContent(
           {past ? (
             // Past training day without record - show backlog option
             <View style={styles.buttonRow}>
-              <Button onPress={() => onBacklogWorkout(date)}>补录训练</Button>
+              <Button
+                onPress={() => onBacklogWorkout(date)}
+                testID="log-retroactive-btn"
+              >
+                补录训练
+              </Button>
               <View style={styles.buttonSpacer} />
               <Button
                 variant="secondary"
                 onPress={() => onRecordOtherSport(date)}
+                testID="log-other-sport-btn"
               >
                 记录其他运动
               </Button>
@@ -170,11 +180,17 @@ function renderContent(
           ) : (
             // Future/today training day
             <View style={styles.buttonRow}>
-              <Button onPress={() => onStartWorkout(date)}>开始训练</Button>
+              <Button
+                onPress={() => onStartWorkout(date)}
+                testID="start-workout-btn"
+              >
+                开始训练
+              </Button>
               <View style={styles.buttonSpacer} />
               <Button
                 variant="secondary"
                 onPress={() => onRecordOtherSport(date)}
+                testID="log-other-sport-btn"
               >
                 记录其他运动
               </Button>

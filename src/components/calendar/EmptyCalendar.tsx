@@ -17,14 +17,16 @@ export interface EmptyCalendarProps {
 
 export function EmptyCalendar({ onCreatePlan }: EmptyCalendarProps) {
   return (
-    <View style={styles.container}>
+    <View style={styles.container} testID="empty-state-guide">
       <Text style={styles.emoji}>📋</Text>
       <Text style={styles.title}>还没有训练计划</Text>
       <Text style={styles.subtitle}>
         创建你的第一个训练计划，开始记录你的训练旅程
       </Text>
       <View style={styles.buttonContainer}>
-        <Button onPress={onCreatePlan}>创建训练计划</Button>
+        <Button onPress={onCreatePlan} testID="create-plan-btn">
+          创建训练计划
+        </Button>
       </View>
     </View>
   );

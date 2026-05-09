@@ -24,11 +24,12 @@ import { Colors, Typography, Spacing } from "@utils/constants";
 export interface SettingsGroupProps {
   title: string;
   children: React.ReactNode;
+  testID?: string;
 }
 
-export function SettingsGroup({ title, children }: SettingsGroupProps) {
+export function SettingsGroup({ title, children, testID }: SettingsGroupProps) {
   return (
-    <View style={styles.group}>
+    <View style={styles.group} testID={testID}>
       <Text style={styles.groupTitle}>{title}</Text>
       <View style={styles.groupContent}>{children}</View>
     </View>
@@ -153,15 +154,22 @@ export interface NavigationRowProps {
   label: string;
   subtitle?: string;
   onPress: () => void;
+  testID?: string;
 }
 
 export function NavigationRow({
   label,
   subtitle,
   onPress,
+  testID,
 }: NavigationRowProps) {
   return (
-    <TouchableOpacity style={styles.row} onPress={onPress} activeOpacity={0.6}>
+    <TouchableOpacity
+      style={styles.row}
+      onPress={onPress}
+      activeOpacity={0.6}
+      testID={testID}
+    >
       <View style={styles.navRowLeft}>
         <Text style={styles.rowLabel}>{label}</Text>
         {subtitle ? <Text style={styles.rowSubtitle}>{subtitle}</Text> : null}
@@ -180,11 +188,21 @@ export function NavigationRow({
 export interface DestructiveRowProps {
   label: string;
   onPress: () => void;
+  testID?: string;
 }
 
-export function DestructiveRow({ label, onPress }: DestructiveRowProps) {
+export function DestructiveRow({
+  label,
+  onPress,
+  testID,
+}: DestructiveRowProps) {
   return (
-    <TouchableOpacity style={styles.row} onPress={onPress} activeOpacity={0.6}>
+    <TouchableOpacity
+      style={styles.row}
+      onPress={onPress}
+      activeOpacity={0.6}
+      testID={testID}
+    >
       <Text style={[styles.rowLabel, styles.destructiveText]}>{label}</Text>
     </TouchableOpacity>
   );

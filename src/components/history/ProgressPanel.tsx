@@ -48,7 +48,7 @@ export function ProgressPanel({
   return (
     <View>
       {/* Exercise selector */}
-      <View style={styles.selectorWrapper}>
+      <View style={styles.selectorWrapper} testID="exercise-selector">
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           {exercises.map((exercise) => {
             const isSelected =
@@ -78,7 +78,7 @@ export function ProgressPanel({
       </View>
 
       {/* Progress Chart */}
-      <View style={styles.chartContainer}>
+      <View style={styles.chartContainer} testID="progress-chart">
         <Text style={styles.chartTitle}>{chartTitle}</Text>
         <Text style={styles.chartSubtitle}>{chartSubtitle}</Text>
 

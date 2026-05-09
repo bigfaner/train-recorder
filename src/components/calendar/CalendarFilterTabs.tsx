@@ -16,6 +16,8 @@ export interface CalendarFilterTabsProps {
   activeFilter: FilterType;
   /** Called when a filter is selected */
   onFilterChange: (filter: FilterType) => void;
+  /** Optional testID for the container */
+  testID?: string;
 }
 
 const FILTER_OPTIONS: Array<{ key: FilterType; label: string }> = [
@@ -29,9 +31,10 @@ const FILTER_OPTIONS: Array<{ key: FilterType; label: string }> = [
 export function CalendarFilterTabs({
   activeFilter,
   onFilterChange,
+  testID,
 }: CalendarFilterTabsProps) {
   return (
-    <View style={styles.container}>
+    <View style={styles.container} testID={testID}>
       {FILTER_OPTIONS.map((option) => {
         const isActive =
           activeFilter === option.key ||
@@ -45,6 +48,9 @@ export function CalendarFilterTabs({
             activeOpacity={0.7}
             accessibilityRole="button"
             accessibilityState={{ selected: isActive }}
+            testID={
+              option.key ? `filter-option-${option.key}` : "filter-option-all"
+            }
           >
             <Text style={[styles.tabText, isActive && styles.tabTextActive]}>
               {option.label}

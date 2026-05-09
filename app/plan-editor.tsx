@@ -322,17 +322,19 @@ export default function PlanEditorScreen({
 
         {/* Plan Mode */}
         <Text style={styles.fieldLabel}>计划模式</Text>
-        <View style={styles.segmentRow}>
+        <View style={styles.segmentRow} testID="mode-selector">
           <SegmentButton
             label="无限循环"
             active={state.planMode === "infinite_loop"}
             onPress={() => handlePlanModeChange("infinite_loop")}
+            testID="mode-endless-loop"
           />
           <View style={styles.segmentSpacer} />
           <SegmentButton
             label="固定周期"
             active={state.planMode === "fixed_cycle"}
             onPress={() => handlePlanModeChange("fixed_cycle")}
+            testID="mode-fixed-cycle"
           />
         </View>
 
@@ -349,6 +351,7 @@ export default function PlanEditorScreen({
               placeholder="输入周数"
               placeholderTextColor={Colors.textTertiary}
               keyboardType="number-pad"
+              testID="cycle-length-input"
             />
           </>
         )}
@@ -472,7 +475,11 @@ export default function PlanEditorScreen({
 
         {/* Save Button */}
         <View style={styles.saveContainer}>
-          <Button onPress={handleSave} disabled={isSaving}>
+          <Button
+            onPress={handleSave}
+            disabled={isSaving}
+            testID="save-plan-btn"
+          >
             {isSaving ? "保存中..." : "保存计划"}
           </Button>
         </View>
@@ -490,11 +497,13 @@ function SegmentButton({
   active,
   onPress,
   compact = false,
+  testID: segmentTestID,
 }: {
   label: string;
   active: boolean;
   onPress: () => void;
   compact?: boolean;
+  testID?: string;
 }) {
   return (
     <Text
@@ -505,6 +514,7 @@ function SegmentButton({
       ]}
       accessibilityRole="button"
       accessibilityState={{ selected: active }}
+      testID={segmentTestID}
     >
       {active ? `● ${label}` : label}
     </Text>

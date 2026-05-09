@@ -56,7 +56,7 @@ export function ExerciseDetailScreen({
   const progressData = buildProgressData(recentSessions, weightPR);
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container} testID="exercise-detail-panel">
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}

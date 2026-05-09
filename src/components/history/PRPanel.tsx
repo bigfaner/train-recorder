@@ -32,7 +32,7 @@ export function PRPanel({ prCards }: PRPanelProps) {
   }
 
   return (
-    <View>
+    <View testID="pr-list">
       <Text style={styles.sectionTitle}>个人最佳记录</Text>
       {prCards.map((card, index) => (
         <View key={index} style={styles.prCard}>

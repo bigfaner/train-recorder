@@ -27,7 +27,7 @@ export function VolumePanel({
   return (
     <View>
       {/* Bar Chart */}
-      <View style={styles.chartContainer}>
+      <View style={styles.chartContainer} testID="volume-chart">
         <Text style={styles.chartTitle}>每周总容量</Text>
         <Text style={styles.chartSubtitle}>近{volumeData.length}周</Text>
 

@@ -52,13 +52,14 @@ export function SportTypeGrid({
   const allTypes = [...presets, ...customs];
 
   return (
-    <View>
+    <View testID="sport-type-list">
       <Text style={styles.sectionTitle}>选择运动类型</Text>
       <View style={styles.grid}>
         {allTypes.map((sport) => {
           const isSelected = selectedBizKey === sport.biz_key;
           const icon = getSportIcon(sport);
           const emoji = ICON_LABELS[icon] || ICON_LABELS.custom;
+          const testIdSuffix = ICON_LABELS[icon] ? icon : "custom";
 
           return (
             <TouchableOpacity
@@ -66,6 +67,7 @@ export function SportTypeGrid({
               style={[styles.sportCard, isSelected && styles.sportCardSelected]}
               onPress={() => onSportSelect(sport)}
               activeOpacity={0.7}
+              testID={`sport-type-item-${testIdSuffix}`}
             >
               <View
                 style={[
@@ -92,6 +94,7 @@ export function SportTypeGrid({
         style={styles.customBtn}
         onPress={onCustomSport}
         activeOpacity={0.7}
+        testID="custom-sport-btn"
       >
         <Text style={styles.customBtnText}>+ 自定义运动</Text>
       </TouchableOpacity>

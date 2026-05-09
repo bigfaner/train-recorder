@@ -148,7 +148,7 @@ export function CalendarMonthGrid({
   }
 
   return (
-    <View style={styles.grid}>
+    <View style={styles.grid} testID="calendar-month-view">
       {/* Weekday headers */}
       <View style={styles.headerRow}>
         {WEEKDAY_LABELS_SHORT.map((label) => (
@@ -194,6 +194,7 @@ export function CalendarMonthGrid({
                 activeOpacity={0.6}
                 accessibilityLabel={`${month}月${dayNum}日`}
                 accessibilityRole="button"
+                testID={today ? "day-cell-today" : `day-cell-${dateStr}`}
               >
                 <Text
                   style={[
@@ -213,6 +214,7 @@ export function CalendarMonthGrid({
                       styles.dot,
                       { backgroundColor: indicator.dotColor },
                     ]}
+                    testID="training-type-label"
                   />
                 )}
 

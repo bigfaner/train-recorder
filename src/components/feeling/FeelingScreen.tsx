@@ -126,6 +126,7 @@ export function FeelingScreen({
             onValueChange={setFatigue}
             minLabel="轻松"
             maxLabel="筋疲力尽"
+            testID="fatigue-slider"
           />
           {showWarning && (
             <Text style={[styles.sliderValue, styles.warningText]}>
@@ -144,6 +145,7 @@ export function FeelingScreen({
             onValueChange={setSatisfaction}
             minLabel="很差"
             maxLabel="完美"
+            testID="satisfaction-slider"
           />
           {showWarning && (
             <Text style={[styles.sliderValue, styles.warningText]}>
@@ -161,7 +163,7 @@ export function FeelingScreen({
 
         {/* Per-exercise notes */}
         {completedExercises.length > 0 && (
-          <View style={styles.section}>
+          <View style={styles.section} testID="exercise-note-list">
             <Text style={styles.sectionTitle}>动作感受</Text>
             {completedExercises.map((exercise) => {
               const name =
@@ -171,7 +173,11 @@ export function FeelingScreen({
               const note = exerciseNotes.get(exercise.exercise_biz_key) ?? "";
 
               return (
-                <Card key={exercise.biz_key.toString()} style={styles.noteCard}>
+                <Card
+                  key={exercise.biz_key.toString()}
+                  style={styles.noteCard}
+                  testID={`exercise-note-${exercise.exercise_biz_key.toString()}`}
+                >
                   <Text style={styles.exerciseSummary}>{summary}</Text>
                   <Input
                     value={note}
@@ -180,6 +186,7 @@ export function FeelingScreen({
                     }
                     placeholder="感受..."
                     style={styles.noteInput}
+                    testID={`exercise-note-input-${exercise.exercise_biz_key.toString()}`}
                   />
                 </Card>
               );
@@ -200,7 +207,9 @@ export function FeelingScreen({
 
         {/* Save button */}
         <View style={styles.buttonSection}>
-          <Button onPress={handleSave}>保存</Button>
+          <Button onPress={handleSave} testID="save-feeling-btn">
+            保存
+          </Button>
           <View style={styles.skipSpacer} />
           <Button onPress={onSkip} variant="secondary">
             跳过

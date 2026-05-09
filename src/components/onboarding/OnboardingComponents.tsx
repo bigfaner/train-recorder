@@ -86,7 +86,10 @@ export function WelcomeSteps({
   const isLastStep = currentStep === WELCOME_STEPS.length - 1;
 
   return (
-    <View style={styles.welcomeContainer}>
+    <View
+      style={styles.welcomeContainer}
+      testID={`onboarding-step-${currentStep + 1}`}
+    >
       <StepIndicator
         currentStep={currentStep}
         totalSteps={WELCOME_STEPS.length}
@@ -103,6 +106,7 @@ export function WelcomeSteps({
           onPress={onNext}
           style={[styles.actionButton, styles.primaryButton]}
           accessibilityRole="button"
+          testID={isLastStep ? "onboarding-finish-btn" : "onboarding-next-btn"}
         >
           <Text style={styles.primaryButtonText}>
             {isLastStep ? "选择模板" : "下一步"}
@@ -113,6 +117,7 @@ export function WelcomeSteps({
           onPress={onSkip}
           style={styles.skipButton}
           accessibilityRole="button"
+          testID="onboarding-skip-btn"
         >
           <Text style={styles.skipButtonText}>跳过</Text>
         </TouchableOpacity>
@@ -166,6 +171,7 @@ export function TemplatePicker({
       <ScrollView
         style={styles.templateList}
         contentContainerStyle={styles.templateListContent}
+        testID="template-list"
       >
         {templates.map((template) => {
           const isSelected = selectedTemplateId === template.templateId;
@@ -179,6 +185,7 @@ export function TemplatePicker({
               ]}
               accessibilityRole="button"
               accessibilityState={{ selected: isSelected }}
+              testID={`template-item-${template.templateId}`}
             >
               <Text style={styles.templateName}>{template.templateName}</Text>
               <Text style={styles.templateDescription}>

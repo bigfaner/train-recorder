@@ -1,11 +1,11 @@
 {
-  "task_id": "disc-1",
-  "key": "disc-1",
-  "title": "Fix: Install Expo web dependencies for e2e testing",
+  "task_id": "disc-3",
+  "key": "disc-3",
+  "title": "Fix: UI e2e test failures - elements not found",
   "priority": "P0",
   "estimatedTime": "30min",
-  "file": "disc-1.md",
-  "record": "records/disc-1.md",
-  "startedTime": "2026-05-09 17:42",
+  "file": "disc-3.md",
+  "record": "records/disc-3.md",
+  "startedTime": "2026-05-09 18:01",
   "breaking": true
 }

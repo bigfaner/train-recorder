@@ -11,10 +11,12 @@ import { Colors, Typography, Spacing } from "@utils/constants";
 
 export function EmptyStatsState() {
   return (
-    <View style={styles.container}>
+    <View style={styles.container} testID="stats-empty-state">
       <Text style={styles.icon}>📊</Text>
       <Text style={styles.title}>还没有训练数据</Text>
-      <Text style={styles.subtitle}>完成你的第一次训练，查看训练统计</Text>
+      <Text style={styles.subtitle} testID="start-training-link">
+        完成你的第一次训练，查看训练统计
+      </Text>
     </View>
   );
 }

@@ -8,14 +8,17 @@ time_spent: "~25m"
 # Task Record: disc-3 Fix: UI e2e test failures - elements not found
 
 ## Summary
+
 Fix UI e2e test failures by installing missing Expo web dependencies (react-dom, react-native-web) and adding testID props to all components so Playwright can locate elements. 22 component files updated with testID attributes matching the e2e test expectations.
 
 ## Changes
 
 ### Files Created
+
 无
 
 ### Files Modified
+
 - src/components/ui/Button.tsx
 - src/components/ui/Card.tsx
 - src/components/ui/Input.tsx
@@ -50,17 +53,20 @@ Fix UI e2e test failures by installing missing Expo web dependencies (react-dom,
 - app/workout.tsx
 
 ### Key Decisions
+
 - Installed react-dom and react-native-web as Expo web dependencies to enable web server startup for Playwright testing
 - Added testID prop passthrough to base UI components (Button, Card, Input, Slider) so parent components can specify testIDs
 - Added testID attributes to all feature components matching the exact testID values expected by the e2e test suite
 - In React Native for Web, testID is automatically mapped to data-testid in the DOM, so no custom mapping was needed
 
 ## Test Results
+
 - **Passed**: 982
 - **Failed**: 0
 - **Coverage**: N/A (task has no tests)
 
 ## Acceptance Criteria
+
 - [x] Web server starts successfully with Expo web dependencies installed
 - [x] Components have testID attributes matching e2e test expectations
 - [x] All existing unit tests continue to pass
@@ -68,4 +74,5 @@ Fix UI e2e test failures by installing missing Expo web dependencies (react-dom,
 - [x] Lint passes
 
 ## Notes
+
 Root cause was twofold: (1) missing react-dom/react-native-web packages prevented Expo web server from starting, (2) components lacked testID attributes that Playwright getByTestId() looks for. The e2e tests themselves were not modified - only the app components were updated to expose testIDs.

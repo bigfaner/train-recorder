@@ -2113,13 +2113,7 @@
       "isMeta": false
     }
   ],
-  "skillsUsed": [
-    "clear",
-    "run-tasks",
-    "forge",
-    "learn-lesson",
-    "git-commit"
-  ],
+  "skillsUsed": ["clear", "run-tasks", "forge", "learn-lesson", "git-commit"],
   "hooks": [
     {
       "line": 2,

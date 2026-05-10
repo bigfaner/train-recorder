@@ -674,7 +674,7 @@
         "fix-6",
         "fix-7"
       ],
-      "status": "pending",
+      "status": "in_progress",
       "file": "run-e2e-tests.md",
       "record": "records/run-e2e-tests.md",
       "scope": "all"

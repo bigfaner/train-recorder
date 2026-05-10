@@ -1,0 +1,131 @@
+Exit code 1
+
+Running 128 tests using 1 worker
+
+  ✓    1 features\train-recorder\api.spec.ts:21:5 › API E2E Tests — Service Layer › Progressive Overload › TC-API-001: All sets met — increase weight by increment (4.7s)
+  ✘    2 features\train-recorder\api.spec.ts:33:5 › API E2E Tests — Service Layer › Progressive Overload › TC-API-002: Some sets missed — maintain weight (2.4s)
+  ✓    3 features\train-recorder\api.spec.ts:41:5 › API E2E Tests — Service Layer › Progressive Overload › TC-API-003: Consecutive 2 misses — decrease 10% (2.2s)
+  ✓    4 features\train-recorder\api.spec.ts:51:5 › API E2E Tests — Service Layer › Progressive Overload › TC-API-004: Independent increment per exercise (3.6s)
+  ✓    5 features\train-recorder\api.spec.ts:59:5 › API E2E Tests — Service Layer › Progressive Overload › TC-API-005: Custom weight does not affect next suggestion (2.1s)
+  ✓    6 features\train-recorder\api.spec.ts:69:5 › API E2E Tests — Service Layer › Progressive Overload › TC-API-006: New exercise returns null suggestion (5.7s)
+  ✘    7 features\train-recorder\api.spec.ts:79:5 › API E2E Tests — Service Layer › Progressive Overload › TC-API-007: Decrease rounds to plate combo (2.5s)
+  ✘    8 features\train-recorder\api.spec.ts:87:5 › API E2E Tests — Service Layer › Progressive Overload › TC-API-008: Three consecutive sessions met — increment tip (2.5s)
+  ✘    9 features\train-recorder\api.spec.ts:101:5 › API E2E Tests — Service Layer › Mid-workout Exit Overload › TC-API-009: Partial exit — completed exercises included in overload (2.6s)
+  ✘   10 features\train-recorder\api.spec.ts:111:5 › API E2E Tests — Service Layer › Mid-workout Exit Overload › TC-API-010: Mid-exit cancels running timer (2.5s)
+  ✘   11 features\train-recorder\api.spec.ts:123:5 › API E2E Tests — Service Layer › Retroactive Overload › TC-API-011: Retroactive record triggers chain recalculation (2.6s)
+  ✘   12 features\train-recorder\api.spec.ts:137:5 › API E2E Tests — Service Layer › Stats Calculations › TC-API-012: 1RM estimation formula (2.5s)
+  ✘   13 features\train-recorder\api.spec.ts:145:5 › API E2E Tests — Service Layer › Stats Calculations › TC-API-013: Week-over-week calculation (2.5s)
+  ✘   14 features\train-recorder\api.spec.ts:153:5 › API E2E Tests — Service Layer › Stats Calculations › TC-API-014: Training frequency heatmap intensity grading (2.5s)
+  ✘   15 features\train-recorder\ui.spec.ts:9:5 › Train Recorder UI E2E Tests › Plan Management › TC-UI-001: First-use empty state guide leads to plan creation (2.6s)
+  ✘   16 features\train-recorder\ui.spec.ts:20:5 › Train Recorder UI E2E Tests › Plan Management › TC-UI-002: Endless loop mode auto-scheduling (2.5s)
+  ✘   17 features\train-recorder\ui.spec.ts:33:5 › Train Recorder UI E2E Tests › Plan Management › TC-UI-003: Fixed cycle mode auto-scheduling (2.5s)
+  ✘   18 features\train-recorder\ui.spec.ts:48:5 › Train Recorder UI E2E Tests › Plan Management › TC-UI-004: Calendar today cell shows training type (2.6s)
+  ✘   19 features\train-recorder\ui.spec.ts:58:5 › Train Recorder UI E2E Tests › Plan Management › TC-UI-005: Switch plan reschedules calendar (2.5s)
+  ✘   20 features\train-recorder\ui.spec.ts:69:5 › Train Recorder UI E2E Tests › Plan Management › TC-UI-006: No rest day plan shows warning (2.5s)
+  ✘   21 features\train-recorder\ui.spec.ts:86:5 › Train Recorder UI E2E Tests › Workout Execution › TC-UI-007: Exercise card shows suggested weight and target sets (2.5s)
+  ✘   22 features\train-recorder\ui.spec.ts:101:5 › Train Recorder UI E2E Tests › Workout Execution › TC-UI-008: Complete set auto-starts rest countdown (2.5s)
+  ✘   23 features\train-recorder\ui.spec.ts:116:5 › Train Recorder UI E2E Tests › Workout Execution › TC-UI-009: Countdown timer vibration and sound at zero (2.6s)
+  ✘   24 features\train-recorder\ui.spec.ts:128:5 › Train Recorder UI E2E Tests › Workout Execution › TC-UI-010: Skip rest during countdown (2.5s)
+  ✘   25 features\train-recorder\ui.spec.ts:137:5 › Train Recorder UI E2E Tests › Workout Execution › TC-UI-011: Modified weight marked as custom (2.5s)
+  ✘   26 features\train-recorder\ui.spec.ts:149:5 › Train Recorder UI E2E Tests › Workout Execution › TC-UI-012: Complete set within 2 clicks (2.5s)
+  ✘   27 features\train-recorder\ui.spec.ts:159:5 › Train Recorder UI E2E Tests › Workout Execution › TC-UI-013: Add extra set after completing target (2.5s)
+  ✘   28 features\train-recorder\ui.spec.ts:173:5 › Train Recorder UI E2E Tests › Workout Execution › TC-UI-014: Mid-workout exit preserves completed data (2.5s)
+  ✘   29 features\train-recorder\ui.spec.ts:186:5 › Train Recorder UI E2E Tests › Workout Execution › TC-UI-015: Resume workout after background return (2.5s)
+  ✘   30 features\train-recorder\ui.spec.ts:202:5 › Train Recorder UI E2E Tests › History & Progress › TC-UI-016: Progress curve line chart renders (2.6s)
+  ✘   31 features\train-recorder\ui.spec.ts:211:5 › Train Recorder UI E2E Tests › History & Progress › TC-UI-017: PR notification after 
+
+... [16994 characters truncated] ...
+
+───────────────────────────────────────────────
+
+    Error Context: results\features-train-recorder-ap-e6bf7-rease-rounds-to-plate-combo\error-context.md
+
+  3) features\train-recorder\api.spec.ts:87:5 › API E2E Tests — Service Layer › Progressive Overload › TC-API-008: Three consecutive sessions met — increment tip 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:8081/workout
+    Call log:
+    [2m  - navigating to "http://localhost:8081/workout", waiting until "load"[22m
+
+
+      90 |       // Precondition: exercise met target for 3 consecutive sessions
+      91 |       // Expected: normal increment + tip "状态不错，考虑加大增量？"
+    > 92 |       await page.goto(`${baseUrl()}/workout`);
+         |                  ^
+      93 |       await screenshot(page, "TC-API-008");
+      94 |     });
+      95 |   });
+        at Z:\project\ai-coding\train-recorder\tests\e2e\features\train-recorder\api.spec.ts:92:18
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    results\features-train-recorder-ap-1669e-essions-met-—-increment-tip\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: results\features-train-recorder-ap-1669e-essions-met-—-increment-tip\error-context.md
+
+  4) features\train-recorder\api.spec.ts:101:5 › API E2E Tests — Service Layer › Mid-workout Exit Overload › TC-API-009: Partial exit — completed exercises included in overload 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:8081/workout
+    Call log:
+    [2m  - navigating to "http://localhost:8081/workout", waiting until "load"[22m
+
+
+      104 |       // Precondition: exit mid-workout, completed squat 3/5 sets, bench 0 sets
+      105 |       // Expected: squat overload based on 3 sets; bench unchanged
+    > 106 |       await page.goto(`${baseUrl()}/workout`);
+          |                  ^
+      107 |       await screenshot(page, "TC-API-009");
+      108 |     });
+      109 |
+        at Z:\project\ai-coding\train-recorder\tests\e2e\features\train-recorder\api.spec.ts:106:18
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    results\features-train-recorder-ap-97763-rcises-included-in-overload\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: results\features-train-recorder-ap-97763-rcises-included-in-overload\error-context.md
+
+  5) features\train-recorder\api.spec.ts:111:5 › API E2E Tests — Service Layer › Mid-workout Exit Overload › TC-API-010: Mid-exit cancels running timer 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:8081/workout
+    Call log:
+    [2m  - navigating to "http://localhost:8081/workout", waiting until "load"[22m
+
+
+      112 |       // Precondition: rest timer running during mid-workout exit
+      113 |       // Expected: timer.status = 'cancelled', no notification fired
+    > 114 |       await page.goto(`${baseUrl()}/workout`);
+          |                  ^
+      115 |       await screenshot(page, "TC-API-010");
+      116 |     });
+      117 |   });
+        at Z:\project\ai-coding\train-recorder\tests\e2e\features\train-recorder\api.spec.ts:114:18
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    results\features-train-recorder-ap-f69c0--exit-cancels-running-timer\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: results\features-train-recorder-ap-f69c0--exit-cancels-running-timer\error-context.md
+
+  6) features\train-recorder\api.spec.ts:123:5 › API E2E Tests — Service Layer › Retroactive Overload › TC-API-011: Retroactive record triggers chain recalculation 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:8081/workout
+    Call log:
+    [2m  - navigating to "http://localhost:8081/workout", waiting until "load"[22m
+
+
+      126 |       // Precondition: retroactive squat 85kg 3 days ago, then 1 session at 90kg
+      127 |       // Expected: chain recalculated, subsequent suggestions unchanged
+    > 128 |       await page.goto(`${baseUrl()}/workout`);
+          |                  ^
+      129 |       await screenshot(page, "TC-API-011");
+      130 |     });
+      131 |   });
+        at Z:\project\ai-coding\train-recorder\tests\e2e\features\train-recorder\api.spec.ts:128:18
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    results\features-train-recorder-ap-56264-riggers-chain-recalculation\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: results\features-train-recorder-ap-56264-riggers-chain-recalculation\error-context.md
+
+  7) features\train-recorder\api.spec.ts:137:5 › API E2E Tests

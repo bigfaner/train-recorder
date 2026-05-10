@@ -1,6 +1,6 @@
 ---
 status: "blocked"
-started: "2026-05-09 17:34"
+started: "2026-05-10 14:55"
 completed: "N/A"
 time_spent: ""
 ---
@@ -9,28 +9,30 @@ time_spent: ""
 
 ## Summary
 
-Executed 128 e2e tests via Playwright. All 128 tests failed due to missing Expo web server infrastructure. The app is a React Native/Expo mobile app that lacks web support dependencies (react-dom, react-native-web), so the Expo web dev server could not start at localhost:8081. Two failure modes: API specs use relative URLs without baseUrl() prefix (14 tests), and UI specs correctly reference localhost:8081 but server is unreachable (114 tests). Created fix task disc-1 to install web dependencies and fix API spec URL handling. Test results report generated at tests/e2e/features/train-recorder/results/latest.md.
+Executed e2e tests for train-recorder feature. 35/128 tests passed (14 API + 21 UI), 26 failed (all UI - missing testIDs), 67 skipped (globalTimeout). App health confirmed OK - no crash issues. Failures are due to missing testID props on UI components and empty-state pages for calendar/feeling/body-data tests.
 
 ## Changes
 
 ### Files Created
 
-- tests/e2e/features/train-recorder/results/latest.md
+无
 
 ### Files Modified
 
-无
+- tests/e2e/features/train-recorder/results/latest.md
 
 ### Key Decisions
 
-- Marked task as blocked per task instructions: do NOT attempt to fix failures inline, create fix tasks instead
-- Created fix task disc-1 (P0) to install Expo web dependencies (react-dom, react-native-web) and fix API spec relative URLs
-- Root cause is infrastructure: Expo web server cannot start because web dependencies are not installed
+- App health verified before running tests - server started manually, confirmed HTTP 200
+- Previous ExpoSQLite crash is resolved - app renders correctly with 35 passes
+- 26 UI test failures classified as test-level issues (missing testIDs), not app health
+- 67 tests did not run due to globalTimeout (1200s) consumed by 61 executed tests
 
 ## Test Results
 
-- **Passed**: 0
-- **Failed**: 128
+- **Tests Executed**: No
+- **Passed**: 35
+- **Failed**: 26
 - **Coverage**: N/A (task has no tests)
 
 ## Acceptance Criteria
@@ -40,4 +42,4 @@ Executed 128 e2e tests via Playwright. All 128 tests failed due to missing Expo 
 
 ## Notes
 
-All 128 tests failed due to single infrastructure issue: Expo web server not available. Fix task disc-1 created. After disc-1 is completed, T-test-3 should be restored to pending for re-run.
+26 failures need fix tasks: missing testIDs on history-record-_, body-record-_, exercise-item-\*, progress-tab, calendar-month-view, feeling page elements, other sports elements. Calendar tests (TC-UI-028~034) also show empty state instead of seeded data.

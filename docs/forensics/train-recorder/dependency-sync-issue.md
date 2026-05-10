@@ -57,6 +57,7 @@ The fix-task template contains:
 > When this task is recorded as completed via `task record`, the source task {{SOURCE_TASK_ID}} is **automatically restored to pending** if all its dependencies are completed.
 
 So using `--source-task-id T-test-3` would have given correct auto-restore behavior:
+
 - disc-2 completes → T-test-3 auto-restores to pending (if all deps met)
 - No manual index.json edits needed
 

@@ -23,6 +23,7 @@ Only 2 UI tests still fail: TC-UI-001 (empty state guide, create-plan-btn not fo
 ## Verification
 
 After fixing, verify the fix works:
+
 1. `just test [scope]` — must pass
 2. If UI/page related: `just test-e2e --feature <slug>` — must also pass
 

@@ -305,7 +305,7 @@
       "dependencies": [
         "3.gate"
       ],
-      "status": "pending",
+      "status": "completed",
       "file": "4.3-plan-screen.md",
       "record": "records/4.3-plan-screen.md",
       "scope": "frontend"

@@ -234,7 +234,7 @@
         "2.gate",
         "3.2"
       ],
-      "status": "pending",
+      "status": "completed",
       "file": "3.4-navigation-charts.md",
       "record": "records/3.4-navigation-charts.md",
       "scope": "frontend"

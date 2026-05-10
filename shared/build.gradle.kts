@@ -63,6 +63,7 @@ kotlin {
             implementation(libs.kotlin.test.annotations.common)
             implementation(libs.kotlinx.coroutines.test)
             implementation(libs.koin.test)
+            implementation(libs.kotlinx.datetime)
         }
 
         jvmMain.dependencies {

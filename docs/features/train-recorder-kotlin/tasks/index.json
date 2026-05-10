@@ -292,7 +292,7 @@
       "dependencies": [
         "3.gate"
       ],
-      "status": "pending",
+      "status": "completed",
       "file": "4.2-workout-screen.md",
       "record": "records/4.2-workout-screen.md",
       "scope": "frontend"

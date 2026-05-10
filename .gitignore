@@ -47,3 +47,4 @@ coverage-*.json
 lcov.info
 lcov-report/
 tests/e2e/results/
+.vscode/settings.json

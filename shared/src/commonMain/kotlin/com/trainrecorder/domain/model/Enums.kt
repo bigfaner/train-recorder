@@ -1,8 +1,11 @@
 package com.trainrecorder.domain.model
 
+import kotlinx.serialization.Serializable
+
 /**
  * Workout session status.
  */
+@Serializable
 enum class WorkoutStatus(val value: String) {
     IN_PROGRESS("in_progress"),
     COMPLETED("completed"),
@@ -18,6 +21,7 @@ enum class WorkoutStatus(val value: String) {
 /**
  * Exercise status within a workout.
  */
+@Serializable
 enum class ExerciseStatus(val value: String) {
     PENDING("pending"),
     IN_PROGRESS("in_progress"),
@@ -34,6 +38,7 @@ enum class ExerciseStatus(val value: String) {
 /**
  * Training type for workout sessions and training days.
  */
+@Serializable
 enum class TrainingType(val value: String) {
     PUSH("push"),
     PULL("pull"),
@@ -51,6 +56,7 @@ enum class TrainingType(val value: String) {
 /**
  * Weight unit preference.
  */
+@Serializable
 enum class WeightUnit(val value: String) {
     KG("kg"),
     LB("lb");
@@ -65,6 +71,7 @@ enum class WeightUnit(val value: String) {
 /**
  * Exercise category classification.
  */
+@Serializable
 enum class ExerciseCategory(val value: String) {
     CORE("core"),
     UPPER_PUSH("upper_push"),
@@ -84,6 +91,7 @@ enum class ExerciseCategory(val value: String) {
 /**
  * Plan schedule mode.
  */
+@Serializable
 enum class ScheduleDayType(val value: String) {
     WEEKLY_FIXED("weekly_fixed"),
     FIXED_INTERVAL("fixed_interval");
@@ -98,6 +106,7 @@ enum class ScheduleDayType(val value: String) {
 /**
  * Weight suggestion hint based on recent performance.
  */
+@Serializable
 enum class SuggestionHint(val value: String) {
     NONE("none"),
     GOOD_STATE("good_state"),
@@ -114,6 +123,7 @@ enum class SuggestionHint(val value: String) {
 /**
  * Exercise mode for sets configuration.
  */
+@Serializable
 enum class ExerciseMode(val value: String) {
     FIXED("fixed"),
     CUSTOM("custom");
@@ -128,6 +138,7 @@ enum class ExerciseMode(val value: String) {
 /**
  * Plan mode for training plans.
  */
+@Serializable
 enum class PlanMode(val value: String) {
     INFINITE_LOOP("infinite_loop"),
     FIXED_CYCLE("fixed_cycle");
@@ -142,6 +153,7 @@ enum class PlanMode(val value: String) {
 /**
  * Input type for other sport metrics.
  */
+@Serializable
 enum class MetricInputType(val value: String) {
     NUMBER("number"),
     TEXT("text");

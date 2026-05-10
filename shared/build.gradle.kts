@@ -10,6 +10,8 @@ plugins {
 kotlin {
     androidTarget()
 
+    jvm()
+
     listOf(
         iosX64(),
         iosArm64(),
@@ -63,9 +65,28 @@ kotlin {
             implementation(libs.koin.test)
         }
 
+        jvmMain.dependencies {
+            implementation(libs.sqldelight.sqlite.driver)
+        }
+
+        jvmTest.dependencies {
+            implementation(libs.sqldelight.sqlite.driver)
+            implementation(libs.kotlinx.datetime)
+            implementation(libs.kotlinx.coroutines.core)
+            implementation(libs.kotlinx.serialization.json)
+            implementation(libs.sqldelight.runtime)
+            implementation(libs.sqldelight.coroutines.extensions)
+        }
+
         androidMain.dependencies {
             implementation(libs.sqldelight.android.driver)
             implementation(libs.kotlinx.coroutines.android)
+        }
+
+        getByName("androidUnitTest") {
+            dependencies {
+                implementation(libs.sqldelight.sqlite.driver)
+            }
         }
 
         iosMain.dependencies {

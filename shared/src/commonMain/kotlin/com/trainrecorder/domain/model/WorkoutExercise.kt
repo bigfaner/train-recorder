@@ -1,7 +1,9 @@
 package com.trainrecorder.domain.model
 
 import kotlinx.datetime.Instant
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class WorkoutExercise(
     val id: String,
     val workoutSessionId: String,

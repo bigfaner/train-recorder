@@ -270,3 +270,174 @@ CREATE INDEX idx_body_date ON body_measurement(record_date);
 CREATE INDEX idx_sport_record_date ON other_sport_record(record_date);
 CREATE INDEX idx_sport_record_type ON other_sport_record(sport_type_id);
 CREATE INDEX idx_sport_metric_type ON other_sport_metric(sport_type_id);
+
+-- ============================================================
+-- Queries: Exercise
+-- ============================================================
+
+selectAllExercises:
+SELECT * FROM exercise ORDER BY created_at;
+
+selectExercisesByCategory:
+SELECT * FROM exercise WHERE category = ? ORDER BY created_at;
+
+selectExerciseById:
+SELECT * FROM exercise WHERE id = ?;
+
+searchExercises:
+SELECT * FROM exercise WHERE display_name LIKE '%' || ? || '%' ORDER BY created_at;
+
+insertExercise:
+INSERT INTO exercise(id, display_name, category, weight_increment, default_rest, is_custom, created_at, updated_at)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+
+insertOrIgnoreExercise:
+INSERT OR IGNORE INTO exercise(id, display_name, category, weight_increment, default_rest, is_custom, created_at, updated_at)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+
+updateExercise:
+UPDATE exercise
+SET display_name = ?, category = ?, weight_increment = ?, default_rest = ?, is_custom = ?, updated_at = ?
+WHERE id = ?;
+
+deleteExercise:
+DELETE FROM exercise WHERE id = ?;
+
+countExerciseReferences:
+SELECT COUNT(*) FROM training_day_exercise WHERE exercise_id = ?;
+
+-- ============================================================
+-- Queries: UserSettings
+-- ============================================================
+
+selectSettings:
+SELECT * FROM user_settings LIMIT 1;
+
+insertSettings:
+INSERT OR REPLACE INTO user_settings(id, weight_unit, default_rest_seconds, training_reminder_enabled, vibration_enabled, sound_enabled, onboarding_completed, updated_at)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+
+updateWeightUnit:
+UPDATE user_settings SET weight_unit = ?, updated_at = ? WHERE id = ?;
+
+updateDefaultRest:
+UPDATE user_settings SET default_rest_seconds = ?, updated_at = ? WHERE id = ?;
+
+updateNotifications:
+UPDATE user_settings SET training_reminder_enabled = ?, vibration_enabled = ?, sound_enabled = ?, updated_at = ? WHERE id = ?;
+
+completeOnboarding:
+UPDATE user_settings SET onboarding_completed = 1, updated_at = ? WHERE id = ?;
+
+countSettings:
+SELECT COUNT(*) FROM user_settings;
+
+-- ============================================================
+-- Queries: clearAllData (delete all user data, keep exercise + settings)
+-- ============================================================
+
+deleteAllExerciseSets:
+DELETE FROM exercise_set;
+
+deleteAllWorkoutExercises:
+DELETE FROM workout_exercise;
+
+deleteAllWorkoutFeelings:
+DELETE FROM workout_feeling;
+
+deleteAllExerciseFeelings:
+DELETE FROM exercise_feeling;
+
+deleteAllWorkoutSessions:
+DELETE FROM workout_session;
+
+deleteAllPersonalRecords:
+DELETE FROM personal_record;
+
+deleteAllWeightSuggestions:
+DELETE FROM weight_suggestion;
+
+deleteAllBodyMeasurements:
+DELETE FROM body_measurement;
+
+deleteAllOtherSportMetricValues:
+DELETE FROM other_sport_metric_value;
+
+deleteAllOtherSportRecords:
+DELETE FROM other_sport_record;
+
+deleteAllOtherSportMetrics:
+DELETE FROM other_sport_metric;
+
+deleteAllOtherSportTypes:
+DELETE FROM other_sport_type;
+
+deleteAllTimerStates:
+DELETE FROM timer_state;
+
+deleteAllTrainingDaySetConfigs:
+DELETE FROM training_day_set_config;
+
+deleteAllTrainingDayExercises:
+DELETE FROM training_day_exercise;
+
+deleteAllTrainingDays:
+DELETE FROM training_day;
+
+deleteAllTrainingPlans:
+DELETE FROM training_plan;
+
+-- ============================================================
+-- Queries: export data (for all tables)
+-- ============================================================
+
+selectAllWorkoutSessions:
+SELECT * FROM workout_session;
+
+selectAllWorkoutExercises:
+SELECT * FROM workout_exercise;
+
+selectAllExerciseSets:
+SELECT * FROM exercise_set;
+
+selectAllWorkoutFeelings:
+SELECT * FROM workout_feeling;
+
+selectAllExerciseFeelings:
+SELECT * FROM exercise_feeling;
+
+selectAllPersonalRecords:
+SELECT * FROM personal_record;
+
+selectAllWeightSuggestions:
+SELECT * FROM weight_suggestion;
+
+selectAllBodyMeasurements:
+SELECT * FROM body_measurement;
+
+selectAllOtherSportTypes:
+SELECT * FROM other_sport_type;
+
+selectAllOtherSportMetrics:
+SELECT * FROM other_sport_metric;
+
+selectAllOtherSportRecords:
+SELECT * FROM other_sport_record;
+
+selectAllOtherSportMetricValues:
+SELECT * FROM other_sport_metric_value;
+
+selectAllTimerStates:
+SELECT * FROM timer_state;
+
+selectAllTrainingPlans:
+SELECT * FROM training_plan;
+
+selectAllTrainingDays:
+SELECT * FROM training_day;
+
+selectAllTrainingDayExercises:
+SELECT * FROM training_day_exercise;
+
+selectAllTrainingDaySetConfigs:
+SELECT * FROM training_day_set_config;

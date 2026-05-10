@@ -108,7 +108,7 @@
       "dependencies": [
         "1.gate"
       ],
-      "status": "pending",
+      "status": "completed",
       "file": "2.1-repo-exercise-settings.md",
       "record": "records/2.1-repo-exercise-settings.md",
       "scope": "backend"

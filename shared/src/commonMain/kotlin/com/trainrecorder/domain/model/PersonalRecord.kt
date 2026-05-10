@@ -2,7 +2,9 @@ package com.trainrecorder.domain.model
 
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class PersonalRecord(
     val id: String,
     val exerciseId: String,

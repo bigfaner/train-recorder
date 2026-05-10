@@ -426,4 +426,36 @@ class CalendarViewModelTest {
         val ym = YearMonth(2024, 2)
         assertEquals(LocalDate(2024, 2, 29), ym.endDate())
     }
+
+    @Test
+    fun `YearMonth plus advances month correctly`() {
+        val ym = YearMonth(2026, 5)
+        assertEquals(YearMonth(2026, 6), ym.plus(1))
+        assertEquals(YearMonth(2026, 7), ym.plus(2))
+        assertEquals(YearMonth(2027, 1), ym.plus(8))
+        assertEquals(YearMonth(2027, 5), ym.plus(12))
+    }
+
+    @Test
+    fun `YearMonth minus goes back month correctly`() {
+        val ym = YearMonth(2026, 5)
+        assertEquals(YearMonth(2026, 4), ym.minus(1))
+        assertEquals(YearMonth(2026, 1), ym.minus(4))
+        assertEquals(YearMonth(2025, 12), ym.minus(5))
+        assertEquals(YearMonth(2025, 5), ym.minus(12))
+    }
+
+    @Test
+    fun `YearMonth plus wraps year boundary`() {
+        val ym = YearMonth(2026, 12)
+        assertEquals(YearMonth(2027, 1), ym.plus(1))
+        assertEquals(YearMonth(2027, 6), ym.plus(6))
+    }
+
+    @Test
+    fun `YearMonth minus wraps year boundary`() {
+        val ym = YearMonth(2026, 1)
+        assertEquals(YearMonth(2025, 12), ym.minus(1))
+        assertEquals(YearMonth(2025, 7), ym.minus(6))
+    }
 }

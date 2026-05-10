@@ -41,6 +41,21 @@ data class YearMonth(
         return nextMonthStart.minus(1, DateTimeUnit.DAY)
     }
 
+    /**
+     * Add [months] to this YearMonth, wrapping year as needed.
+     */
+    fun plus(months: Int): YearMonth {
+        val totalMonths = (year * 12 + (monthNumber - 1)) + months
+        val newYear = totalMonths / 12
+        val newMonth = (totalMonths % 12) + 1
+        return YearMonth(newYear, newMonth)
+    }
+
+    /**
+     * Subtract [months] from this YearMonth, wrapping year as needed.
+     */
+    fun minus(months: Int): YearMonth = plus(-months)
+
     companion object {
         fun from(date: LocalDate): YearMonth = YearMonth(date.year, date.monthNumber)
     }

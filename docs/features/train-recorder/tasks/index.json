@@ -560,6 +560,43 @@
       "breaking": true,
       "sourceTaskID": "T-test-3"
     },
+    "fix-3": {
+      "id": "fix-3",
+      "title": "Fix: plan-editor.tsx save button broken — controlled component without prop injection",
+      "priority": "P0",
+      "estimatedTime": "1h",
+      "status": "completed",
+      "file": "fix-3.md",
+      "record": "records/fix-3.md",
+      "breaking": true,
+      "sourceTaskID": "T-test-3"
+    },
+    "fix-4": {
+      "id": "fix-4",
+      "title": "Fix: Missing testIDs on feeling, calendar, other-sport, body-data, workout pages",
+      "priority": "P0",
+      "estimatedTime": "2h",
+      "status": "pending",
+      "file": "fix-4.md",
+      "record": "records/fix-4.md",
+      "breaking": true,
+      "sourceTaskID": "T-test-3"
+    },
+    "fix-5": {
+      "id": "fix-5",
+      "title": "Fix: Add e2e data seeding mechanism — tests fail on empty state",
+      "priority": "P0",
+      "estimatedTime": "2h",
+      "dependencies": [
+        "fix-3",
+        "fix-4"
+      ],
+      "status": "pending",
+      "file": "fix-5.md",
+      "record": "records/fix-5.md",
+      "breaking": true,
+      "sourceTaskID": "T-test-3"
+    },
     "gen-test-cases": {
       "id": "T-test-1",
       "title": "Generate e2e Test Cases",
@@ -608,9 +645,12 @@
         "T-test-2",
         "disc-4",
         "fix-1",
-        "fix-2"
+        "fix-2",
+        "fix-3",
+        "fix-4",
+        "fix-5"
       ],
-      "status": "pending",
+      "status": "blocked",
       "file": "run-e2e-tests.md",
       "record": "records/run-e2e-tests.md",
       "scope": "all"

@@ -223,6 +223,45 @@ describe("plan-helpers", () => {
       });
       expect(result.warnings).toHaveLength(0);
     });
+
+    it("skips exercise check when skipExerciseCheck is true", () => {
+      const result = validatePlan(
+        {
+          planName: "test",
+          planMode: "infinite_loop",
+          scheduleMode: "weekly_fixed",
+          cycleLength: null,
+          restDays: 1,
+          trainingDays: [
+            {
+              dayName: "推日",
+              trainingType: "push",
+              exercises: [],
+            },
+          ],
+        },
+        { skipExerciseCheck: true },
+      );
+      expect(result.isValid).toBe(true);
+      expect(result.errors).toHaveLength(0);
+    });
+
+    it("still checks name and days even with skipExerciseCheck", () => {
+      const result = validatePlan(
+        {
+          planName: "",
+          planMode: "infinite_loop",
+          scheduleMode: "weekly_fixed",
+          cycleLength: null,
+          restDays: 1,
+          trainingDays: [],
+        },
+        { skipExerciseCheck: true },
+      );
+      expect(result.isValid).toBe(false);
+      expect(result.errors).toContain("请输入计划名称");
+      expect(result.errors).toContain("至少需要 1 个训练日");
+    });
   });
 
   // ============================================================

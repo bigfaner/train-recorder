@@ -41,6 +41,27 @@ jest.mock("expo-router", () => ({
   useLocalSearchParams: () => ({}),
 }));
 
+// Mock database module for self-contained plan-editor page
+jest.mock("../../../src/db/database", () => ({
+  getDatabase: jest.fn(),
+  getSnowflakeGenerator: () => ({
+    generate: () => BigInt(Date.now()),
+    generateBatch: (n: number) =>
+      Array.from({ length: n }, () => BigInt(Date.now())),
+  }),
+}));
+
+jest.mock("../../../src/db/database-adapter", () => ({}));
+
+// Mock DB repositories
+jest.mock("../../../src/db/repositories/training-plan.repo", () => ({
+  createTrainingPlanRepo: jest.fn(),
+}));
+
+jest.mock("../../../src/db/repositories/training-day.repo", () => ({
+  createTrainingDayRepo: jest.fn(),
+}));
+
 describe("Plan Component Modules", () => {
   it("ActivePlanCard module exports component", () => {
     const module = require("@components/plan/ActivePlanCard");
@@ -101,6 +122,12 @@ describe("Plan Page Modules", () => {
   it("plan editor page exports default function", () => {
     const module = require("../../../app/plan-editor");
     expect(typeof module.default).toBe("function");
+  });
+
+  it("plan editor page exports PlanEditorScreen as named export", () => {
+    const module = require("../../../app/plan-editor");
+    expect(typeof module.PlanEditorScreen).toBe("function");
+    expect(typeof module.PlanEditorScreenProps).toBe("undefined"); // interface only
   });
 
   it("training day editor page exports default function", () => {

@@ -27,21 +27,24 @@ export interface PlanValidationResult {
  * Validate a plan before saving.
  * - name must not be empty
  * - at least 1 training day
- * - each day must have at least 1 exercise
+ * - each day must have at least 1 exercise (unless skipExerciseCheck)
  * - warn if >= 7 training days with no rest days
  */
-export function validatePlan(data: {
-  planName: string;
-  planMode: "fixed_cycle" | "infinite_loop";
-  scheduleMode: "weekly_fixed" | "fixed_interval";
-  cycleLength: number | null;
-  restDays: number;
-  trainingDays: {
-    dayName: string;
-    trainingType: "push" | "pull" | "legs" | "custom";
-    exercises: PlanExercise[];
-  }[];
-}): PlanValidationResult {
+export function validatePlan(
+  data: {
+    planName: string;
+    planMode: "fixed_cycle" | "infinite_loop";
+    scheduleMode: "weekly_fixed" | "fixed_interval";
+    cycleLength: number | null;
+    restDays: number;
+    trainingDays: {
+      dayName: string;
+      trainingType: "push" | "pull" | "legs" | "custom";
+      exercises: PlanExercise[];
+    }[];
+  },
+  options?: { skipExerciseCheck?: boolean },
+): PlanValidationResult {
   const errors: string[] = [];
   const warnings: string[] = [];
 
@@ -55,12 +58,14 @@ export function validatePlan(data: {
     errors.push("至少需要 1 个训练日");
   }
 
-  // Each day must have at least 1 exercise
-  data.trainingDays.forEach((day, i) => {
-    if (day.exercises.length === 0) {
-      errors.push(`${day.dayName || `Day ${i + 1}`} 需要至少 1 个动作`);
-    }
-  });
+  // Each day must have at least 1 exercise (unless skipped for plan-editor flow)
+  if (!options?.skipExerciseCheck) {
+    data.trainingDays.forEach((day, i) => {
+      if (day.exercises.length === 0) {
+        errors.push(`${day.dayName || `Day ${i + 1}`} 需要至少 1 个动作`);
+      }
+    });
+  }
 
   // Fixed cycle needs cycle_length
   if (data.planMode === "fixed_cycle") {

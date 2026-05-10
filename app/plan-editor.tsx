@@ -8,9 +8,12 @@
  * - Weekly fixed: weekday toggle buttons, assign training type per weekday
  * - Fixed interval: rest days stepper, training day order list
  * - Save validation
+ *
+ * Default export is a self-contained expo-router page.
+ * Named export `PlanEditorScreen` is the controlled component for reuse within tabs.
  */
 
-import React, { useState, useCallback, useMemo } from "react";
+import React, { useState, useCallback, useMemo, useEffect } from "react";
 import {
   View,
   Text,
@@ -19,7 +22,7 @@ import {
   TextInput,
   Alert,
 } from "react-native";
-import { useRouter } from "expo-router";
+import { useRouter, useLocalSearchParams } from "expo-router";
 import { Colors, Typography, Spacing, ComponentSizes } from "@utils/constants";
 import type { TrainingPlan, TrainingDay } from "../src/types";
 import {
@@ -30,6 +33,15 @@ import {
 } from "../src/components/plan";
 import { Button } from "../src/components/ui/Button";
 import { Card } from "../src/components/ui/Card";
+import { getDatabase, getSnowflakeGenerator } from "../src/db/database";
+import type { DatabaseAdapter } from "../src/db/database-adapter";
+import { createTrainingPlanRepo } from "../src/db/repositories/training-plan.repo";
+import { createTrainingDayRepo } from "../src/db/repositories/training-day.repo";
+
+/** Cast SQLiteDatabase to DatabaseAdapter for repo creation */
+function getDbAdapter(): DatabaseAdapter {
+  return getDatabase() as unknown as DatabaseAdapter;
+}
 
 // ============================================================
 // Types for editor state
@@ -57,7 +69,7 @@ export interface PlanEditorScreenProps {
   existingPlan: TrainingPlan | null;
   /** Existing training days for editing */
   existingDays: TrainingDay[];
-  /** Save callback */
+  /** Save callback — receives final trainingDays (derived from weeklyDayMap for weekly_fixed mode) */
   onSave: (data: {
     planName: string;
     planMode: "fixed_cycle" | "infinite_loop";
@@ -65,11 +77,179 @@ export interface PlanEditorScreenProps {
     scheduleMode: "weekly_fixed" | "fixed_interval";
     restDays: number;
     weeklyConfig: string | null;
+    /** Final training days (from weeklyDayMap for weekly_fixed, from drafts for fixed_interval) */
     trainingDays: TrainingDayDraft[];
   }) => Promise<void>;
 }
 
-export default function PlanEditorScreen({
+// ============================================================
+// Self-contained expo-router page (default export)
+// ============================================================
+
+export default function PlanEditorPage() {
+  const router = useRouter();
+  const params = useLocalSearchParams<{ planBizKey?: string }>();
+
+  const [existingPlan, setExistingPlan] = useState<TrainingPlan | null>(null);
+  const [existingDays, setExistingDays] = useState<TrainingDay[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Load existing plan data when editing
+  useEffect(() => {
+    if (!params.planBizKey) {
+      setIsLoading(false);
+      return;
+    }
+    const db = getDbAdapter();
+    const planRepo = createTrainingPlanRepo(db);
+    const dayRepo = createTrainingDayRepo(db);
+
+    const plan = planRepo.findByBizKey(BigInt(params.planBizKey));
+    if (plan) {
+      setExistingPlan(plan);
+      const days = dayRepo.findByPlanBizKey(plan.biz_key);
+      setExistingDays(days);
+    }
+    setIsLoading(false);
+  }, [params.planBizKey]);
+
+  // Internal save handler using DB repos
+  const handleSave = useCallback(
+    async (data: {
+      planName: string;
+      planMode: "fixed_cycle" | "infinite_loop";
+      cycleLength: number | null;
+      scheduleMode: "weekly_fixed" | "fixed_interval";
+      restDays: number;
+      weeklyConfig: string | null;
+      trainingDays: TrainingDayDraft[];
+    }) => {
+      const db = getDbAdapter();
+      const snowflake = getSnowflakeGenerator();
+      const planRepo = createTrainingPlanRepo(db);
+      const dayRepo = createTrainingDayRepo(db);
+      const now = new Date().toISOString();
+
+      if (existingPlan) {
+        // Update existing plan
+        planRepo.update(existingPlan.id, {
+          plan_name: data.planName,
+          plan_mode: data.planMode,
+          cycle_length: data.cycleLength,
+          schedule_mode: data.scheduleMode,
+          rest_days: data.restDays,
+          weekly_config: data.weeklyConfig,
+          updated_at: now,
+        } as Partial<TrainingPlan>);
+
+        // Delete old training days and recreate
+        const oldDays = dayRepo.findByPlanBizKey(existingPlan.biz_key);
+        for (const oldDay of oldDays) {
+          dayRepo.deleteById(oldDay.id);
+        }
+
+        // Create new training days (data.trainingDays already derived from weeklyDayMap)
+        for (let i = 0; i < data.trainingDays.length; i++) {
+          const d = data.trainingDays[i]!;
+          dayRepo.createDay({
+            biz_key: snowflake.generate(),
+            plan_biz_key: existingPlan.biz_key,
+            day_name: d.dayName,
+            training_type: d.trainingType,
+            order_index: i,
+            created_at: now,
+            updated_at: now,
+          });
+        }
+      } else {
+        // Create new plan
+        const planBizKey = snowflake.generate();
+        const plan = planRepo.createPlan({
+          biz_key: planBizKey,
+          plan_name: data.planName,
+          plan_mode: data.planMode,
+          cycle_length: data.cycleLength,
+          schedule_mode: data.scheduleMode,
+          rest_days: data.restDays,
+          weekly_config: data.weeklyConfig,
+          is_active: 0,
+          created_at: now,
+          updated_at: now,
+        });
+
+        // Create training days (data.trainingDays already derived from weeklyDayMap)
+        for (let i = 0; i < data.trainingDays.length; i++) {
+          const d = data.trainingDays[i]!;
+          dayRepo.createDay({
+            biz_key: snowflake.generate(),
+            plan_biz_key: plan.biz_key,
+            day_name: d.dayName,
+            training_type: d.trainingType,
+            order_index: i,
+            created_at: now,
+            updated_at: now,
+          });
+        }
+      }
+
+      router.back();
+    },
+    [existingPlan, router],
+  );
+
+  if (isLoading) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.pageTitle}>加载中...</Text>
+      </View>
+    );
+  }
+
+  return (
+    <PlanEditorScreen
+      existingPlan={existingPlan}
+      existingDays={existingDays}
+      onSave={handleSave}
+    />
+  );
+}
+
+/**
+ * Build training day drafts from weeklyDayMap for weekly_fixed mode.
+ * Each selected weekday becomes a training day draft.
+ */
+function buildTrainingDaysFromWeekly(
+  weeklyDayMap: Record<number, "push" | "pull" | "legs" | "custom" | null>,
+): TrainingDayDraft[] {
+  const days: TrainingDayDraft[] = [];
+  const weekdayLabels: Record<number, string> = {
+    1: "周一",
+    2: "周二",
+    3: "周三",
+    4: "周四",
+    5: "周五",
+    6: "周六",
+    7: "周日",
+  };
+  for (const [dayStr, type] of Object.entries(weeklyDayMap)) {
+    if (type !== null) {
+      const day = parseInt(dayStr, 10);
+      days.push({
+        tempId: `wd-${day}`,
+        dayName: weekdayLabels[day] ?? `周${getWeekdayLabel(day)}`,
+        trainingType: type,
+        orderIndex: days.length,
+      });
+    }
+  }
+  return days;
+}
+
+// ============================================================
+// Controlled component (named export for reuse)
+// ============================================================
+
+export function PlanEditorScreen({
   existingPlan,
   existingDays,
   onSave,
@@ -245,18 +425,27 @@ export default function PlanEditorScreen({
   // ============================================================
 
   const handleSave = useCallback(async () => {
-    const validation = validatePlan({
-      planName: state.planName,
-      planMode: state.planMode,
-      scheduleMode: state.scheduleMode,
-      cycleLength: state.cycleLength,
-      restDays: state.restDays,
-      trainingDays: state.trainingDays.map((d) => ({
-        dayName: d.dayName,
-        trainingType: d.trainingType,
-        exercises: [], // Exercises are configured in training-day-editor
-      })),
-    });
+    // Build trainingDays for validation based on schedule mode
+    const validationDays =
+      state.scheduleMode === "weekly_fixed"
+        ? buildTrainingDaysFromWeekly(state.weeklyDayMap)
+        : state.trainingDays;
+
+    const validation = validatePlan(
+      {
+        planName: state.planName,
+        planMode: state.planMode,
+        scheduleMode: state.scheduleMode,
+        cycleLength: state.cycleLength,
+        restDays: state.restDays,
+        trainingDays: validationDays.map((d) => ({
+          dayName: d.dayName,
+          trainingType: d.trainingType,
+          exercises: [], // Exercises are configured in training-day-editor
+        })),
+      },
+      { skipExerciseCheck: true },
+    );
 
     if (!validation.isValid) {
       Alert.alert("保存失败", validation.errors.join("\n"));
@@ -270,6 +459,12 @@ export default function PlanEditorScreen({
     // Build weekly_config from weeklyDayMap
     const weeklyConfig = buildWeeklyConfig(state);
 
+    // Derive final trainingDays based on schedule mode
+    const finalTrainingDays =
+      state.scheduleMode === "weekly_fixed"
+        ? buildTrainingDaysFromWeekly(state.weeklyDayMap)
+        : state.trainingDays;
+
     setIsSaving(true);
     try {
       await onSave({
@@ -279,16 +474,15 @@ export default function PlanEditorScreen({
         scheduleMode: state.scheduleMode,
         restDays: state.restDays,
         weeklyConfig,
-        trainingDays: state.trainingDays,
+        trainingDays: finalTrainingDays,
       });
       setSaveFeedback("saved");
-      router.back();
     } catch (e) {
       Alert.alert("保存失败", (e as Error).message);
     } finally {
       setIsSaving(false);
     }
-  }, [state, onSave, router]);
+  }, [state, onSave]);
 
   // ============================================================
   // Render

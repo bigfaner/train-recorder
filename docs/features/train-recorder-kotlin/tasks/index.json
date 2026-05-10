@@ -220,7 +220,7 @@
       "dependencies": [
         "2.gate"
       ],
-      "status": "pending",
+      "status": "completed",
       "file": "3.3-supporting-viewmodels.md",
       "record": "records/3.3-supporting-viewmodels.md",
       "scope": "all"

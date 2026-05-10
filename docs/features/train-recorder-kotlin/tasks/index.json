@@ -332,7 +332,7 @@
       "dependencies": [
         "3.gate"
       ],
-      "status": "pending",
+      "status": "completed",
       "file": "4.5-remaining-screens.md",
       "record": "records/4.5-remaining-screens.md",
       "scope": "frontend"

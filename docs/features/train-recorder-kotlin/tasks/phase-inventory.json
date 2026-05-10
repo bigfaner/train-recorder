@@ -1,0 +1,7 @@
+[
+  {"phase": 1, "name": "Foundation", "source": "fallback", "gates": [{"afterPhase": 1, "description": "Project builds, all tables created, all models and interfaces compile"}]},
+  {"phase": 2, "name": "Business Logic", "source": "fallback", "gates": [{"afterPhase": 2, "description": "All repositories functional, use cases pass unit tests, timer runs on both platforms"}]},
+  {"phase": 3, "name": "Presentation Layer", "source": "fallback", "gates": [{"afterPhase": 3, "description": "All ViewModels produce correct state, navigation graph routes correctly, chart components render"}]},
+  {"phase": 4, "name": "UI Screens", "source": "fallback", "gates": [{"afterPhase": 4, "description": "All 10 screens render correctly, end-to-end training flow works"}]},
+  {"phase": 5, "name": "Integration", "source": "fallback", "gates": [{"afterPhase": 5, "description": "App launches on Android and iOS, full feature set functional"}]}
+]

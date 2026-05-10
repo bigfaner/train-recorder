@@ -5,6 +5,7 @@ import com.trainrecorder.domain.model.SuggestionHint
 import com.trainrecorder.domain.model.WorkoutExercise
 import com.trainrecorder.domain.repository.WorkoutExerciseWithSets
 import kotlin.math.floor
+import kotlin.math.round
 
 /**
  * Result of weight suggestion calculation for an exercise.
@@ -96,7 +97,7 @@ class WeightSuggester {
     }
 
     private fun roundToIncrement(value: Double, increment: Double): Double =
-        Math.round(value / increment) * increment
+        round(value / increment) * increment
 
     private fun roundDownToIncrement(value: Double, increment: Double): Double =
         floor(value / increment) * increment

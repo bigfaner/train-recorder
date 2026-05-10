@@ -21,36 +21,107 @@ import {
 } from "../../src/components/calendar";
 import type { FilterType } from "../../src/components/calendar/CalendarFilterTabs";
 import { getTodayISO, parseISODate } from "../../src/utils/date";
+import { getDatabase } from "../../src/db/database";
+import type { DatabaseAdapter } from "../../src/db/database-adapter";
+import { createTrainingPlanRepo } from "../../src/db/repositories/training-plan.repo";
+import { createTrainingDayRepo } from "../../src/db/repositories/training-day.repo";
+import { createWorkoutSessionRepo } from "../../src/db/repositories/workout-session.repo";
 
-// Placeholder hook — the real useCalendar requires DB deps.
-// In production, inject via context or a provider.
-// For now, this page manages its own state and accepts injected props.
-export interface CalendarScreenProps {
-  /** Active training plan */
-  plan: TrainingPlan | null;
-  /** Training days for the plan */
-  trainingDays: TrainingDay[];
-  /** Calendar computation hook result */
-  calendarDays: CalendarDay[];
-  /** Compute month callback */
-  computeMonth: (year: number, month: number) => Promise<void>;
-  /** Skip training day */
-  skipTrainingDay: (date: string) => Promise<void>;
-  /** Unskip training day */
-  unskipTrainingDay: (date: string) => Promise<void>;
-  /** Loading state */
-  isLoading: boolean;
+function getDbAdapter(): DatabaseAdapter {
+  return getDatabase() as unknown as DatabaseAdapter;
 }
 
-export default function CalendarScreen({
-  plan,
-  trainingDays: _trainingDays,
-  calendarDays,
-  computeMonth,
-  skipTrainingDay,
-  unskipTrainingDay,
-  isLoading: isLoadingProp,
-}: CalendarScreenProps) {
+/**
+ * Build CalendarDay[] for a given month from DB data.
+ */
+function buildCalendarDays(
+  year: number,
+  month: number,
+  plan: TrainingPlan,
+  trainingDays: TrainingDay[],
+): CalendarDay[] {
+  const db = getDbAdapter();
+  const sessionRepo = createWorkoutSessionRepo(db);
+  const todayStr = getTodayISO();
+
+  // Build weekday -> training type map from plan's weekly_config
+  const weeklyConfig: Record<string, string | null> = (() => {
+    try {
+      return plan.weekly_config ? JSON.parse(plan.weekly_config) : {};
+    } catch {
+      return {};
+    }
+  })();
+
+  // Get total days in month
+  const totalDays = new Date(year, month, 0).getDate();
+  const days: CalendarDay[] = [];
+
+  // Get sessions for this month range
+  const startDate = `${year}-${String(month).padStart(2, "0")}-01`;
+  const endDate = `${year}-${String(month).padStart(2, "0")}-${String(totalDays).padStart(2, "0")}`;
+  const sessions = sessionRepo.findByDateRange(startDate, endDate);
+
+  // Build session map by date
+  const sessionMap = new Map<string, (typeof sessions)[0]>();
+  for (const s of sessions) {
+    sessionMap.set(s.session_date, s);
+  }
+
+  for (let d = 1; d <= totalDays; d++) {
+    const dateStr = `${year}-${String(month).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+    const dayOfWeek = new Date(year, month - 1, d).getDay();
+    // Convert Sunday=0 to ISO weekday (Mon=1...Sun=7)
+    const isoWeekday = dayOfWeek === 0 ? 7 : dayOfWeek;
+
+    const session = sessionMap.get(dateStr) ?? null;
+    const trainingType = weeklyConfig[String(isoWeekday)] ?? null;
+
+    // Find matching training day
+    const matchingDay = trainingType
+      ? (trainingDays.find((td) => td.training_type === trainingType) ?? null)
+      : null;
+
+    // Determine day type
+    let dayType: CalendarDay["dayType"] = "rest";
+    const isSkipped = false;
+
+    if (session) {
+      if (session.session_status === "completed") {
+        dayType = "completed";
+      } else if (session.session_status === "completed_partial") {
+        dayType = "completed_partial";
+      }
+    } else if (trainingType) {
+      dayType = "training";
+    }
+
+    // Check if past training day was skipped
+    if (trainingType && !session && dateStr < todayStr) {
+      // A training day in the past without a session could be considered skipped
+      // but for now we leave it as "training" (the UI shows "补录训练")
+    }
+
+    days.push({
+      date: dateStr,
+      trainingDay: matchingDay
+        ? {
+            ...matchingDay,
+            training_type: trainingType as "push" | "pull" | "legs" | "custom",
+          }
+        : null,
+      workoutSession: session,
+      otherSport: null,
+      isSkipped,
+      consecutiveSkips: 0,
+      dayType,
+    });
+  }
+
+  return days;
+}
+
+export default function CalendarScreen() {
   const router = useRouter();
 
   // Current viewed month (defaults to today)
@@ -64,18 +135,38 @@ export default function CalendarScreen({
   // Filter type
   const [filterType, setFilterType] = useState<FilterType>(null);
 
-  // Load calendar data on month change
+  // Load plan and calendar data from DB
+  const [plan, setPlan] = useState<TrainingPlan | null>(null);
+  const [trainingDays, setTrainingDays] = useState<TrainingDay[]>([]);
+  const [calendarDays, setCalendarDays] = useState<CalendarDay[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Load plan on mount
+  useEffect(() => {
+    try {
+      const db = getDbAdapter();
+      const planRepo = createTrainingPlanRepo(db);
+      const dayRepo = createTrainingDayRepo(db);
+
+      const activePlan = planRepo.findActive();
+      if (activePlan) {
+        setPlan(activePlan);
+        const days = dayRepo.findByPlanBizKey(activePlan.biz_key);
+        setTrainingDays(days);
+      }
+    } catch {
+      // DB not available (e.g. during SSR or before DB init)
+    }
+    setIsLoading(false);
+  }, []);
+
+  // Load calendar days when month changes or plan loads
   useEffect(() => {
     if (plan) {
-      computeMonth(viewYear, viewMonth);
+      const days = buildCalendarDays(viewYear, viewMonth, plan, trainingDays);
+      setCalendarDays(days);
     }
-  }, [viewYear, viewMonth, plan, computeMonth]);
-
-  // Get selected calendar day
-  const selectedDay = useMemo(() => {
-    if (!selectedDate) return null;
-    return calendarDays.find((d) => d.date === selectedDate) ?? null;
-  }, [selectedDate, calendarDays]);
+  }, [viewYear, viewMonth, plan, trainingDays]);
 
   // Month navigation
   const handlePrevMonth = useCallback(() => {
@@ -102,6 +193,12 @@ export default function CalendarScreen({
   const handleDateSelect = useCallback((date: string) => {
     setSelectedDate((prev) => (prev === date ? null : date));
   }, []);
+
+  // Get selected calendar day
+  const selectedDay = useMemo(() => {
+    if (!selectedDate) return null;
+    return calendarDays.find((d) => d.date === selectedDate) ?? null;
+  }, [selectedDate, calendarDays]);
 
   // Navigation handlers
   const handleStartWorkout = useCallback(
@@ -138,32 +235,41 @@ export default function CalendarScreen({
     router.push("/plan-editor");
   }, [router]);
 
-  // Skip/Unskip
-  const handleSkipDay = useCallback(
-    async (date: string) => {
-      Alert.alert("跳过训练", "确定要跳过这一天的训练吗？", [
-        { text: "取消", style: "cancel" },
-        {
-          text: "确定",
-          style: "destructive",
-          onPress: async () => {
-            await skipTrainingDay(date);
-            // Refresh calendar
-            computeMonth(viewYear, viewMonth);
-          },
+  const handleSkipDay = useCallback(async (date: string) => {
+    Alert.alert("跳过训练", "确定要跳过这一天的训练吗？", [
+      { text: "取消", style: "cancel" },
+      {
+        text: "确定",
+        style: "destructive",
+        onPress: () => {
+          // Mark as skipped in calendar days
+          setCalendarDays((prev) =>
+            prev.map((d) =>
+              d.date === date
+                ? { ...d, isSkipped: true, dayType: "skipped" as const }
+                : d,
+            ),
+          );
         },
-      ]);
-    },
-    [skipTrainingDay, computeMonth, viewYear, viewMonth],
-  );
+      },
+    ]);
+  }, []);
 
-  const handleUnskipDay = useCallback(
-    async (date: string) => {
-      await unskipTrainingDay(date);
-      computeMonth(viewYear, viewMonth);
-    },
-    [unskipTrainingDay, computeMonth, viewYear, viewMonth],
-  );
+  const handleUnskipDay = useCallback(async (date: string) => {
+    setCalendarDays((prev) =>
+      prev.map((d) =>
+        d.date === date
+          ? {
+              ...d,
+              isSkipped: false,
+              dayType: d.trainingDay
+                ? ("training" as const)
+                : ("rest" as const),
+            }
+          : d,
+      ),
+    );
+  }, []);
 
   // No plan - show empty state
   if (!plan) {
@@ -191,7 +297,7 @@ export default function CalendarScreen({
       />
 
       {/* Month grid */}
-      {isLoadingProp ? (
+      {isLoading ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={Colors.accent} />
         </View>

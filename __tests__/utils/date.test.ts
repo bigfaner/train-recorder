@@ -39,6 +39,27 @@ jest.mock("expo-router", () => ({
   }),
 }));
 
+jest.mock("../../src/db/database", () => ({
+  getDatabase: jest.fn(() => ({})),
+  getSnowflakeGenerator: jest.fn(() => ({ generate: () => BigInt(1) })),
+}));
+jest.mock("../../src/db/database-adapter", () => ({}));
+jest.mock("../../src/db/repositories/training-plan.repo", () => ({
+  createTrainingPlanRepo: jest.fn(() => ({
+    findActive: jest.fn(() => null),
+  })),
+}));
+jest.mock("../../src/db/repositories/training-day.repo", () => ({
+  createTrainingDayRepo: jest.fn(() => ({
+    findByPlanBizKey: jest.fn(() => []),
+  })),
+}));
+jest.mock("../../src/db/repositories/workout-session.repo", () => ({
+  createWorkoutSessionRepo: jest.fn(() => ({
+    findByDateRange: jest.fn(() => []),
+  })),
+}));
+
 // --- Date Utility Tests ---
 
 describe("Date utilities", () => {

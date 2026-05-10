@@ -61,6 +61,18 @@ jest.mock("expo-router", () => ({
   useLocalSearchParams: () => ({}),
 }));
 
+jest.mock("../../../src/db/database", () => ({
+  getDatabase: jest.fn(() => ({})),
+  getSnowflakeGenerator: jest.fn(() => ({ generate: () => BigInt(1) })),
+}));
+jest.mock("../../../src/db/database-adapter", () => ({}));
+jest.mock("../../../src/db/repositories/body-measurement.repo", () => ({
+  createBodyMeasurementRepo: jest.fn(() => ({
+    findAll: jest.fn(() => []),
+    findLatest: jest.fn(() => null),
+  })),
+}));
+
 // ============================================================
 // Helper Function Tests
 // ============================================================

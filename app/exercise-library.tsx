@@ -9,27 +9,37 @@
  *   - selectionMode: "true" | undefined — enables multi-select checkboxes
  */
 
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { View, StyleSheet } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { Colors } from "@utils/constants";
 import { ExerciseLibraryScreen } from "@components/exercise/ExerciseLibraryScreen";
 import type { Exercise } from "../src/types";
+import { getDatabase } from "../src/db/database";
+import type { DatabaseAdapter } from "../src/db/database-adapter";
+import { createExerciseRepo } from "../src/db/repositories/exercise.repo";
 
-// TODO: Replace with actual database-driven data when DB layer is wired up
-// For now, exercises are loaded from the repository via a provider/hook
-// that will be implemented in a future integration task.
-
-// Placeholder data for initial render — will be replaced by real DB data
-const PLACEHOLDER_EXERCISES: Exercise[] = [];
+function getDbAdapter(): DatabaseAdapter {
+  return getDatabase() as unknown as DatabaseAdapter;
+}
 
 export default function ExerciseLibraryPage() {
   const router = useRouter();
   const params = useLocalSearchParams<{ selectionMode?: string }>();
   const isSelectionMode = params.selectionMode === "true";
 
-  const [exercises] = useState<Exercise[]>(PLACEHOLDER_EXERCISES);
+  const [exercises, setExercises] = useState<Exercise[]>([]);
   const [selectedBizKeys, setSelectedBizKeys] = useState<bigint[]>([]);
+
+  useEffect(() => {
+    try {
+      const db = getDbAdapter();
+      const exerciseRepo = createExerciseRepo(db);
+      setExercises(exerciseRepo.findAllActive());
+    } catch {
+      // DB not available - keep empty list
+    }
+  }, []);
 
   const handleExercisePress = useCallback(
     (exercise: Exercise) => {
@@ -47,8 +57,6 @@ export default function ExerciseLibraryPage() {
 
   const handleCompleteSelection = useCallback(
     (_selected: Exercise[]) => {
-      // Navigate back to plan editor with selected exercises
-      // The plan editor will read the selection from navigation state
       router.back();
     },
     [router],
@@ -56,7 +64,6 @@ export default function ExerciseLibraryPage() {
 
   const handleCreateCustom = useCallback(() => {
     // Navigate to custom exercise creation form
-    // Will be implemented as part of the custom exercise flow
   }, []);
 
   return (

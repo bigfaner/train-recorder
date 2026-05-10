@@ -62,6 +62,42 @@ jest.mock("expo-router", () => ({
   useLocalSearchParams: () => ({}),
 }));
 
+jest.mock("../../../src/db/database", () => ({
+  getDatabase: jest.fn(() => ({})),
+  getSnowflakeGenerator: jest.fn(() => ({ generate: () => BigInt(1) })),
+}));
+jest.mock("../../../src/db/database-adapter", () => ({}));
+jest.mock("../../../src/db/repositories/workout-session.repo", () => ({
+  createWorkoutSessionRepo: jest.fn(() => ({
+    findByStatus: jest.fn(() => []),
+  })),
+}));
+jest.mock("../../../src/db/repositories/workout-exercise.repo", () => ({
+  createWorkoutExerciseRepo: jest.fn(() => ({
+    findBySessionBizKey: jest.fn(() => []),
+  })),
+}));
+jest.mock("../../../src/db/repositories/workout-set.repo", () => ({
+  createWorkoutSetRepo: jest.fn(() => ({
+    findByWorkoutExerciseBizKey: jest.fn(() => []),
+  })),
+}));
+jest.mock("../../../src/db/repositories/personal-record.repo", () => ({
+  createPersonalRecordRepo: jest.fn(() => ({
+    findAll: jest.fn(() => []),
+  })),
+}));
+jest.mock("../../../src/db/repositories/feeling.repo", () => ({
+  createFeelingRepo: jest.fn(() => ({
+    findByWorkoutSessionBizKey: jest.fn(() => null),
+  })),
+}));
+jest.mock("../../../src/db/repositories/exercise.repo", () => ({
+  createExerciseRepo: jest.fn(() => ({
+    findAllActive: jest.fn(() => []),
+  })),
+}));
+
 // ============================================================
 // Helper Function Tests
 // ============================================================

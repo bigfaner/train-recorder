@@ -608,6 +608,17 @@
       "breaking": true,
       "sourceTaskID": "T-test-3"
     },
+    "fix-7": {
+      "id": "fix-7",
+      "title": "Fix: Missing testIDs and seed data gaps causing 26 e2e failures",
+      "priority": "P0",
+      "estimatedTime": "30min",
+      "status": "completed",
+      "file": "fix-7.md",
+      "record": "records/fix-7.md",
+      "breaking": true,
+      "sourceTaskID": "T-test-3"
+    },
     "gen-test-cases": {
       "id": "T-test-1",
       "title": "Generate e2e Test Cases",
@@ -660,7 +671,8 @@
         "fix-3",
         "fix-4",
         "fix-5",
-        "fix-6"
+        "fix-6",
+        "fix-7"
       ],
       "status": "pending",
       "file": "run-e2e-tests.md",

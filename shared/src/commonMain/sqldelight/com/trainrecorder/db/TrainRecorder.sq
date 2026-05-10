@@ -1,0 +1,272 @@
+-- ============================================================
+-- Schema: Train Recorder
+-- Generated from: design/schema.sql
+-- Target: SQLite (via SQLDelight, KMP)
+-- Note: No SQL foreign keys — referential integrity maintained at application layer
+-- ============================================================
+
+-- UserSettings: 全局用户偏好, 单行表
+CREATE TABLE user_settings (
+    id                          TEXT    PRIMARY KEY NOT NULL,
+    weight_unit                 TEXT    NOT NULL DEFAULT 'kg',
+    default_rest_seconds        INTEGER NOT NULL DEFAULT 180,
+    training_reminder_enabled   INTEGER NOT NULL DEFAULT 1,
+    vibration_enabled           INTEGER NOT NULL DEFAULT 1,
+    sound_enabled               INTEGER NOT NULL DEFAULT 0,
+    onboarding_completed        INTEGER NOT NULL DEFAULT 0,
+    updated_at                  TEXT    NOT NULL
+);
+
+-- Exercise: 动作库, 预置+自定义动作
+CREATE TABLE exercise (
+    id              TEXT    PRIMARY KEY NOT NULL,
+    display_name    TEXT    NOT NULL UNIQUE,
+    category        TEXT    NOT NULL,
+    weight_increment REAL   NOT NULL,
+    default_rest    INTEGER NOT NULL,
+    is_custom       INTEGER NOT NULL DEFAULT 0,
+    created_at      TEXT    NOT NULL,
+    updated_at      TEXT    NOT NULL
+);
+
+-- TrainingPlan: 训练计划, 同一时间只有一个 is_active=1
+CREATE TABLE training_plan (
+    id              TEXT    PRIMARY KEY NOT NULL,
+    display_name    TEXT    NOT NULL,
+    plan_mode       TEXT    NOT NULL,
+    cycle_length    INTEGER,
+    schedule_mode   TEXT    NOT NULL,
+    interval_days   INTEGER,
+    is_active       INTEGER NOT NULL DEFAULT 0,
+    created_at      TEXT    NOT NULL,
+    updated_at      TEXT    NOT NULL
+);
+
+-- TrainingDay: 训练日定义, 属于某个训练计划
+CREATE TABLE training_day (
+    id          TEXT    PRIMARY KEY NOT NULL,
+    plan_id     TEXT    NOT NULL,
+    display_name TEXT   NOT NULL,
+    day_type    TEXT    NOT NULL,
+    order_index INTEGER NOT NULL,
+    created_at  TEXT    NOT NULL,
+    updated_at  TEXT    NOT NULL
+);
+
+-- TrainingDayExercise: 训练日中的动作配置
+CREATE TABLE training_day_exercise (
+    id                  TEXT    PRIMARY KEY NOT NULL,
+    training_day_id     TEXT    NOT NULL,
+    exercise_id         TEXT    NOT NULL,
+    order_index         INTEGER NOT NULL,
+    exercise_mode       TEXT    NOT NULL DEFAULT 'fixed',
+    target_sets         INTEGER NOT NULL,
+    target_reps         INTEGER NOT NULL,
+    start_weight        REAL,
+    note                TEXT,
+    rest_seconds        INTEGER NOT NULL,
+    weight_increment    REAL    NOT NULL,
+    created_at          TEXT    NOT NULL,
+    updated_at          TEXT    NOT NULL
+);
+
+-- TrainingDaySetConfig: 自定义模式的逐组参数
+CREATE TABLE training_day_set_config (
+    id                  TEXT    PRIMARY KEY NOT NULL,
+    day_exercise_id     TEXT    NOT NULL,
+    set_index           INTEGER NOT NULL,
+    target_reps         INTEGER NOT NULL,
+    target_weight       REAL    NOT NULL
+);
+
+-- WorkoutSession: 一次训练会话(实际执行或补录)
+CREATE TABLE workout_session (
+    id                  TEXT    PRIMARY KEY NOT NULL,
+    plan_id             TEXT,
+    training_day_id     TEXT,
+    record_date         TEXT    NOT NULL,
+    training_type       TEXT    NOT NULL,
+    workout_status      TEXT    NOT NULL DEFAULT 'in_progress',
+    started_at          TEXT,
+    ended_at            TEXT,
+    is_backfill         INTEGER NOT NULL DEFAULT 0,
+    created_at          TEXT    NOT NULL,
+    updated_at          TEXT    NOT NULL
+);
+
+-- WorkoutExercise: 训练会话中的动作实例
+CREATE TABLE workout_exercise (
+    id                  TEXT    PRIMARY KEY NOT NULL,
+    workout_session_id  TEXT    NOT NULL,
+    exercise_id         TEXT    NOT NULL,
+    order_index         INTEGER NOT NULL,
+    note                TEXT,
+    suggested_weight    REAL,
+    is_custom_weight    INTEGER NOT NULL DEFAULT 0,
+    target_sets         INTEGER NOT NULL,
+    target_reps         INTEGER NOT NULL,
+    exercise_mode       TEXT    NOT NULL DEFAULT 'fixed',
+    exercise_status     TEXT    NOT NULL DEFAULT 'pending',
+    created_at          TEXT    NOT NULL,
+    updated_at          TEXT    NOT NULL
+);
+
+-- ExerciseSet: 每组训练记录
+CREATE TABLE exercise_set (
+    id                      TEXT    PRIMARY KEY NOT NULL,
+    workout_exercise_id     TEXT    NOT NULL,
+    set_index               INTEGER NOT NULL,
+    target_weight           REAL    NOT NULL,
+    actual_weight           REAL    NOT NULL,
+    target_reps             INTEGER NOT NULL,
+    actual_reps             INTEGER,
+    is_completed            INTEGER NOT NULL DEFAULT 0,
+    rest_started_at         TEXT,
+    rest_duration           INTEGER,
+    created_at              TEXT    NOT NULL,
+    updated_at              TEXT    NOT NULL
+);
+
+-- WorkoutFeeling: 训练后感受, 与 workout_session 一对一
+CREATE TABLE workout_feeling (
+    id                  TEXT    PRIMARY KEY NOT NULL,
+    workout_session_id  TEXT    NOT NULL UNIQUE,
+    fatigue_level       INTEGER NOT NULL DEFAULT 5,
+    satisfaction_level  INTEGER NOT NULL DEFAULT 5,
+    notes               TEXT,
+    created_at          TEXT    NOT NULL,
+    updated_at          TEXT    NOT NULL
+);
+
+-- ExerciseFeeling: 各动作的独立感受备注
+CREATE TABLE exercise_feeling (
+    id                  TEXT    PRIMARY KEY NOT NULL,
+    workout_feeling_id  TEXT    NOT NULL,
+    exercise_id         TEXT    NOT NULL,
+    notes               TEXT,
+    created_at          TEXT    NOT NULL,
+    updated_at          TEXT    NOT NULL
+);
+
+-- PersonalRecord: 每个动作一条记录
+CREATE TABLE personal_record (
+    id                      TEXT    PRIMARY KEY NOT NULL,
+    exercise_id             TEXT    NOT NULL UNIQUE,
+    max_weight              REAL    NOT NULL,
+    max_volume              REAL    NOT NULL,
+    max_weight_date         TEXT    NOT NULL,
+    max_volume_date         TEXT    NOT NULL,
+    max_weight_session_id   TEXT    NOT NULL,
+    max_volume_session_id   TEXT    NOT NULL,
+    created_at              TEXT    NOT NULL,
+    updated_at              TEXT    NOT NULL
+);
+
+-- WeightSuggestion: 加重建议缓存
+CREATE TABLE weight_suggestion (
+    id                      TEXT    PRIMARY KEY NOT NULL,
+    exercise_id             TEXT    NOT NULL UNIQUE,
+    suggested_weight        REAL,
+    based_on_session_id     TEXT,
+    consecutive_completions INTEGER NOT NULL DEFAULT 0,
+    consecutive_failures    INTEGER NOT NULL DEFAULT 0,
+    last_calculated_at      TEXT    NOT NULL,
+    created_at              TEXT    NOT NULL,
+    updated_at              TEXT    NOT NULL
+);
+
+-- BodyMeasurement: 身体数据记录
+CREATE TABLE body_measurement (
+    id              TEXT    PRIMARY KEY NOT NULL,
+    record_date     TEXT    NOT NULL,
+    body_weight     REAL,
+    chest           REAL,
+    waist           REAL,
+    arm             REAL,
+    thigh           REAL,
+    notes           TEXT,
+    created_at      TEXT    NOT NULL,
+    updated_at      TEXT    NOT NULL
+);
+
+-- OtherSportType: 其他运动类型
+CREATE TABLE other_sport_type (
+    id              TEXT    PRIMARY KEY NOT NULL,
+    display_name    TEXT    NOT NULL UNIQUE,
+    is_custom       INTEGER NOT NULL DEFAULT 0,
+    created_at      TEXT    NOT NULL,
+    updated_at      TEXT    NOT NULL
+);
+
+-- OtherSportMetric: 运动类型的记录指标配置
+CREATE TABLE other_sport_metric (
+    id              TEXT    PRIMARY KEY NOT NULL,
+    sport_type_id   TEXT    NOT NULL,
+    metric_name     TEXT    NOT NULL,
+    metric_key      TEXT    NOT NULL,
+    input_type      TEXT    NOT NULL DEFAULT 'number',
+    is_required     INTEGER NOT NULL DEFAULT 0,
+    unit            TEXT,
+    created_at      TEXT    NOT NULL,
+    updated_at      TEXT    NOT NULL
+);
+
+-- OtherSportRecord: 其他运动的具体记录
+CREATE TABLE other_sport_record (
+    id              TEXT    PRIMARY KEY NOT NULL,
+    sport_type_id   TEXT    NOT NULL,
+    record_date     TEXT    NOT NULL,
+    notes           TEXT,
+    created_at      TEXT    NOT NULL,
+    updated_at      TEXT    NOT NULL
+);
+
+-- OtherSportMetricValue: 运动记录的各指标值
+CREATE TABLE other_sport_metric_value (
+    id              TEXT    PRIMARY KEY NOT NULL,
+    sport_record_id TEXT    NOT NULL,
+    metric_id       TEXT    NOT NULL,
+    metric_value    TEXT    NOT NULL,
+    created_at      TEXT    NOT NULL,
+    updated_at      TEXT    NOT NULL
+);
+
+-- TimerState: 训练计时器状态
+CREATE TABLE timer_state (
+    id                      TEXT    PRIMARY KEY NOT NULL,
+    workout_session_id      TEXT    NOT NULL,
+    start_timestamp         TEXT    NOT NULL,
+    total_duration_seconds  INTEGER NOT NULL,
+    is_running              INTEGER NOT NULL DEFAULT 1,
+    updated_at              TEXT    NOT NULL
+);
+
+-- ============================================================
+-- Indexes
+-- ============================================================
+CREATE INDEX idx_training_day_plan ON training_day(plan_id);
+CREATE INDEX idx_day_exercise_day ON training_day_exercise(training_day_id);
+CREATE INDEX idx_day_exercise_exercise ON training_day_exercise(exercise_id);
+CREATE INDEX idx_set_config_exercise ON training_day_set_config(day_exercise_id);
+
+CREATE INDEX idx_workout_date ON workout_session(record_date);
+CREATE INDEX idx_workout_type_date ON workout_session(training_type, record_date);
+CREATE INDEX idx_workout_plan ON workout_session(plan_id);
+CREATE INDEX idx_workout_status ON workout_session(workout_status);
+
+CREATE INDEX idx_workout_exercise_session ON workout_exercise(workout_session_id);
+CREATE INDEX idx_workout_exercise_exercise ON workout_exercise(exercise_id);
+
+CREATE INDEX idx_set_workout_exercise ON exercise_set(workout_exercise_id, set_index);
+
+CREATE INDEX idx_feeling_session ON workout_feeling(workout_session_id);
+CREATE INDEX idx_exercise_feeling ON exercise_feeling(workout_feeling_id);
+
+CREATE INDEX idx_pr_exercise ON personal_record(exercise_id);
+CREATE INDEX idx_suggestion_exercise ON weight_suggestion(exercise_id);
+
+CREATE INDEX idx_body_date ON body_measurement(record_date);
+
+CREATE INDEX idx_sport_record_date ON other_sport_record(record_date);
+CREATE INDEX idx_sport_record_type ON other_sport_record(sport_type_id);
+CREATE INDEX idx_sport_metric_type ON other_sport_metric(sport_type_id);

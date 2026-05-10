@@ -597,6 +597,17 @@
       "breaking": true,
       "sourceTaskID": "T-test-3"
     },
+    "fix-6": {
+      "id": "fix-6",
+      "title": "Fix: ExpoSQLite web compatibility crash",
+      "priority": "P0",
+      "estimatedTime": "30min",
+      "status": "completed",
+      "file": "fix-6.md",
+      "record": "records/fix-6.md",
+      "breaking": true,
+      "sourceTaskID": "T-test-3"
+    },
     "gen-test-cases": {
       "id": "T-test-1",
       "title": "Generate e2e Test Cases",
@@ -648,7 +659,8 @@
         "fix-2",
         "fix-3",
         "fix-4",
-        "fix-5"
+        "fix-5",
+        "fix-6"
       ],
       "status": "pending",
       "file": "run-e2e-tests.md",

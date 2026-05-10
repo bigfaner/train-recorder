@@ -53,4 +53,24 @@ sealed class DomainError(message: String) : Exception(message) {
     /** Attempted to operate on a workout exercise that does not exist. */
     data class WorkoutExerciseNotFoundError(val exerciseId: String) :
         DomainError("Workout exercise $exerciseId not found")
+
+    /** Attempted to operate on a body measurement that does not exist. */
+    data class BodyMeasurementNotFoundError(val id: String) :
+        DomainError("Body measurement $id not found")
+
+    /** Attempted to operate on an other sport record that does not exist. */
+    data class OtherSportRecordNotFoundError(val id: String) :
+        DomainError("Other sport record $id not found")
+
+    /** Attempted to create an other sport type with a duplicate name. */
+    data class DuplicateSportTypeNameError(val name: String) :
+        DomainError("Other sport type with name '$name' already exists")
+
+    /** Attempted to operate on a workout feeling that does not exist. */
+    data class FeelingNotFoundError(val id: String) :
+        DomainError("Workout feeling $id not found")
+
+    /** Validation error for invalid input values. */
+    data class ValidationError(val field: String, val reason: String) :
+        DomainError("Validation error: $field - $reason")
 }

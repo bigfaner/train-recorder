@@ -582,3 +582,212 @@ DELETE FROM exercise_set WHERE workout_exercise_id = ?;
 
 deleteSetsBySessionId:
 DELETE FROM exercise_set WHERE workout_exercise_id IN (SELECT id FROM workout_exercise WHERE workout_session_id = ?);
+
+-- ============================================================
+-- Queries: BodyMeasurement
+-- ============================================================
+
+selectAllBodyMeasurementsOrdered:
+SELECT * FROM body_measurement ORDER BY record_date;
+
+selectBodyMeasurementsByDateRange:
+SELECT * FROM body_measurement WHERE record_date >= ? AND record_date <= ? ORDER BY record_date;
+
+selectLatestBodyMeasurement:
+SELECT * FROM body_measurement ORDER BY record_date DESC, created_at DESC LIMIT 1;
+
+selectBodyMeasurementById:
+SELECT * FROM body_measurement WHERE id = ?;
+
+insertBodyMeasurement:
+INSERT INTO body_measurement(id, record_date, body_weight, chest, waist, arm, thigh, notes, created_at, updated_at)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+updateBodyMeasurement:
+UPDATE body_measurement
+SET record_date = ?, body_weight = ?, chest = ?, waist = ?, arm = ?, thigh = ?, notes = ?, updated_at = ?
+WHERE id = ?;
+
+deleteBodyMeasurementById:
+DELETE FROM body_measurement WHERE id = ?;
+
+-- ============================================================
+-- Queries: OtherSportType
+-- ============================================================
+
+selectAllSportTypes:
+SELECT * FROM other_sport_type ORDER BY created_at;
+
+selectSportTypeById:
+SELECT * FROM other_sport_type WHERE id = ?;
+
+insertSportType:
+INSERT INTO other_sport_type(id, display_name, is_custom, created_at, updated_at)
+VALUES (?, ?, ?, ?, ?);
+
+-- ============================================================
+-- Queries: OtherSportMetric
+-- ============================================================
+
+selectMetricsBySportTypeId:
+SELECT * FROM other_sport_metric WHERE sport_type_id = ?;
+
+insertSportMetric:
+INSERT INTO other_sport_metric(id, sport_type_id, metric_name, metric_key, input_type, is_required, unit, created_at, updated_at)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+-- ============================================================
+-- Queries: OtherSportRecord
+-- ============================================================
+
+selectSportRecordsByDateRange:
+SELECT * FROM other_sport_record WHERE record_date >= ? AND record_date <= ? ORDER BY record_date;
+
+selectSportRecordById:
+SELECT * FROM other_sport_record WHERE id = ?;
+
+insertSportRecord:
+INSERT INTO other_sport_record(id, sport_type_id, record_date, notes, created_at, updated_at)
+VALUES (?, ?, ?, ?, ?, ?);
+
+deleteSportRecordById:
+DELETE FROM other_sport_record WHERE id = ?;
+
+-- ============================================================
+-- Queries: OtherSportMetricValue
+-- ============================================================
+
+selectMetricValuesByRecordId:
+SELECT * FROM other_sport_metric_value WHERE sport_record_id = ?;
+
+insertSportMetricValue:
+INSERT INTO other_sport_metric_value(id, sport_record_id, metric_id, metric_value, created_at, updated_at)
+VALUES (?, ?, ?, ?, ?, ?);
+
+deleteMetricValuesByRecordId:
+DELETE FROM other_sport_metric_value WHERE sport_record_id = ?;
+
+-- ============================================================
+-- Queries: WorkoutFeeling
+-- ============================================================
+
+selectFeelingBySessionId:
+SELECT * FROM workout_feeling WHERE workout_session_id = ?;
+
+selectFeelingById:
+SELECT * FROM workout_feeling WHERE id = ?;
+
+insertWorkoutFeeling:
+INSERT INTO workout_feeling(id, workout_session_id, fatigue_level, satisfaction_level, notes, created_at, updated_at)
+VALUES (?, ?, ?, ?, ?, ?, ?);
+
+updateWorkoutFeeling:
+UPDATE workout_feeling
+SET fatigue_level = ?, satisfaction_level = ?, notes = ?, updated_at = ?
+WHERE id = ?;
+
+-- ============================================================
+-- Queries: ExerciseFeeling
+-- ============================================================
+
+selectExerciseFeelingsByWorkoutFeelingId:
+SELECT * FROM exercise_feeling WHERE workout_feeling_id = ?;
+
+insertExerciseFeeling:
+INSERT INTO exercise_feeling(id, workout_feeling_id, exercise_id, notes, created_at, updated_at)
+VALUES (?, ?, ?, ?, ?, ?);
+
+deleteExerciseFeelingsByWorkoutFeelingId:
+DELETE FROM exercise_feeling WHERE workout_feeling_id = ?;
+
+-- ============================================================
+-- Queries: PersonalRecord
+-- ============================================================
+
+selectPersonalRecordByExerciseId:
+SELECT * FROM personal_record WHERE exercise_id = ?;
+
+selectAllPersonalRecordsOrdered:
+SELECT * FROM personal_record ORDER BY max_weight DESC;
+
+selectPersonalRecordById:
+SELECT * FROM personal_record WHERE id = ?;
+
+insertPersonalRecord:
+INSERT INTO personal_record(id, exercise_id, max_weight, max_volume, max_weight_date, max_volume_date, max_weight_session_id, max_volume_session_id, created_at, updated_at)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+updatePersonalRecord:
+UPDATE personal_record
+SET max_weight = ?, max_volume = ?, max_weight_date = ?, max_volume_date = ?, max_weight_session_id = ?, max_volume_session_id = ?, updated_at = ?
+WHERE id = ?;
+
+deletePersonalRecordByExerciseId:
+DELETE FROM personal_record WHERE exercise_id = ?;
+
+deletePersonalRecords:
+DELETE FROM personal_record;
+
+-- PR calculation helpers: get max weight for an exercise across all sessions
+selectMaxWeightForExercise:
+SELECT es.actual_weight, ws.record_date, ws.id
+FROM exercise_set es
+JOIN workout_exercise we ON es.workout_exercise_id = we.id
+JOIN workout_session ws ON we.workout_session_id = ws.id
+WHERE we.exercise_id = ? AND es.is_completed = 1 AND es.actual_weight > 0
+ORDER BY es.actual_weight DESC, ws.record_date DESC
+LIMIT 1;
+
+-- PR calculation helpers: get max volume for an exercise across all sessions
+selectMaxVolumeForExercise:
+SELECT SUM(es.actual_weight * es.actual_reps), ws.record_date, ws.id
+FROM exercise_set es
+JOIN workout_exercise we ON es.workout_exercise_id = we.id
+JOIN workout_session ws ON we.workout_session_id = ws.id
+WHERE we.exercise_id = ? AND es.is_completed = 1 AND es.actual_reps IS NOT NULL
+GROUP BY ws.id
+ORDER BY SUM(es.actual_weight * es.actual_reps) DESC
+LIMIT 1;
+
+-- Get distinct exercise IDs that have completed sets
+selectExercisesWithCompletedSets:
+SELECT DISTINCT we.exercise_id
+FROM exercise_set es
+JOIN workout_exercise we ON es.workout_exercise_id = we.id
+WHERE es.is_completed = 1;
+
+-- ============================================================
+-- Queries: WeightSuggestion
+-- ============================================================
+
+selectWeightSuggestionByExerciseId:
+SELECT * FROM weight_suggestion WHERE exercise_id = ?;
+
+insertWeightSuggestion:
+INSERT INTO weight_suggestion(id, exercise_id, suggested_weight, based_on_session_id, consecutive_completions, consecutive_failures, last_calculated_at, created_at, updated_at)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+updateWeightSuggestion:
+UPDATE weight_suggestion
+SET suggested_weight = ?, based_on_session_id = ?, consecutive_completions = ?, consecutive_failures = ?, last_calculated_at = ?, updated_at = ?
+WHERE id = ?;
+
+deleteWeightSuggestionByExerciseId:
+DELETE FROM weight_suggestion WHERE exercise_id = ?;
+
+-- Get recent workout exercises for an exercise, ordered by date desc
+selectRecentWorkoutExercisesForSuggestion:
+SELECT we.id, we.workout_session_id, we.exercise_id, we.order_index, we.note, we.suggested_weight, we.is_custom_weight, we.target_sets, we.target_reps, we.exercise_mode, we.exercise_status, we.created_at, we.updated_at
+FROM workout_exercise we
+JOIN workout_session ws ON we.workout_session_id = ws.id
+WHERE we.exercise_id = ?
+ORDER BY ws.record_date DESC;
+
+-- Get recent sessions with completed sets for an exercise for weight suggestion calculation
+selectRecentSetsForExercise:
+SELECT es.id, es.workout_exercise_id, es.set_index, es.target_weight, es.actual_weight, es.target_reps, es.actual_reps, es.is_completed, es.rest_started_at, es.rest_duration, es.created_at, es.updated_at, ws.record_date, ws.id
+FROM exercise_set es
+JOIN workout_exercise we ON es.workout_exercise_id = we.id
+JOIN workout_session ws ON we.workout_session_id = ws.id
+WHERE we.exercise_id = ? AND es.is_completed = 1
+ORDER BY ws.record_date DESC;

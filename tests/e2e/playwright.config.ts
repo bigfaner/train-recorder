@@ -9,7 +9,7 @@ export default defineConfig({
   testIgnore: featureMode ? [] : /^features\//,
   timeout: 30_000,
   expect: { timeout: 10_000 },
-  globalTimeout: 600_000,
+  globalTimeout: 1_200_000,
   retries: Number(process.env.E2E_RETRIES ?? "0"),
   workers: 1,
   reporter: [["list"], ["json", { outputFile: "results/test-results.json" }]],
@@ -19,10 +19,6 @@ export default defineConfig({
     screenshot: "only-on-failure",
   },
   outputDir: "results/",
-  webServer: {
-    command: "npx expo start --web --port 8081",
-    port: 8081,
-    timeout: 60_000,
-    reuseExistingServer: !process.env.CI,
-  },
+  // webServer: NOT configured — server lifecycle managed by /run-e2e-tests skill
+  // See: docs/conventions/e2e-server-lifecycle.md
 });

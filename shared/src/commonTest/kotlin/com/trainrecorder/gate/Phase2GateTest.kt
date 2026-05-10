@@ -848,8 +848,14 @@ class Phase2GateTest {
 
     @Test
     fun gate_phase1KoinModulesStillLoad() {
+        val testDb = com.trainrecorder.createTestDatabase()
         org.koin.core.context.startKoin {
-            modules(com.trainrecorder.di.appModule)
+            modules(
+                org.koin.dsl.module {
+                    single<com.trainrecorder.db.TrainRecorderDatabase> { testDb }
+                },
+                com.trainrecorder.di.appModule,
+            )
         }.checkModules()
         org.koin.core.context.stopKoin()
     }

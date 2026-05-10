@@ -41,6 +41,7 @@ import com.trainrecorder.domain.repository.WeightSuggestionRepository
 import com.trainrecorder.domain.repository.WorkoutRepository
 import com.trainrecorder.domain.usecase.ScheduleCalculator
 import com.trainrecorder.domain.usecase.WeightSuggester
+import com.trainrecorder.createTestDatabase
 import com.trainrecorder.di.appModule
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -320,8 +321,14 @@ class Phase1GateTest {
 
     @Test
     fun gate_koinModulesLoad() {
+        val testDb = createTestDatabase()
         startKoin {
-            modules(appModule)
+            modules(
+                org.koin.dsl.module {
+                    single<com.trainrecorder.db.TrainRecorderDatabase> { testDb }
+                },
+                appModule,
+            )
         }.checkModules()
 
         stopKoin()

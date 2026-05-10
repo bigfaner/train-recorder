@@ -21,6 +21,8 @@ kotlin {
             implementation(libs.compose.material3)
 
             implementation(libs.koin.android)
+
+            implementation(libs.sqldelight.android.driver)
         }
     }
 }

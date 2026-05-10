@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 
@@ -50,11 +51,14 @@ val TAB_ROUTES = TAB_DESTINATIONS.map { it.route }.toSet()
 /**
  * Main scaffold with bottom tab bar and navigation host.
  *
- * @param navHostContent The NavHost composable to render above the tab bar.
+ * Creates and provides a [NavHostController] to [content] so that the
+ * tab bar and NavHost share the same controller.
+ *
+ * @param content The composable content (typically NavHost), receiving the shared NavController.
  */
 @Composable
 fun TrainRecorderScaffold(
-    navHostContent: @Composable () -> Unit,
+    content: @Composable (NavHostController) -> Unit,
 ) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -88,7 +92,7 @@ fun TrainRecorderScaffold(
         Box(
             modifier = Modifier.padding(innerPadding),
         ) {
-            navHostContent()
+            content(navController)
         }
     }
 }

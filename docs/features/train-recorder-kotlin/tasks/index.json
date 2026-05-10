@@ -387,7 +387,7 @@
       "dependencies": [
         "4.gate"
       ],
-      "status": "pending",
+      "status": "completed",
       "file": "5.2-app-entry.md",
       "record": "records/5.2-app-entry.md",
       "scope": "all"

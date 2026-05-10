@@ -29,4 +29,28 @@ sealed class DomainError(message: String) : Exception(message) {
     /** Data import encountered ID conflicts. */
     data class ImportConflictError(val details: String) :
         DomainError("Import conflict: $details")
+
+    /** Attempted to operate on a training plan that does not exist. */
+    data class PlanNotFoundError(val planId: String) :
+        DomainError("Training plan $planId not found")
+
+    /** Attempted to operate on a workout session that does not exist. */
+    data class SessionNotFoundError(val sessionId: String) :
+        DomainError("Workout session $sessionId not found")
+
+    /** Attempted to modify a workout session that is already completed. */
+    data class SessionLockedError(val sessionId: String) :
+        DomainError("Workout session $sessionId is already completed and cannot be modified")
+
+    /** Invalid weight value (must be > 0). */
+    data class InvalidWeightError(val weight: Double) :
+        DomainError("Invalid weight: $weight (must be > 0)")
+
+    /** Invalid reps value (must be >= 0). */
+    data class InvalidRepsError(val reps: Int) :
+        DomainError("Invalid reps: $reps (must be >= 0)")
+
+    /** Attempted to operate on a workout exercise that does not exist. */
+    data class WorkoutExerciseNotFoundError(val exerciseId: String) :
+        DomainError("Workout exercise $exerciseId not found")
 }

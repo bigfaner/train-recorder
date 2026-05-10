@@ -441,3 +441,144 @@ SELECT * FROM training_day_exercise;
 
 selectAllTrainingDaySetConfigs:
 SELECT * FROM training_day_set_config;
+
+-- ============================================================
+-- Queries: TrainingPlan
+-- ============================================================
+
+selectActivePlan:
+SELECT * FROM training_plan WHERE is_active = 1;
+
+selectAllPlans:
+SELECT * FROM training_plan ORDER BY created_at;
+
+selectPlanById:
+SELECT * FROM training_plan WHERE id = ?;
+
+insertPlan:
+INSERT INTO training_plan(id, display_name, plan_mode, cycle_length, schedule_mode, interval_days, is_active, created_at, updated_at)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+updatePlan:
+UPDATE training_plan
+SET display_name = ?, plan_mode = ?, cycle_length = ?, schedule_mode = ?, interval_days = ?, updated_at = ?
+WHERE id = ?;
+
+deactivateAllPlans:
+UPDATE training_plan SET is_active = 0, updated_at = ?;
+
+activatePlan:
+UPDATE training_plan SET is_active = 1, updated_at = ? WHERE id = ?;
+
+deletePlanById:
+DELETE FROM training_plan WHERE id = ?;
+
+-- TrainingDay queries
+selectDaysByPlanId:
+SELECT * FROM training_day WHERE plan_id = ? ORDER BY order_index;
+
+selectDayById:
+SELECT * FROM training_day WHERE id = ?;
+
+insertDay:
+INSERT INTO training_day(id, plan_id, display_name, day_type, order_index, created_at, updated_at)
+VALUES (?, ?, ?, ?, ?, ?, ?);
+
+updateDay:
+UPDATE training_day
+SET display_name = ?, day_type = ?, order_index = ?, updated_at = ?
+WHERE id = ?;
+
+deleteDaysByPlanId:
+DELETE FROM training_day WHERE plan_id = ?;
+
+deleteDayById:
+DELETE FROM training_day WHERE id = ?;
+
+-- TrainingDayExercise queries
+selectExercisesByDayId:
+SELECT * FROM training_day_exercise WHERE training_day_id = ? ORDER BY order_index;
+
+insertDayExercise:
+INSERT INTO training_day_exercise(id, training_day_id, exercise_id, order_index, exercise_mode, target_sets, target_reps, start_weight, note, rest_seconds, weight_increment, created_at, updated_at)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+deleteExercisesByDayId:
+DELETE FROM training_day_exercise WHERE training_day_id = ?;
+
+deleteExercisesByPlanId:
+DELETE FROM training_day_exercise WHERE training_day_id IN (SELECT id FROM training_day WHERE plan_id = ?);
+
+-- TrainingDaySetConfig queries
+selectSetConfigsByDayExerciseId:
+SELECT * FROM training_day_set_config WHERE day_exercise_id = ? ORDER BY set_index;
+
+insertSetConfig:
+INSERT INTO training_day_set_config(id, day_exercise_id, set_index, target_reps, target_weight)
+VALUES (?, ?, ?, ?, ?);
+
+deleteSetConfigsByDayExerciseId:
+DELETE FROM training_day_set_config WHERE day_exercise_id IN (SELECT id FROM training_day_exercise WHERE training_day_id IN (SELECT id FROM training_day WHERE plan_id = ?));
+
+deleteSetConfigsByDayId:
+DELETE FROM training_day_set_config WHERE day_exercise_id IN (SELECT id FROM training_day_exercise WHERE training_day_id = ?);
+
+-- ============================================================
+-- Queries: WorkoutSession
+-- ============================================================
+
+selectSessionsByDateRange:
+SELECT * FROM workout_session WHERE record_date >= ? AND record_date <= ? ORDER BY record_date;
+
+selectSessionById:
+SELECT * FROM workout_session WHERE id = ?;
+
+insertSession:
+INSERT INTO workout_session(id, plan_id, training_day_id, record_date, training_type, workout_status, started_at, ended_at, is_backfill, created_at, updated_at)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+updateSessionStatus:
+UPDATE workout_session SET workout_status = ?, ended_at = ?, updated_at = ? WHERE id = ?;
+
+updateSessionStatusAndDate:
+UPDATE workout_session SET workout_status = ?, updated_at = ? WHERE id = ?;
+
+deleteSessionById:
+DELETE FROM workout_session WHERE id = ?;
+
+-- WorkoutExercise queries
+selectWorkoutExercisesBySessionId:
+SELECT * FROM workout_exercise WHERE workout_session_id = ? ORDER BY order_index;
+
+selectWorkoutExerciseById:
+SELECT * FROM workout_exercise WHERE id = ?;
+
+insertWorkoutExercise:
+INSERT INTO workout_exercise(id, workout_session_id, exercise_id, order_index, note, suggested_weight, is_custom_weight, target_sets, target_reps, exercise_mode, exercise_status, created_at, updated_at)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+updateWorkoutExerciseStatus:
+UPDATE workout_exercise SET exercise_status = ?, updated_at = ? WHERE id = ?;
+
+deleteWorkoutExercisesBySessionId:
+DELETE FROM workout_exercise WHERE workout_session_id = ?;
+
+-- ExerciseSet queries
+selectSetsByWorkoutExerciseId:
+SELECT * FROM exercise_set WHERE workout_exercise_id = ? ORDER BY set_index;
+
+selectSetById:
+SELECT * FROM exercise_set WHERE id = ?;
+
+insertExerciseSet:
+INSERT INTO exercise_set(id, workout_exercise_id, set_index, target_weight, actual_weight, target_reps, actual_reps, is_completed, rest_started_at, rest_duration, created_at, updated_at)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+updateExerciseSet:
+UPDATE exercise_set SET actual_weight = ?, actual_reps = ?, is_completed = ?, updated_at = ? WHERE id = ?;
+
+deleteSetsByWorkoutExerciseId:
+DELETE FROM exercise_set WHERE workout_exercise_id = ?;
+
+deleteSetsBySessionId:
+DELETE FROM exercise_set WHERE workout_exercise_id IN (SELECT id FROM workout_exercise WHERE workout_session_id = ?);

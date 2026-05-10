@@ -121,7 +121,7 @@
       "dependencies": [
         "1.gate"
       ],
-      "status": "pending",
+      "status": "completed",
       "file": "2.2-repo-plan-workout.md",
       "record": "records/2.2-repo-plan-workout.md",
       "scope": "backend"

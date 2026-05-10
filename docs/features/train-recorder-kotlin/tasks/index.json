@@ -374,7 +374,7 @@
       "dependencies": [
         "4.gate"
       ],
-      "status": "pending",
+      "status": "completed",
       "file": "5.1-onboarding-export.md",
       "record": "records/5.1-onboarding-export.md",
       "scope": "all"

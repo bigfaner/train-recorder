@@ -92,6 +92,8 @@ class SettingsHelperTest {
         val message = buildClearDataConfirmationMessage()
         assertTrue(message.isNotBlank())
         assertTrue(message.contains("delete", ignoreCase = true))
+        assertTrue(message.contains("exercise library", ignoreCase = true))
+        assertTrue(message.contains("preserved", ignoreCase = true))
     }
 
     // --- Weight Unit Label Tests ---

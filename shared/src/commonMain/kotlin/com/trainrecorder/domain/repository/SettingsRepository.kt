@@ -46,5 +46,6 @@ interface SettingsRepository {
     suspend fun completeOnboarding(): Result<Unit>
     suspend fun exportData(format: ExportFormat, dateRange: DateRange?): Result<String>
     suspend fun importData(filePath: String): Result<ImportResult>
+    suspend fun importDataFromJson(jsonString: String): Result<ImportResult>
     suspend fun clearAllData(): Result<Unit>
 }

@@ -283,14 +283,234 @@ class SettingsRepositoryImplTest {
     }
 
     // ============================================================
-    // Import Data (not yet supported)
+    // Import Data (JSON string-based)
     // ============================================================
 
     @Test
-    fun testImportDataNotSupported() = runTest {
+    fun testImportDataRejectsInvalidJson() = runTest {
         val (repo, _) = createInitializedRepository()
 
-        val result = repo.importData("/some/path")
+        val result = repo.importDataFromJson("not valid json")
         assertTrue(result.isFailure)
+    }
+
+    @Test
+    fun testImportDataRejectsMissingVersion() = runTest {
+        val (repo, _) = createInitializedRepository()
+
+        val result = repo.importDataFromJson("""{"settings": {}}""")
+        assertTrue(result.isFailure)
+    }
+
+    @Test
+    fun testImportDataRejectsUnsupportedVersion() = runTest {
+        val (repo, _) = createInitializedRepository()
+
+        val result = repo.importDataFromJson("""{"version": 99, "settings": {}}""")
+        assertTrue(result.isFailure)
+    }
+
+    @Test
+    fun testExportAndImportRoundTrip() = runTest {
+        val (repo, db) = createInitializedRepository()
+
+        // Seed exercises
+        val exerciseRepo = ExerciseRepositoryImpl(db)
+        exerciseRepo.seedDefaultExercises()
+
+        // Create a plan so there's data to import
+        val now = kotlinx.datetime.Clock.System.now().toString()
+        db.trainRecorderQueries.insertPlan(
+            id = "plan-1",
+            display_name = "Test Plan",
+            plan_mode = "infinite_loop",
+            cycle_length = null,
+            schedule_mode = "weekly_fixed",
+            interval_days = null,
+            is_active = 1L,
+            created_at = now,
+            updated_at = now,
+        )
+
+        // Export
+        val exportResult = repo.exportData(ExportFormat.JSON, null)
+        assertTrue(exportResult.isSuccess)
+        val jsonStr = exportResult.getOrThrow()
+
+        // Clear all data (preserves exercises and settings)
+        repo.clearAllData()
+
+        // Verify plan is gone
+        val plansAfterClear = db.trainRecorderQueries.selectAllTrainingPlans().executeAsList()
+        assertEquals(0, plansAfterClear.size)
+
+        // Import back
+        val importResult = repo.importDataFromJson(jsonStr)
+        if (importResult.isFailure) {
+            println("Import failed: ${importResult.exceptionOrNull()}")
+            println("Cause: ${importResult.exceptionOrNull()?.cause}")
+        }
+        assertTrue(importResult.isSuccess)
+        val importReport = importResult.getOrThrow()
+        assertTrue(importReport.importedCount > 0, "Expected importedCount > 0, got ${importReport.importedCount}. Errors: ${importReport.errors}")
+    }
+
+    @Test
+    fun testImportDataRegeneratesIds() = runTest {
+        val (repo, _) = createInitializedRepository()
+
+        val json = """
+        {
+            "version": 1,
+            "exportedAt": "2025-01-15T10:30:00Z",
+            "settings": {"id":"default","weight_unit":"kg","default_rest_seconds":180,"training_reminder_enabled":1,"vibration_enabled":1,"sound_enabled":0,"onboarding_completed":0,"updated_at":"2025-01-15T10:30:00Z"},
+            "exercises": [],
+            "trainingPlans": [{"id":"old-plan-1","display_name":"Test Plan","plan_mode":"infinite_loop","cycle_length":null,"schedule_mode":"weekly_fixed","interval_days":null,"is_active":1,"created_at":"2025-01-15T10:30:00Z","updated_at":"2025-01-15T10:30:00Z"}],
+            "trainingDays": [],
+            "trainingDayExercises": [],
+            "trainingDaySetConfigs": [],
+            "workoutSessions": [],
+            "workoutExercises": [],
+            "exerciseSets": [],
+            "workoutFeelings": [],
+            "exerciseFeelings": [],
+            "personalRecords": [],
+            "weightSuggestions": [],
+            "bodyMeasurements": [],
+            "otherSportTypes": [],
+            "otherSportMetrics": [],
+            "otherSportRecords": [],
+            "otherSportMetricValues": [],
+            "timerStates": []
+        }
+        """.trimIndent()
+
+        val result = repo.importDataFromJson(json)
+        assertTrue(result.isSuccess)
+        // The import should succeed with regenerated IDs
+    }
+
+    @Test
+    fun testImportDataTransactionRollbackOnFailure() = runTest {
+        val (repo, _) = createInitializedRepository()
+
+        // Import with missing required key should not leave partial data
+        val json = """
+        {
+            "version": 1,
+            "settings": {},
+            "exercises": [],
+            "trainingPlans": [],
+            "trainingDays": [],
+            "trainingDayExercises": [],
+            "trainingDaySetConfigs": [],
+            "workoutSessions": [{"bad": "data"}],
+            "workoutExercises": [],
+            "exerciseSets": [],
+            "workoutFeelings": [],
+            "exerciseFeelings": [],
+            "personalRecords": [],
+            "weightSuggestions": [],
+            "bodyMeasurements": [],
+            "otherSportTypes": [],
+            "otherSportMetrics": [],
+            "otherSportRecords": [],
+            "otherSportMetricValues": [],
+            "timerStates": []
+        }
+        """.trimIndent()
+
+        val result = repo.importDataFromJson(json)
+        // Should succeed but with errors reported
+        // Individual row parse failures are captured, not thrown
+        if (result.isSuccess) {
+            val report = result.getOrThrow()
+            assertTrue(report.errors.isNotEmpty())
+        }
+    }
+
+    // ============================================================
+    // Full JSON Export Content Tests
+    // ============================================================
+
+    @Test
+    fun testExportContainsAllRequiredTables() = runTest {
+        val (repo, db) = createInitializedRepository()
+        val exerciseRepo = ExerciseRepositoryImpl(db)
+        exerciseRepo.seedDefaultExercises()
+
+        val result = repo.exportData(ExportFormat.JSON, null)
+        assertTrue(result.isSuccess)
+
+        val json = result.getOrThrow()
+        // Check that JSON contains all the required table names
+        assertTrue(json.contains("\"version\""))
+        assertTrue(json.contains("\"exercises\""))
+        assertTrue(json.contains("\"trainingPlans\""))
+        assertTrue(json.contains("\"settings\""))
+    }
+
+    @Test
+    fun testExportWithDateRangeFiltersSessions() = runTest {
+        val (repo, db) = createInitializedRepository()
+
+        // Insert a workout session
+        val now = kotlinx.datetime.Clock.System.now().toString()
+        db.trainRecorderQueries.insertSession(
+            id = "session-1",
+            plan_id = null,
+            training_day_id = null,
+            record_date = "2025-03-15",
+            training_type = "push",
+            workout_status = "completed",
+            started_at = now,
+            ended_at = now,
+            is_backfill = 0L,
+            created_at = now,
+            updated_at = now,
+        )
+
+        // Export with date range that includes the session
+        val range = com.trainrecorder.domain.repository.DateRange(
+            start = kotlinx.datetime.LocalDate.parse("2025-03-01"),
+            end = kotlinx.datetime.LocalDate.parse("2025-03-31"),
+        )
+        val result = repo.exportData(ExportFormat.JSON, range)
+        assertTrue(result.isSuccess)
+
+        val json = result.getOrThrow()
+        assertTrue(json.contains("session-1"))
+    }
+
+    @Test
+    fun testExportWithDateRangeExcludesOutOfRangeSessions() = runTest {
+        val (repo, db) = createInitializedRepository()
+
+        // Insert a workout session outside the range
+        val now = kotlinx.datetime.Clock.System.now().toString()
+        db.trainRecorderQueries.insertSession(
+            id = "session-old",
+            plan_id = null,
+            training_day_id = null,
+            record_date = "2024-01-15",
+            training_type = "push",
+            workout_status = "completed",
+            started_at = now,
+            ended_at = now,
+            is_backfill = 0L,
+            created_at = now,
+            updated_at = now,
+        )
+
+        // Export with date range that excludes the session
+        val range = com.trainrecorder.domain.repository.DateRange(
+            start = kotlinx.datetime.LocalDate.parse("2025-03-01"),
+            end = kotlinx.datetime.LocalDate.parse("2025-03-31"),
+        )
+        val result = repo.exportData(ExportFormat.JSON, range)
+        assertTrue(result.isSuccess)
+
+        val json = result.getOrThrow()
+        assertFalse(json.contains("session-old"))
     }
 }

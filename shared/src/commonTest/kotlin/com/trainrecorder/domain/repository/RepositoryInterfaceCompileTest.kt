@@ -158,6 +158,7 @@ class RepositoryInterfaceCompileTest {
                 override suspend fun completeOnboarding() = Result.success(Unit)
                 override suspend fun exportData(format: ExportFormat, dateRange: DateRange?) = Result.success("/path")
                 override suspend fun importData(filePath: String) = Result.success(ImportResult(0, 0, emptyList()))
+                override suspend fun importDataFromJson(jsonString: String) = Result.success(ImportResult(0, 0, emptyList()))
                 override suspend fun clearAllData() = Result.success(Unit)
             }
         }

@@ -46,6 +46,7 @@ class SettingsViewModelTest {
         private val updateNotificationsResult: Result<Unit> = Result.success(Unit),
         private val exportResult: Result<String> = Result.success("/path/to/export"),
         private val importResult: Result<ImportResult> = Result.success(ImportResult(10, 0, emptyList())),
+        private val importFromJsonResult: Result<ImportResult> = Result.success(ImportResult(10, 0, emptyList())),
         private val clearAllDataResult: Result<Unit> = Result.success(Unit),
         private val completeOnboardingResult: Result<Unit> = Result.success(Unit),
     ) : SettingsRepository {
@@ -58,6 +59,7 @@ class SettingsViewModelTest {
         override suspend fun completeOnboarding(): Result<Unit> = completeOnboardingResult
         override suspend fun exportData(format: ExportFormat, dateRange: DateRange?): Result<String> = exportResult
         override suspend fun importData(filePath: String): Result<ImportResult> = importResult
+        override suspend fun importDataFromJson(jsonString: String): Result<ImportResult> = importFromJsonResult
         override suspend fun clearAllData(): Result<Unit> = clearAllDataResult
     }
 

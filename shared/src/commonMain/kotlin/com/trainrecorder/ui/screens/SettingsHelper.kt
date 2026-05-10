@@ -81,7 +81,8 @@ fun isValidExportFormat(format: String?): Boolean {
  * Build the confirmation message for clear data action.
  */
 fun buildClearDataConfirmationMessage(): String {
-    return "This will permanently delete all your training data, body measurements, and settings. This action cannot be undone."
+    return "This will permanently delete all your training data, body measurements, and other sport records. " +
+        "Your exercise library and settings will be preserved. This action cannot be undone."
 }
 
 /**

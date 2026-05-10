@@ -131,6 +131,19 @@ class SettingsViewModel(
         }
     }
 
+    fun importDataFromJson(jsonString: String) {
+        setState { copy(isImporting = true, error = null) }
+        scope.launch {
+            settingsRepository.importDataFromJson(jsonString)
+                .onSuccess {
+                    setState { copy(isImporting = false) }
+                }
+                .onFailure { error ->
+                    setState { copy(isImporting = false, error = error.message) }
+                }
+        }
+    }
+
     private fun clearAllData() {
         setState { copy(error = null) }
         scope.launch {

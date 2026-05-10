@@ -4,426 +4,501 @@
   "design": "design/tech-design.md",
   "created": "2026-05-10",
   "status": "planning",
-  "statusEnum": ["pending", "in_progress", "completed", "blocked", "skipped", "rejected"],
-  "priorityEnum": ["P0", "P1", "P2"],
-  "e2eRound": 0,
   "tasks": {
-    "1.1-project-scaffold": {
-      "id": "1.1",
-      "title": "KMP Project Scaffold",
+    "1-gate": {
+      "id": "1.gate",
+      "title": "Phase 1 Exit Gate",
       "priority": "P0",
-      "estimatedTime": "3h",
-      "dependencies": [],
+      "estimatedTime": "1h",
+      "dependencies": [
+        "1.summary"
+      ],
       "status": "pending",
-      "scope": "all",
+      "file": "1-gate.md",
+      "record": "records/1-gate.md",
       "breaking": true,
-      "file": "1.1-project-scaffold.md",
-      "record": "records/1.1-project-scaffold.md"
-    },
-    "1.2-schema-models": {
-      "id": "1.2",
-      "title": "Database Schema & Domain Models",
-      "priority": "P0",
-      "estimatedTime": "3h",
-      "dependencies": ["1.1"],
-      "status": "pending",
-      "scope": "backend",
-      "breaking": true,
-      "file": "1.2-schema-models.md",
-      "record": "records/1.2-schema-models.md"
-    },
-    "1.3-repo-interfaces": {
-      "id": "1.3",
-      "title": "Repository Interfaces",
-      "priority": "P0",
-      "estimatedTime": "2h",
-      "dependencies": ["1.2"],
-      "status": "pending",
-      "scope": "all",
-      "breaking": true,
-      "file": "1.3-repo-interfaces.md",
-      "record": "records/1.3-repo-interfaces.md"
+      "scope": "all"
     },
     "1-summary": {
       "id": "1.summary",
       "title": "Phase 1 Summary",
       "priority": "P0",
       "estimatedTime": "15min",
-      "dependencies": ["1.x"],
+      "dependencies": [
+        "1.x"
+      ],
       "status": "pending",
-      "scope": "all",
-      "noTest": true,
       "file": "1-summary.md",
-      "record": "records/1-summary.md"
-    },
-    "1-gate": {
-      "id": "1.gate",
-      "title": "Phase 1 Exit Gate",
-      "priority": "P0",
-      "estimatedTime": "1h",
-      "dependencies": ["1.summary"],
-      "status": "pending",
+      "record": "records/1-summary.md",
       "scope": "all",
+      "noTest": true
+    },
+    "1.1-project-scaffold": {
+      "id": "1.1",
+      "title": "KMP Project Scaffold",
+      "priority": "P0",
+      "estimatedTime": "3h",
+      "status": "completed",
+      "file": "1.1-project-scaffold.md",
+      "record": "records/1.1-project-scaffold.md",
       "breaking": true,
-      "file": "1-gate.md",
-      "record": "records/1-gate.md"
+      "scope": "all"
     },
-    "2.1-repo-exercise-settings": {
-      "id": "2.1",
-      "title": "Exercise & Settings Repository Implementations",
+    "1.2-schema-models": {
+      "id": "1.2",
+      "title": "Database Schema \u0026 Domain Models",
       "priority": "P0",
       "estimatedTime": "3h",
-      "dependencies": ["1.gate"],
+      "dependencies": [
+        "1.1"
+      ],
       "status": "pending",
-      "scope": "backend",
-      "breaking": false,
-      "file": "2.1-repo-exercise-settings.md",
-      "record": "records/2.1-repo-exercise-settings.md"
+      "file": "1.2-schema-models.md",
+      "record": "records/1.2-schema-models.md",
+      "breaking": true,
+      "scope": "backend"
     },
-    "2.2-repo-plan-workout": {
-      "id": "2.2",
-      "title": "Plan & Workout Repository Implementations",
+    "1.3-repo-interfaces": {
+      "id": "1.3",
+      "title": "Repository Interfaces",
       "priority": "P0",
-      "estimatedTime": "4h",
-      "dependencies": ["1.gate"],
+      "estimatedTime": "2h",
+      "dependencies": [
+        "1.2"
+      ],
       "status": "pending",
-      "scope": "backend",
-      "breaking": false,
-      "file": "2.2-repo-plan-workout.md",
-      "record": "records/2.2-repo-plan-workout.md"
-    },
-    "2.3-repo-supporting": {
-      "id": "2.3",
-      "title": "Supporting Repository Implementations",
-      "priority": "P0",
-      "estimatedTime": "3h",
-      "dependencies": ["1.gate"],
-      "status": "pending",
-      "scope": "backend",
-      "breaking": false,
-      "file": "2.3-repo-supporting.md",
-      "record": "records/2.3-repo-supporting.md"
-    },
-    "2.4-use-cases": {
-      "id": "2.4",
-      "title": "Core Use Cases: WeightSuggester & ScheduleCalculator",
-      "priority": "P0",
-      "estimatedTime": "4h",
-      "dependencies": ["1.gate", "2.1", "2.2", "2.3"],
-      "status": "pending",
-      "scope": "backend",
-      "breaking": false,
-      "file": "2.4-use-cases.md",
-      "record": "records/2.4-use-cases.md"
-    },
-    "2-summary": {
-      "id": "2.summary",
-      "title": "Phase 2 Summary",
-      "priority": "P0",
-      "estimatedTime": "15min",
-      "dependencies": ["2.x"],
-      "status": "pending",
-      "scope": "all",
-      "noTest": true,
-      "file": "2-summary.md",
-      "record": "records/2-summary.md"
+      "file": "1.3-repo-interfaces.md",
+      "record": "records/1.3-repo-interfaces.md",
+      "breaking": true,
+      "scope": "all"
     },
     "2-gate": {
       "id": "2.gate",
       "title": "Phase 2 Exit Gate",
       "priority": "P0",
       "estimatedTime": "1h",
-      "dependencies": ["2.summary"],
+      "dependencies": [
+        "2.summary"
+      ],
       "status": "pending",
-      "scope": "all",
-      "breaking": true,
       "file": "2-gate.md",
-      "record": "records/2-gate.md"
+      "record": "records/2-gate.md",
+      "breaking": true,
+      "scope": "all"
     },
-    "3.1-timer-service": {
-      "id": "3.1",
-      "title": "TimerService Platform Implementation",
-      "priority": "P0",
-      "estimatedTime": "3h",
-      "dependencies": ["2.gate"],
-      "status": "pending",
-      "scope": "all",
-      "breaking": false,
-      "file": "3.1-timer-service.md",
-      "record": "records/3.1-timer-service.md"
-    },
-    "3.2-core-viewmodels": {
-      "id": "3.2",
-      "title": "Core ViewModels",
-      "priority": "P0",
-      "estimatedTime": "4h",
-      "dependencies": ["2.gate"],
-      "status": "pending",
-      "scope": "all",
-      "breaking": false,
-      "file": "3.2-core-viewmodels.md",
-      "record": "records/3.2-core-viewmodels.md"
-    },
-    "3.3-supporting-viewmodels": {
-      "id": "3.3",
-      "title": "Supporting ViewModels",
-      "priority": "P1",
-      "estimatedTime": "3h",
-      "dependencies": ["2.gate"],
-      "status": "pending",
-      "scope": "all",
-      "breaking": false,
-      "file": "3.3-supporting-viewmodels.md",
-      "record": "records/3.3-supporting-viewmodels.md"
-    },
-    "3.4-navigation-charts": {
-      "id": "3.4",
-      "title": "Navigation Graph & Chart Components",
-      "priority": "P0",
-      "estimatedTime": "3h",
-      "dependencies": ["2.gate", "3.2"],
-      "status": "pending",
-      "scope": "frontend",
-      "breaking": false,
-      "file": "3.4-navigation-charts.md",
-      "record": "records/3.4-navigation-charts.md"
-    },
-    "3-summary": {
-      "id": "3.summary",
-      "title": "Phase 3 Summary",
+    "2-summary": {
+      "id": "2.summary",
+      "title": "Phase 2 Summary",
       "priority": "P0",
       "estimatedTime": "15min",
-      "dependencies": ["3.1", "3.2", "3.3", "3.4"],
+      "dependencies": [
+        "2.x"
+      ],
       "status": "pending",
+      "file": "2-summary.md",
+      "record": "records/2-summary.md",
       "scope": "all",
-      "noTest": true,
-      "file": "3-summary.md",
-      "record": "records/3-summary.md"
+      "noTest": true
+    },
+    "2.1-repo-exercise-settings": {
+      "id": "2.1",
+      "title": "Exercise \u0026 Settings Repository Implementations",
+      "priority": "P0",
+      "estimatedTime": "3h",
+      "dependencies": [
+        "1.gate"
+      ],
+      "status": "pending",
+      "file": "2.1-repo-exercise-settings.md",
+      "record": "records/2.1-repo-exercise-settings.md",
+      "scope": "backend"
+    },
+    "2.2-repo-plan-workout": {
+      "id": "2.2",
+      "title": "Plan \u0026 Workout Repository Implementations",
+      "priority": "P0",
+      "estimatedTime": "4h",
+      "dependencies": [
+        "1.gate"
+      ],
+      "status": "pending",
+      "file": "2.2-repo-plan-workout.md",
+      "record": "records/2.2-repo-plan-workout.md",
+      "scope": "backend"
+    },
+    "2.3-repo-supporting": {
+      "id": "2.3",
+      "title": "Supporting Repository Implementations",
+      "priority": "P0",
+      "estimatedTime": "3h",
+      "dependencies": [
+        "1.gate"
+      ],
+      "status": "pending",
+      "file": "2.3-repo-supporting.md",
+      "record": "records/2.3-repo-supporting.md",
+      "scope": "backend"
+    },
+    "2.4-use-cases": {
+      "id": "2.4",
+      "title": "Core Use Cases: WeightSuggester \u0026 ScheduleCalculator",
+      "priority": "P0",
+      "estimatedTime": "4h",
+      "dependencies": [
+        "1.gate",
+        "2.1",
+        "2.2",
+        "2.3"
+      ],
+      "status": "pending",
+      "file": "2.4-use-cases.md",
+      "record": "records/2.4-use-cases.md",
+      "scope": "backend"
     },
     "3-gate": {
       "id": "3.gate",
       "title": "Phase 3 Gate",
       "priority": "P0",
       "estimatedTime": "1h",
-      "dependencies": ["3.summary"],
+      "dependencies": [
+        "3.summary"
+      ],
       "status": "pending",
-      "scope": "all",
-      "breaking": true,
       "file": "3-gate.md",
-      "record": "records/3-gate.md"
+      "record": "records/3-gate.md",
+      "breaking": true,
+      "scope": "all"
     },
-    "4.1-calendar-screen": {
-      "id": "4.1",
-      "title": "Calendar Screen",
-      "priority": "P0",
-      "estimatedTime": "3h",
-      "dependencies": ["3.gate"],
-      "status": "pending",
-      "scope": "frontend",
-      "breaking": false,
-      "file": "4.1-calendar-screen.md",
-      "record": "records/4.1-calendar-screen.md"
-    },
-    "4.2-workout-screen": {
-      "id": "4.2",
-      "title": "Workout Execution Screen",
-      "priority": "P0",
-      "estimatedTime": "4h",
-      "dependencies": ["3.gate"],
-      "status": "pending",
-      "scope": "frontend",
-      "breaking": false,
-      "file": "4.2-workout-screen.md",
-      "record": "records/4.2-workout-screen.md"
-    },
-    "4.3-plan-screen": {
-      "id": "4.3",
-      "title": "Plan Management Screen",
-      "priority": "P0",
-      "estimatedTime": "3h",
-      "dependencies": ["3.gate"],
-      "status": "pending",
-      "scope": "frontend",
-      "breaking": false,
-      "file": "4.3-plan-screen.md",
-      "record": "records/4.3-plan-screen.md"
-    },
-    "4.4-history-stats-screens": {
-      "id": "4.4",
-      "title": "History & Stats Screens",
-      "priority": "P1",
-      "estimatedTime": "4h",
-      "dependencies": ["3.gate", "3.4"],
-      "status": "pending",
-      "scope": "frontend",
-      "breaking": false,
-      "file": "4.4-history-stats-screens.md",
-      "record": "records/4.4-history-stats-screens.md"
-    },
-    "4.5-remaining-screens": {
-      "id": "4.5",
-      "title": "Remaining Screens",
-      "priority": "P1",
-      "estimatedTime": "4h",
-      "dependencies": ["3.gate"],
-      "status": "pending",
-      "scope": "frontend",
-      "breaking": false,
-      "file": "4.5-remaining-screens.md",
-      "record": "records/4.5-remaining-screens.md"
-    },
-    "4-summary": {
-      "id": "4.summary",
-      "title": "Phase 4 Summary",
+    "3-summary": {
+      "id": "3.summary",
+      "title": "Phase 3 Summary",
       "priority": "P0",
       "estimatedTime": "15min",
-      "dependencies": ["4.1", "4.2", "4.3", "4.4", "4.5"],
+      "dependencies": [
+        "3.1",
+        "3.2",
+        "3.3",
+        "3.4"
+      ],
       "status": "pending",
+      "file": "3-summary.md",
+      "record": "records/3-summary.md",
       "scope": "all",
-      "noTest": true,
-      "file": "4-summary.md",
-      "record": "records/4-summary.md"
+      "noTest": true
+    },
+    "3.1-timer-service": {
+      "id": "3.1",
+      "title": "TimerService Platform Implementation",
+      "priority": "P0",
+      "estimatedTime": "3h",
+      "dependencies": [
+        "2.gate"
+      ],
+      "status": "pending",
+      "file": "3.1-timer-service.md",
+      "record": "records/3.1-timer-service.md",
+      "scope": "all"
+    },
+    "3.2-core-viewmodels": {
+      "id": "3.2",
+      "title": "Core ViewModels",
+      "priority": "P0",
+      "estimatedTime": "4h",
+      "dependencies": [
+        "2.gate"
+      ],
+      "status": "pending",
+      "file": "3.2-core-viewmodels.md",
+      "record": "records/3.2-core-viewmodels.md",
+      "scope": "all"
+    },
+    "3.3-supporting-viewmodels": {
+      "id": "3.3",
+      "title": "Supporting ViewModels",
+      "priority": "P1",
+      "estimatedTime": "3h",
+      "dependencies": [
+        "2.gate"
+      ],
+      "status": "pending",
+      "file": "3.3-supporting-viewmodels.md",
+      "record": "records/3.3-supporting-viewmodels.md",
+      "scope": "all"
+    },
+    "3.4-navigation-charts": {
+      "id": "3.4",
+      "title": "Navigation Graph \u0026 Chart Components",
+      "priority": "P0",
+      "estimatedTime": "3h",
+      "dependencies": [
+        "2.gate",
+        "3.2"
+      ],
+      "status": "pending",
+      "file": "3.4-navigation-charts.md",
+      "record": "records/3.4-navigation-charts.md",
+      "scope": "frontend"
     },
     "4-gate": {
       "id": "4.gate",
       "title": "Phase 4 Gate",
       "priority": "P0",
       "estimatedTime": "1h",
-      "dependencies": ["4.summary"],
+      "dependencies": [
+        "4.summary"
+      ],
       "status": "pending",
-      "scope": "all",
-      "breaking": true,
       "file": "4-gate.md",
-      "record": "records/4-gate.md"
+      "record": "records/4-gate.md",
+      "breaking": true,
+      "scope": "all"
     },
-    "5.1-onboarding-export": {
-      "id": "5.1",
-      "title": "Onboarding Flow & Data Export/Import",
-      "priority": "P1",
-      "estimatedTime": "3h",
-      "dependencies": ["4.gate"],
-      "status": "pending",
-      "scope": "all",
-      "breaking": false,
-      "file": "5.1-onboarding-export.md",
-      "record": "records/5.1-onboarding-export.md"
-    },
-    "5.2-app-entry": {
-      "id": "5.2",
-      "title": "App Entry Points & Final Integration",
-      "priority": "P0",
-      "estimatedTime": "2h",
-      "dependencies": ["4.gate"],
-      "status": "pending",
-      "scope": "all",
-      "breaking": false,
-      "file": "5.2-app-entry.md",
-      "record": "records/5.2-app-entry.md"
-    },
-    "5-summary": {
-      "id": "5.summary",
-      "title": "Phase 5 Summary",
+    "4-summary": {
+      "id": "4.summary",
+      "title": "Phase 4 Summary",
       "priority": "P0",
       "estimatedTime": "15min",
-      "dependencies": ["5.1", "5.2"],
+      "dependencies": [
+        "4.1",
+        "4.2",
+        "4.3",
+        "4.4",
+        "4.5"
+      ],
       "status": "pending",
+      "file": "4-summary.md",
+      "record": "records/4-summary.md",
       "scope": "all",
-      "noTest": true,
-      "file": "5-summary.md",
-      "record": "records/5-summary.md"
+      "noTest": true
+    },
+    "4.1-calendar-screen": {
+      "id": "4.1",
+      "title": "Calendar Screen",
+      "priority": "P0",
+      "estimatedTime": "3h",
+      "dependencies": [
+        "3.gate"
+      ],
+      "status": "pending",
+      "file": "4.1-calendar-screen.md",
+      "record": "records/4.1-calendar-screen.md",
+      "scope": "frontend"
+    },
+    "4.2-workout-screen": {
+      "id": "4.2",
+      "title": "Workout Execution Screen",
+      "priority": "P0",
+      "estimatedTime": "4h",
+      "dependencies": [
+        "3.gate"
+      ],
+      "status": "pending",
+      "file": "4.2-workout-screen.md",
+      "record": "records/4.2-workout-screen.md",
+      "scope": "frontend"
+    },
+    "4.3-plan-screen": {
+      "id": "4.3",
+      "title": "Plan Management Screen",
+      "priority": "P0",
+      "estimatedTime": "3h",
+      "dependencies": [
+        "3.gate"
+      ],
+      "status": "pending",
+      "file": "4.3-plan-screen.md",
+      "record": "records/4.3-plan-screen.md",
+      "scope": "frontend"
+    },
+    "4.4-history-stats-screens": {
+      "id": "4.4",
+      "title": "History \u0026 Stats Screens",
+      "priority": "P1",
+      "estimatedTime": "4h",
+      "dependencies": [
+        "3.gate",
+        "3.4"
+      ],
+      "status": "pending",
+      "file": "4.4-history-stats-screens.md",
+      "record": "records/4.4-history-stats-screens.md",
+      "scope": "frontend"
+    },
+    "4.5-remaining-screens": {
+      "id": "4.5",
+      "title": "Remaining Screens",
+      "priority": "P1",
+      "estimatedTime": "4h",
+      "dependencies": [
+        "3.gate"
+      ],
+      "status": "pending",
+      "file": "4.5-remaining-screens.md",
+      "record": "records/4.5-remaining-screens.md",
+      "scope": "frontend"
     },
     "5-gate": {
       "id": "5.gate",
       "title": "Phase 5 Gate",
       "priority": "P0",
       "estimatedTime": "1h",
-      "dependencies": ["5.summary"],
+      "dependencies": [
+        "5.summary"
+      ],
       "status": "pending",
-      "scope": "all",
-      "breaking": true,
       "file": "5-gate.md",
-      "record": "records/5-gate.md"
+      "record": "records/5-gate.md",
+      "breaking": true,
+      "scope": "all"
     },
-    "gen-test-cases": {
-      "id": "T-test-1",
-      "title": "Generate e2e Test Cases",
-      "priority": "P1",
-      "estimatedTime": "1-2h",
-      "dependencies": ["5.gate"],
+    "5-summary": {
+      "id": "5.summary",
+      "title": "Phase 5 Summary",
+      "priority": "P0",
+      "estimatedTime": "15min",
+      "dependencies": [
+        "5.1",
+        "5.2"
+      ],
       "status": "pending",
+      "file": "5-summary.md",
+      "record": "records/5-summary.md",
       "scope": "all",
-      "noTest": true,
-      "file": "gen-test-cases.md",
-      "record": "records/gen-test-cases.md"
+      "noTest": true
     },
-    "eval-test-cases": {
-      "id": "T-test-1b",
-      "title": "Evaluate e2e Test Cases",
+    "5.1-onboarding-export": {
+      "id": "5.1",
+      "title": "Onboarding Flow \u0026 Data Export/Import",
       "priority": "P1",
-      "estimatedTime": "30min",
-      "dependencies": ["T-test-1"],
+      "estimatedTime": "3h",
+      "dependencies": [
+        "4.gate"
+      ],
       "status": "pending",
-      "scope": "all",
-      "noTest": true,
-      "mainSession": true,
-      "file": "eval-test-cases.md",
-      "record": "records/eval-test-cases.md"
+      "file": "5.1-onboarding-export.md",
+      "record": "records/5.1-onboarding-export.md",
+      "scope": "all"
     },
-    "gen-test-scripts": {
-      "id": "T-test-2",
-      "title": "Generate e2e Test Scripts",
-      "priority": "P1",
-      "estimatedTime": "1-2h",
-      "dependencies": ["T-test-1b"],
+    "5.2-app-entry": {
+      "id": "5.2",
+      "title": "App Entry Points \u0026 Final Integration",
+      "priority": "P0",
+      "estimatedTime": "2h",
+      "dependencies": [
+        "4.gate"
+      ],
       "status": "pending",
-      "scope": "all",
-      "file": "gen-test-scripts.md",
-      "record": "records/gen-test-scripts.md"
-    },
-    "run-e2e-tests": {
-      "id": "T-test-3",
-      "title": "Run e2e Tests",
-      "priority": "P1",
-      "estimatedTime": "30min-1h",
-      "dependencies": ["T-test-2"],
-      "status": "pending",
-      "scope": "all",
-      "file": "run-e2e-tests.md",
-      "record": "records/run-e2e-tests.md"
-    },
-    "graduate-tests": {
-      "id": "T-test-4",
-      "title": "Graduate Test Scripts",
-      "priority": "P1",
-      "estimatedTime": "30min",
-      "dependencies": ["T-test-3"],
-      "status": "pending",
-      "scope": "all",
-      "file": "graduate-tests.md",
-      "record": "records/graduate-tests.md"
-    },
-    "verify-regression": {
-      "id": "T-test-4.5",
-      "title": "Verify Full E2E Regression",
-      "priority": "P1",
-      "estimatedTime": "15-30min",
-      "dependencies": ["T-test-4"],
-      "status": "pending",
-      "scope": "all",
-      "file": "verify-regression.md",
-      "record": "records/verify-regression.md"
+      "file": "5.2-app-entry.md",
+      "record": "records/5.2-app-entry.md",
+      "scope": "all"
     },
     "consolidate-specs": {
       "id": "T-test-5",
       "title": "Consolidate Specs",
       "priority": "P2",
       "estimatedTime": "20min",
-      "dependencies": ["T-test-4.5"],
+      "dependencies": [
+        "T-test-4.5"
+      ],
       "status": "pending",
-      "scope": "all",
-      "noTest": true,
       "file": "consolidate-specs.md",
-      "record": "records/consolidate-specs.md"
+      "record": "records/consolidate-specs.md",
+      "scope": "all",
+      "noTest": true
+    },
+    "eval-test-cases": {
+      "id": "T-test-1b",
+      "title": "Evaluate e2e Test Cases",
+      "priority": "P1",
+      "estimatedTime": "30min",
+      "dependencies": [
+        "T-test-1"
+      ],
+      "status": "pending",
+      "file": "eval-test-cases.md",
+      "record": "records/eval-test-cases.md",
+      "scope": "all",
+      "mainSession": true,
+      "noTest": true
+    },
+    "gen-test-cases": {
+      "id": "T-test-1",
+      "title": "Generate e2e Test Cases",
+      "priority": "P1",
+      "estimatedTime": "1-2h",
+      "dependencies": [
+        "5.gate"
+      ],
+      "status": "pending",
+      "file": "gen-test-cases.md",
+      "record": "records/gen-test-cases.md",
+      "scope": "all",
+      "noTest": true
+    },
+    "gen-test-scripts": {
+      "id": "T-test-2",
+      "title": "Generate e2e Test Scripts",
+      "priority": "P1",
+      "estimatedTime": "1-2h",
+      "dependencies": [
+        "T-test-1b"
+      ],
+      "status": "pending",
+      "file": "gen-test-scripts.md",
+      "record": "records/gen-test-scripts.md",
+      "scope": "all"
+    },
+    "graduate-tests": {
+      "id": "T-test-4",
+      "title": "Graduate Test Scripts",
+      "priority": "P1",
+      "estimatedTime": "30min",
+      "dependencies": [
+        "T-test-3"
+      ],
+      "status": "pending",
+      "file": "graduate-tests.md",
+      "record": "records/graduate-tests.md",
+      "scope": "all"
+    },
+    "run-e2e-tests": {
+      "id": "T-test-3",
+      "title": "Run e2e Tests",
+      "priority": "P1",
+      "estimatedTime": "30min-1h",
+      "dependencies": [
+        "T-test-2"
+      ],
+      "status": "pending",
+      "file": "run-e2e-tests.md",
+      "record": "records/run-e2e-tests.md",
+      "scope": "all"
+    },
+    "verify-regression": {
+      "id": "T-test-4.5",
+      "title": "Verify Full E2E Regression",
+      "priority": "P1",
+      "estimatedTime": "15-30min",
+      "dependencies": [
+        "T-test-4"
+      ],
+      "status": "pending",
+      "file": "verify-regression.md",
+      "record": "records/verify-regression.md",
+      "scope": "all"
     }
-  }
+  },
+  "statusEnum": [
+    "pending",
+    "in_progress",
+    "completed",
+    "blocked",
+    "skipped",
+    "rejected"
+  ],
+  "priorityEnum": [
+    "P0",
+    "P1",
+    "P2"
+  ]
 }

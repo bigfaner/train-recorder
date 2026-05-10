@@ -71,7 +71,7 @@ export function TrendChart({
   const chartWidth = screenWidth - Spacing.contentPadding * 2 - CHART_PADDING;
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container} testID="weight-trend-chart">
       <Text style={styles.title}>趋势图</Text>
       <MetricSelector selected={metricKey} onSelect={handleMetricChange} />
 
@@ -135,7 +135,7 @@ interface MetricSelectorProps {
 
 function MetricSelector({ selected, onSelect }: MetricSelectorProps) {
   return (
-    <View style={metricStyles.container}>
+    <View style={metricStyles.container} testID="metric-selector">
       {BODY_METRICS.map((metric) => (
         <TouchableOpacity
           key={metric.key}

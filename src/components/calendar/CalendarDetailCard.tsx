@@ -112,7 +112,9 @@ function renderContent(
         <View style={styles.contentBlock}>
           <View style={styles.completedRow}>
             <Text style={styles.checkIcon}>✓</Text>
-            <Text style={styles.completedLabel}>已完成</Text>
+            <Text style={styles.completedLabel} testID="completion-status">
+              已完成
+            </Text>
           </View>
           {workoutSession && <Text style={styles.summaryText}>训练已记录</Text>}
           {/* Past completed days could show more detail */}
@@ -124,7 +126,9 @@ function renderContent(
         <View style={styles.contentBlock}>
           <View style={styles.completedRow}>
             <Text style={[styles.checkIcon, styles.checkIconPartial]}>◐</Text>
-            <Text style={styles.completedLabel}>部分完成</Text>
+            <Text style={styles.completedLabel} testID="completion-status">
+              部分完成
+            </Text>
           </View>
           {workoutSession && (
             <Text style={styles.summaryText}>训练已部分记录</Text>
@@ -142,20 +146,22 @@ function renderContent(
             </Text>
           )}
           {onUnskipDay && (
-            <Button
-              variant="secondary"
-              onPress={() => onUnskipDay(date)}
-              testID="undo-skip-btn"
-            >
-              恢复训练
-            </Button>
+            <View testID="context-menu">
+              <Button
+                variant="secondary"
+                onPress={() => onUnskipDay(date)}
+                testID="undo-skip-btn"
+              >
+                恢复训练
+              </Button>
+            </View>
           )}
         </View>
       );
 
     case "training":
       return (
-        <View style={styles.contentBlock}>
+        <View style={styles.contentBlock} testID="workout-preview-panel">
           {trainingDay && (
             <Text style={styles.planPreview}>{trainingDay.day_name}</Text>
           )}
@@ -197,9 +203,13 @@ function renderContent(
             </View>
           )}
           {today && onSkipDay && (
-            <TouchableOpacityWrapper onPress={() => onSkipDay(date)}>
-              <Text style={styles.skipLink}>跳过今日训练</Text>
-            </TouchableOpacityWrapper>
+            <View testID="context-menu">
+              <TouchableOpacityWrapper onPress={() => onSkipDay(date)}>
+                <Text style={styles.skipLink} testID="skip-day-btn">
+                  跳过今日训练
+                </Text>
+              </TouchableOpacityWrapper>
+            </View>
           )}
         </View>
       );
@@ -208,6 +218,9 @@ function renderContent(
       return (
         <View style={styles.contentBlock}>
           <Text style={styles.restMessage}>其他运动记录</Text>
+          <Text style={styles.summaryText} testID="sport-type-label">
+            其他运动
+          </Text>
           <Button variant="secondary" onPress={() => onRecordOtherSport(date)}>
             记录其他运动
           </Button>

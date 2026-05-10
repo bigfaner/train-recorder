@@ -17,6 +17,21 @@ import { Colors, Typography, Spacing, ComponentSizes } from "@utils/constants";
 import type { SportEntryData } from "./sport-helpers";
 import { validateSportEntry } from "./sport-helpers";
 
+/** Map Chinese metric names to English testID suffixes */
+const METRIC_TEST_ID_MAP: Record<string, string> = {
+  距离: "distance",
+  时间: "time",
+  趟数: "laps",
+  配速: "pace",
+  心率: "heartrate",
+  卡路里: "calories",
+};
+
+function getMetricTestId(metricName: string): string {
+  const suffix = METRIC_TEST_ID_MAP[metricName] ?? metricName.toLowerCase();
+  return `metric-${suffix}-input`;
+}
+
 // ============================================================
 // Props
 // ============================================================
@@ -45,7 +60,7 @@ export function MetricInputForm({
   const validation = validateSportEntry(entryData);
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container} testID="metric-config-list">
       <View style={styles.divider} />
 
       {entryData.metrics.map((metric) => (
@@ -59,7 +74,7 @@ export function MetricInputForm({
               placeholder="0"
               placeholderTextColor={Colors.textTertiary}
               keyboardType="numeric"
-              testID={`metric-${metric.metricName.toLowerCase()}-input`}
+              testID={getMetricTestId(metric.metricName)}
             />
             {metric.metricUnit && (
               <Text style={styles.suffix}>{metric.metricUnit}</Text>

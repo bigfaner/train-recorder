@@ -158,6 +158,9 @@ export function BodyDataScreen({
               ]}
               onPress={() => setActiveSegment(segment.key)}
               activeOpacity={0.7}
+              testID={
+                segment.key === "trend" ? "trend-chart-btn" : "history-btn"
+              }
             >
               <Text
                 style={[

@@ -84,11 +84,12 @@ function HistoryItem({ measurement, onEdit, onDelete }: HistoryItemProps) {
   }
 
   return (
-    <View style={itemStyles.card}>
+    <View style={itemStyles.card} testID={`body-record-${measurement.id}`}>
       <TouchableOpacity
         onPress={onEdit}
         activeOpacity={0.7}
         style={itemStyles.content}
+        testID="edit-record-btn"
       >
         <View style={itemStyles.left}>
           <Text style={itemStyles.date}>{dateDisplay}</Text>

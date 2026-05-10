@@ -72,6 +72,8 @@ export interface WorkoutScreenProps {
   onReorderExercises?: (reordered: WorkoutExercise[]) => void;
   /** Callback to skip an exercise */
   onSkipExercise?: (exerciseBizKey: bigint) => void;
+  /** Whether this is a retroactive (backlog) workout */
+  isRetroactive?: boolean;
 }
 
 /**
@@ -198,6 +200,7 @@ export function WorkoutScreen({
   onSelectExercise: _onSelectExercise,
   onReorderExercises: _onReorderExercises,
   onSkipExercise,
+  isRetroactive = false,
 }: WorkoutScreenProps) {
   // Local state for drag reorder
   const [exercises, setExercises] = useState(initialExercises);
@@ -254,6 +257,18 @@ export function WorkoutScreen({
 
   return (
     <View style={styles.container}>
+      {/* Resume workout button (visible when recovering from background/force-close) */}
+      {currentExerciseBizKey !== null && (
+        <View style={styles.resumeBar} testID="resume-workout-btn">
+          <TouchableOpacity
+            style={styles.resumeButton}
+            onPress={() => {}}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.resumeButtonText}>继续训练</Text>
+          </TouchableOpacity>
+        </View>
+      )}
       <WorkoutHeader
         trainingTypeLabel={trainingTypeLabel}
         completedExercises={completedExercises}
@@ -263,7 +278,7 @@ export function WorkoutScreen({
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
-        testID="exercise-list"
+        testID={isRetroactive ? "retroactive-form" : "exercise-list"}
       >
         {exercises.map((exercise, index) => {
           const exerciseName =
@@ -289,6 +304,20 @@ export function WorkoutScreen({
           );
         })}
       </ScrollView>
+
+      {/* Save workout button for retroactive mode */}
+      {isRetroactive && (
+        <View style={styles.saveWorkoutBar}>
+          <TouchableOpacity
+            style={styles.saveWorkoutButton}
+            onPress={onExit}
+            activeOpacity={0.7}
+            testID="save-workout-btn"
+          >
+            <Text style={styles.saveWorkoutButtonText}>保存训练记录</Text>
+          </TouchableOpacity>
+        </View>
+      )}
 
       {/* Current set display for workout resumption */}
       {currentExerciseBizKey !== null && (
@@ -328,5 +357,46 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: Colors.textSecondary,
     textAlign: "center",
+  },
+  resumeBar: {
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    backgroundColor: Colors.surface,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: Colors.border,
+    alignItems: "center",
+  },
+  resumeButton: {
+    backgroundColor: Colors.accent,
+    borderRadius: 12,
+    height: 44,
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
+  },
+  resumeButtonText: {
+    color: "#ffffff",
+    fontSize: 17,
+    fontWeight: "600" as const,
+  },
+  saveWorkoutBar: {
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    backgroundColor: Colors.surface,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: Colors.border,
+  },
+  saveWorkoutButton: {
+    backgroundColor: Colors.accent,
+    borderRadius: 12,
+    height: 50,
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
+  },
+  saveWorkoutButtonText: {
+    color: "#ffffff",
+    fontSize: 17,
+    fontWeight: "600" as const,
   },
 });

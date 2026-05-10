@@ -576,7 +576,7 @@
       "title": "Fix: Missing testIDs on feeling, calendar, other-sport, body-data, workout pages",
       "priority": "P0",
       "estimatedTime": "2h",
-      "status": "pending",
+      "status": "completed",
       "file": "fix-4.md",
       "record": "records/fix-4.md",
       "breaking": true,

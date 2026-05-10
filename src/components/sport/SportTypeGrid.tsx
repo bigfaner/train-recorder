@@ -35,6 +35,7 @@ const ICON_LABELS: Record<string, string> = {
   run: "🏃",
   bike: "🚴",
   yoga: "🧘",
+  hiking: "🥾",
   custom: "⭐",
 };
 

@@ -95,6 +95,14 @@ kotlin {
     }
 }
 
+// Force kotlinx-datetime to 0.6.2 to avoid runtime/compile classpath mismatch
+// caused by Compose transitively pulling in 0.7.x (which has breaking Instant serializer changes)
+configurations.all {
+    resolutionStrategy {
+        force("org.jetbrains.kotlinx:kotlinx-datetime:0.6.2")
+    }
+}
+
 android {
     namespace = "com.trainrecorder.shared"
     compileSdk = 35

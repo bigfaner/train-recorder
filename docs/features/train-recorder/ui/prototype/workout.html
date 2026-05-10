@@ -1,217 +1,397 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>训练执行 — Train Recorder</title>
-  <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-  <div class="phone-frame">
-    <div class="app-container">
-      <!-- Status Bar -->
-      <div class="status-bar">
-        <span class="time">9:41</span>
-        <div class="icons">
-          <svg width="16" height="12" viewBox="0 0 16 12"><rect x="0" y="5" width="3" height="7" rx="0.5" fill="#1d1d1f"/><rect x="4.5" y="3" width="3" height="9" rx="0.5" fill="#1d1d1f"/><rect x="9" y="1" width="3" height="11" rx="0.5" fill="#1d1d1f"/><rect x="13.5" y="0" width="3" height="12" rx="0.5" fill="#1d1d1f" opacity="0.3"/></svg>
-          <svg width="15" height="12" viewBox="0 0 15 12"><path d="M7.5 3.5C9.4 3.5 11.1 4.3 12.3 5.5L13.7 4.1C12.1 2.5 10 1.5 7.5 1.5S2.9 2.5 1.3 4.1L2.7 5.5C3.9 4.3 5.6 3.5 7.5 3.5Z" fill="#1d1d1f"/><path d="M7.5 7C8.6 7 9.6 7.4 10.4 8.1L11.8 6.7C10.6 5.6 9.1 5 7.5 5S4.4 5.6 3.2 6.7L4.6 8.1C5.4 7.4 6.4 7 7.5 7Z" fill="#1d1d1f"/><circle cx="7.5" cy="10.5" r="1.5" fill="#1d1d1f"/></svg>
-          <svg width="25" height="12" viewBox="0 0 25 12"><rect x="0" y="1" width="21" height="10" rx="2" stroke="#1d1d1f" stroke-width="1" fill="none"/><rect x="1.5" y="2.5" width="14" height="7" rx="1" fill="#30d158"/><rect x="22" y="4" width="2" height="4" rx="0.5" fill="#1d1d1f" opacity="0.4"/></svg>
-        </div>
-      </div>
-
-      <!-- Nav Bar -->
-      <div class="nav-bar">
-        <a href="calendar.html" class="nav-back">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
-          推日
-        </a>
-        <span class="nav-title">完成 2/4</span>
-        <span class="nav-action text-tertiary" style="font-size:15px">进度</span>
-      </div>
-
-      <!-- Progress Bar -->
-      <div style="padding:0 16px">
-        <div class="progress-bar">
-          <div class="fill" style="width:50%"></div>
-        </div>
-      </div>
-
-      <!-- Page Content -->
-      <div class="page-content" style="padding-top:12px; position:relative; overflow:hidden;">
-
-        <!-- Exercise 1: 深蹲 - COMPLETED -->
-        <div class="exercise-card completed" id="ex-squat">
-          <div class="exercise-header">
-            <div>
-              <span class="exercise-name">深蹲</span>
-              <span class="text-secondary" style="margin-left:8px">5/5 组</span>
-            </div>
-            <svg class="check-icon" width="20" height="20" viewBox="0 0 20 20" fill="#30d158">
-              <circle cx="10" cy="10" r="10" fill-opacity="0.12"/>
-              <path d="M6 10l3 3 5-5" stroke="#30d158" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>训练执行 — Train Recorder</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="phone-frame">
+      <div class="app-container">
+        <!-- Status Bar -->
+        <div class="status-bar">
+          <span class="time">9:41</span>
+          <div class="icons">
+            <svg width="16" height="12" viewBox="0 0 16 12">
+              <rect x="0" y="5" width="3" height="7" rx="0.5" fill="#1d1d1f" />
+              <rect
+                x="4.5"
+                y="3"
+                width="3"
+                height="9"
+                rx="0.5"
+                fill="#1d1d1f"
+              />
+              <rect x="9" y="1" width="3" height="11" rx="0.5" fill="#1d1d1f" />
+              <rect
+                x="13.5"
+                y="0"
+                width="3"
+                height="12"
+                rx="0.5"
+                fill="#1d1d1f"
+                opacity="0.3"
+              />
+            </svg>
+            <svg width="15" height="12" viewBox="0 0 15 12">
+              <path
+                d="M7.5 3.5C9.4 3.5 11.1 4.3 12.3 5.5L13.7 4.1C12.1 2.5 10 1.5 7.5 1.5S2.9 2.5 1.3 4.1L2.7 5.5C3.9 4.3 5.6 3.5 7.5 3.5Z"
+                fill="#1d1d1f"
+              />
+              <path
+                d="M7.5 7C8.6 7 9.6 7.4 10.4 8.1L11.8 6.7C10.6 5.6 9.1 5 7.5 5S4.4 5.6 3.2 6.7L4.6 8.1C5.4 7.4 6.4 7 7.5 7Z"
+                fill="#1d1d1f"
+              />
+              <circle cx="7.5" cy="10.5" r="1.5" fill="#1d1d1f" />
+            </svg>
+            <svg width="25" height="12" viewBox="0 0 25 12">
+              <rect
+                x="0"
+                y="1"
+                width="21"
+                height="10"
+                rx="2"
+                stroke="#1d1d1f"
+                stroke-width="1"
+                fill="none"
+              />
+              <rect
+                x="1.5"
+                y="2.5"
+                width="14"
+                height="7"
+                rx="1"
+                fill="#30d158"
+              />
+              <rect
+                x="22"
+                y="4"
+                width="2"
+                height="4"
+                rx="0.5"
+                fill="#1d1d1f"
+                opacity="0.4"
+              />
             </svg>
           </div>
-          <div class="exercise-detail">✓ 100kg × 5×5 · 容量 2,500kg</div>
         </div>
 
-        <!-- Exercise 2: 卧推 - ACTIVE (current) -->
-        <div class="exercise-card active" id="ex-bench">
-          <div class="exercise-header">
-            <div>
-              <span class="exercise-name">卧推</span>
-              <span class="text-secondary" style="margin-left:8px">第 3/5 组</span>
-            </div>
-            <span class="tag tag-push" style="font-size:12px">当前</span>
-          </div>
-          <div class="suggestion">
-            建议: <strong>60kg</strong>
-            <span class="increment">+2.5</span>
-          </div>
+        <!-- Nav Bar -->
+        <div class="nav-bar">
+          <a href="calendar.html" class="nav-back">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M15 18l-6-6 6-6" />
+            </svg>
+            推日
+          </a>
+          <span class="nav-title">完成 2/4</span>
+          <span class="nav-action text-tertiary" style="font-size: 15px"
+            >进度</span
+          >
+        </div>
 
-          <div class="set-inputs">
-            <div class="set-input-group">
-              <label>重量 (kg)</label>
-              <input type="number" value="60" inputmode="decimal">
-            </div>
-            <div class="set-input-group">
-              <label>次数</label>
-              <input type="number" value="5" inputmode="numeric" placeholder="0">
-            </div>
-          </div>
-
-          <button class="btn-primary mt-12" onclick="completeSet('ex-bench')">完成本组</button>
-
-          <!-- Previous sets log -->
-          <div class="mt-12" style="font-size:13px; color:var(--text-secondary)">
-            <div class="flex justify-between" style="padding:4px 0; border-bottom:1px solid var(--bg-alt)">
-              <span>第 1 组</span><span>60kg × 5</span><span class="text-success">✓</span>
-            </div>
-            <div class="flex justify-between" style="padding:4px 0; border-bottom:1px solid var(--bg-alt)">
-              <span>第 2 组</span><span>60kg × 5</span><span class="text-success">✓</span>
-            </div>
+        <!-- Progress Bar -->
+        <div style="padding: 0 16px">
+          <div class="progress-bar">
+            <div class="fill" style="width: 50%"></div>
           </div>
         </div>
 
-        <!-- Exercise 3: 推举 - UPCOMING -->
-        <div class="exercise-card" id="ex-ohp" onclick="this.classList.toggle('active')">
-          <div class="exercise-header">
-            <div>
-              <span class="exercise-name">推举</span>
-              <span class="text-secondary" style="margin-left:8px">0/3 组</span>
+        <!-- Page Content -->
+        <div
+          class="page-content"
+          style="padding-top: 12px; position: relative; overflow: hidden"
+        >
+          <!-- Exercise 1: 深蹲 - COMPLETED -->
+          <div class="exercise-card completed" id="ex-squat">
+            <div class="exercise-header">
+              <div>
+                <span class="exercise-name">深蹲</span>
+                <span class="text-secondary" style="margin-left: 8px"
+                  >5/5 组</span
+                >
+              </div>
+              <svg
+                class="check-icon"
+                width="20"
+                height="20"
+                viewBox="0 0 20 20"
+                fill="#30d158"
+              >
+                <circle cx="10" cy="10" r="10" fill-opacity="0.12" />
+                <path
+                  d="M6 10l3 3 5-5"
+                  stroke="#30d158"
+                  stroke-width="2"
+                  fill="none"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
             </div>
-            <span class="text-tertiary" style="font-size:13px">待进行</span>
+            <div class="exercise-detail">✓ 100kg × 5×5 · 容量 2,500kg</div>
           </div>
-          <div class="suggestion">
-            建议: <strong>35kg</strong>
-            <span class="increment">+2.5</span>
+
+          <!-- Exercise 2: 卧推 - ACTIVE (current) -->
+          <div class="exercise-card active" id="ex-bench">
+            <div class="exercise-header">
+              <div>
+                <span class="exercise-name">卧推</span>
+                <span class="text-secondary" style="margin-left: 8px"
+                  >第 3/5 组</span
+                >
+              </div>
+              <span class="tag tag-push" style="font-size: 12px">当前</span>
+            </div>
+            <div class="suggestion">
+              建议: <strong>60kg</strong>
+              <span class="increment">+2.5</span>
+            </div>
+
+            <div class="set-inputs">
+              <div class="set-input-group">
+                <label>重量 (kg)</label>
+                <input type="number" value="60" inputmode="decimal" />
+              </div>
+              <div class="set-input-group">
+                <label>次数</label>
+                <input
+                  type="number"
+                  value="5"
+                  inputmode="numeric"
+                  placeholder="0"
+                />
+              </div>
+            </div>
+
+            <button class="btn-primary mt-12" onclick="completeSet('ex-bench')">
+              完成本组
+            </button>
+
+            <!-- Previous sets log -->
+            <div
+              class="mt-12"
+              style="font-size: 13px; color: var(--text-secondary)"
+            >
+              <div
+                class="flex justify-between"
+                style="padding: 4px 0; border-bottom: 1px solid var(--bg-alt)"
+              >
+                <span>第 1 组</span><span>60kg × 5</span
+                ><span class="text-success">✓</span>
+              </div>
+              <div
+                class="flex justify-between"
+                style="padding: 4px 0; border-bottom: 1px solid var(--bg-alt)"
+              >
+                <span>第 2 组</span><span>60kg × 5</span
+                ><span class="text-success">✓</span>
+              </div>
+            </div>
           </div>
-          <div class="exercise-detail">目标: 3×10 · 默认休息 120s</div>
+
+          <!-- Exercise 3: 推举 - UPCOMING -->
+          <div
+            class="exercise-card"
+            id="ex-ohp"
+            onclick="this.classList.toggle('active')"
+          >
+            <div class="exercise-header">
+              <div>
+                <span class="exercise-name">推举</span>
+                <span class="text-secondary" style="margin-left: 8px"
+                  >0/3 组</span
+                >
+              </div>
+              <span class="text-tertiary" style="font-size: 13px">待进行</span>
+            </div>
+            <div class="suggestion">
+              建议: <strong>35kg</strong>
+              <span class="increment">+2.5</span>
+            </div>
+            <div class="exercise-detail">目标: 3×10 · 默认休息 120s</div>
+          </div>
+
+          <!-- Exercise 4: 三头下压 - UPCOMING -->
+          <div
+            class="exercise-card"
+            id="ex-tricep"
+            onclick="this.classList.toggle('active')"
+          >
+            <div class="exercise-header">
+              <div>
+                <span class="exercise-name">三头下压</span>
+                <span class="text-secondary" style="margin-left: 8px"
+                  >0/3 组</span
+                >
+              </div>
+              <span class="text-tertiary" style="font-size: 13px">待进行</span>
+            </div>
+            <div class="suggestion">
+              建议: <strong>25kg</strong>
+              <span class="increment">+1.0</span>
+            </div>
+            <div class="exercise-detail">目标: 3×12 · 默认休息 90s</div>
+          </div>
+
+          <!-- Spacer for timer -->
+          <div style="height: 200px"></div>
         </div>
 
-        <!-- Exercise 4: 三头下压 - UPCOMING -->
-        <div class="exercise-card" id="ex-tricep" onclick="this.classList.toggle('active')">
-          <div class="exercise-header">
-            <div>
-              <span class="exercise-name">三头下压</span>
-              <span class="text-secondary" style="margin-left:8px">0/3 组</span>
-            </div>
-            <span class="text-tertiary" style="font-size:13px">待进行</span>
+        <!-- Timer Area (slides up from bottom) -->
+        <div class="timer-area" id="timer-area">
+          <div
+            style="
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              margin-bottom: 16px;
+            "
+          >
+            <span class="font-semibold" style="font-size: 15px">组间休息</span>
+            <span class="text-tertiary" style="font-size: 13px"
+              >卧推 · 第 4 组</span
+            >
           </div>
-          <div class="suggestion">
-            建议: <strong>25kg</strong>
-            <span class="increment">+1.0</span>
+          <div class="timer-countdown" id="timer-display">3:00</div>
+
+          <!-- Circular progress indicator -->
+          <div
+            style="
+              margin: 16px auto;
+              width: 200px;
+              height: 4px;
+              background: var(--bg-alt);
+              border-radius: 2px;
+              overflow: hidden;
+            "
+          >
+            <div
+              id="timer-progress"
+              style="
+                width: 100%;
+                height: 100%;
+                background: var(--accent);
+                border-radius: 2px;
+                transition: width 1s linear;
+              "
+            ></div>
           </div>
-          <div class="exercise-detail">目标: 3×12 · 默认休息 90s</div>
+
+          <div class="timer-controls">
+            <button
+              class="btn-outline"
+              style="
+                width: auto;
+                height: 44px;
+                padding: 0 20px;
+                font-size: 15px;
+              "
+              data-action="adjust"
+              data-delta="-30"
+              onclick="adjustTimer(-30)"
+            >
+              -30s
+            </button>
+            <button
+              class="btn-primary"
+              style="width: auto; height: 44px; padding: 0 24px"
+              data-action="skip"
+              onclick="skipTimer()"
+            >
+              跳过
+            </button>
+            <button
+              class="btn-outline"
+              style="
+                width: auto;
+                height: 44px;
+                padding: 0 20px;
+                font-size: 15px;
+              "
+              data-action="adjust"
+              data-delta="30"
+              onclick="adjustTimer(30)"
+            >
+              +30s
+            </button>
+          </div>
         </div>
 
-        <!-- Spacer for timer -->
-        <div style="height:200px"></div>
-
+        <!-- Toast -->
+        <div class="toast" id="toast">组已完成</div>
       </div>
-
-      <!-- Timer Area (slides up from bottom) -->
-      <div class="timer-area" id="timer-area">
-        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px">
-          <span class="font-semibold" style="font-size:15px">组间休息</span>
-          <span class="text-tertiary" style="font-size:13px">卧推 · 第 4 组</span>
-        </div>
-        <div class="timer-countdown" id="timer-display">3:00</div>
-
-        <!-- Circular progress indicator -->
-        <div style="margin:16px auto; width:200px; height:4px; background:var(--bg-alt); border-radius:2px; overflow:hidden">
-          <div id="timer-progress" style="width:100%; height:100%; background:var(--accent); border-radius:2px; transition:width 1s linear"></div>
-        </div>
-
-        <div class="timer-controls">
-          <button class="btn-outline" style="width:auto; height:44px; padding:0 20px; font-size:15px" data-action="adjust" data-delta="-30" onclick="adjustTimer(-30)">-30s</button>
-          <button class="btn-primary" style="width:auto; height:44px; padding:0 24px" data-action="skip" onclick="skipTimer()">跳过</button>
-          <button class="btn-outline" style="width:auto; height:44px; padding:0 20px; font-size:15px" data-action="adjust" data-delta="30" onclick="adjustTimer(30)">+30s</button>
-        </div>
-      </div>
-
-      <!-- Toast -->
-      <div class="toast" id="toast">组已完成</div>
     </div>
-  </div>
 
-  <script>
-    let timerInterval = null;
-    let timerSeconds = 180;
-    let totalSeconds = 180;
+    <script>
+      let timerInterval = null;
+      let timerSeconds = 180;
+      let totalSeconds = 180;
 
-    function completeSet(exerciseId) {
-      const timerArea = document.getElementById('timer-area');
-      timerSeconds = 180;
-      totalSeconds = 180;
-      timerArea.classList.add('visible');
-      const display = document.getElementById('timer-display');
-      display.classList.remove('urgent');
-      updateDisplay();
-      startTimer();
-    }
-
-    function startTimer() {
-      clearInterval(timerInterval);
-      timerInterval = setInterval(() => {
-        timerSeconds--;
-        if (timerSeconds <= 0) {
-          timerSeconds = 0;
-          clearInterval(timerInterval);
-          timerInterval = null;
-          document.getElementById('timer-display').classList.add('urgent');
-          if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
-        }
+      function completeSet(exerciseId) {
+        const timerArea = document.getElementById("timer-area");
+        timerSeconds = 180;
+        totalSeconds = 180;
+        timerArea.classList.add("visible");
+        const display = document.getElementById("timer-display");
+        display.classList.remove("urgent");
         updateDisplay();
-      }, 1000);
-    }
+        startTimer();
+      }
 
-    function updateDisplay() {
-      const min = Math.floor(timerSeconds / 60);
-      const sec = timerSeconds % 60;
-      document.getElementById('timer-display').textContent = min + ':' + sec.toString().padStart(2, '0');
-      const progress = document.getElementById('timer-progress');
-      if (progress) progress.style.width = ((timerSeconds / totalSeconds) * 100) + '%';
-    }
+      function startTimer() {
+        clearInterval(timerInterval);
+        timerInterval = setInterval(() => {
+          timerSeconds--;
+          if (timerSeconds <= 0) {
+            timerSeconds = 0;
+            clearInterval(timerInterval);
+            timerInterval = null;
+            document.getElementById("timer-display").classList.add("urgent");
+            if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+          }
+          updateDisplay();
+        }, 1000);
+      }
 
-    function adjustTimer(delta) {
-      timerSeconds = Math.max(30, Math.min(600, timerSeconds + delta));
-      totalSeconds = timerSeconds;
-      updateDisplay();
-    }
+      function updateDisplay() {
+        const min = Math.floor(timerSeconds / 60);
+        const sec = timerSeconds % 60;
+        document.getElementById("timer-display").textContent =
+          min + ":" + sec.toString().padStart(2, "0");
+        const progress = document.getElementById("timer-progress");
+        if (progress)
+          progress.style.width = (timerSeconds / totalSeconds) * 100 + "%";
+      }
 
-    function skipTimer() {
-      clearInterval(timerInterval);
-      timerInterval = null;
-      document.getElementById('timer-area').classList.remove('visible');
-      showToast('开始下一组');
-    }
+      function adjustTimer(delta) {
+        timerSeconds = Math.max(30, Math.min(600, timerSeconds + delta));
+        totalSeconds = timerSeconds;
+        updateDisplay();
+      }
 
-    function showToast(msg) {
-      const t = document.getElementById('toast');
-      t.textContent = msg;
-      t.classList.add('show');
-      setTimeout(() => t.classList.remove('show'), 2500);
-    }
-  </script>
-</body>
+      function skipTimer() {
+        clearInterval(timerInterval);
+        timerInterval = null;
+        document.getElementById("timer-area").classList.remove("visible");
+        showToast("开始下一组");
+      }
+
+      function showToast(msg) {
+        const t = document.getElementById("toast");
+        t.textContent = msg;
+        t.classList.add("show");
+        setTimeout(() => t.classList.remove("show"), 2500);
+      }
+    </script>
+  </body>
 </html>

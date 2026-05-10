@@ -11,6 +11,7 @@ feature: "Train Recorder"
 **So that** 我的训练有系统化的安排，不再凭感觉决定每天练什么
 
 **Acceptance Criteria:**
+
 - Given 用户首次使用 App，When 用户点击「创建计划」，Then 进入计划创建流程
 - Given 用户选择「无限循环」模式，When 用户定义了推日、拉日、蹲日三个训练日，Then App 自动按顺序排期到日历中
 - Given 用户选择「固定周期」模式，When 用户设置了 4 周周期并定义了每周训练日，Then App 生成 4 周完整排期，第 5 周自动重新开始
@@ -27,6 +28,7 @@ feature: "Train Recorder"
 **So that** 训练记录不打断训练节奏，同时保证休息时间充分
 
 **Acceptance Criteria:**
+
 - Given 用户在训练执行页面，When 进入一个动作，Then 显示建议重量（预填充）和目标组数×次数
 - Given 用户完成一组，When 点击「完成本组」，Then 数据保存成功且自动启动组间倒计时（默认 180 秒）
 - Given 组间倒计时进行中，When 倒计时到 0，Then 设备振动并播放提示音
@@ -46,6 +48,7 @@ feature: "Train Recorder"
 **So that** 我不再需要纠结该加多重，渐进加重有据可依
 
 **Acceptance Criteria:**
+
 - Given 上次深蹲所有组均完成目标次数，When 本次训练加载深蹲，Then 建议重量 = 上次重量 + 深蹲的加重增量（如 5kg）
 - Given 上次卧推有 1 组未完成目标次数，When 本次训练加载卧推，Then 建议重量 = 上次相同重量（不加不减）
 - Given 卧推连续 2 次训练均有组未完成，When 本次训练加载卧推，Then 建议减重 10% 并提示用户
@@ -64,6 +67,7 @@ feature: "Train Recorder"
 **So that** 我能看到自己的进步轨迹，确认训练计划是否有效
 
 **Acceptance Criteria:**
+
 - Given 用户有 ≥ 2 次深蹲训练记录，When 查看深蹲进步曲线，Then 显示以日期为 X 轴、重量为 Y 轴的折线图
 - Given 用户打破了深蹲的历史最高重量，When 训练完成保存后，Then App 显示 PR 提醒「新个人记录！深蹲 140kg」
 - Given 用户查看训练历史列表，When 按训练类型筛选「推日」，Then 只显示推日训练记录
@@ -81,6 +85,7 @@ feature: "Train Recorder"
 **So that** 我的训练感受可追溯，帮助判断训练质量和恢复状态
 
 **Acceptance Criteria:**
+
 - Given 用户完成所有动作，When 进入感受记录页面，Then 显示疲劳度滑块（1-10）、满意度滑块（1-10）和各动作文本备注
 - Given 用户记录疲劳度 ≥ 8 且满意度 ≤ 4，When 保存感受数据，Then 系统标记本次训练为「高疲劳低满意」，下次训练建议降低强度
 - Given 用户未填写感受直接保存，When 保存成功，Then 使用疲劳度和满意度的默认值（5），文本备注为空
@@ -96,6 +101,7 @@ feature: "Train Recorder"
 **So that** 我能一目了然地知道哪天要练什么，临时有事时可以灵活调整
 
 **Acceptance Criteria:**
+
 - Given 训练计划已排期，When 用户打开日历页面，Then 每个训练日显示对应训练类型标签（推/拉/蹲）
 - Given 用户周三有事，When 用户将周三的「拉日」拖动到周四，Then 周三变为休息日，周四变为拉日，后续排期自动顺延
 - Given 用户点击已完成的训练日，When 该日有训练记录，Then 显示该日训练详情（动作、重量、容量、感受）
@@ -113,6 +119,7 @@ feature: "Train Recorder"
 **So that** 我的所有运动数据集中在一个地方管理
 
 **Acceptance Criteria:**
+
 - Given 用户在日历上选择一个休息日，When 点击「记录其他运动」，Then 显示运动类型选择
 - Given 用户选择「游泳」并配置了指标（距离、时间、趟数），When 进入记录页面，Then 显示对应的输入字段
 - Given 用户首次记录某个运动类型，When 运动类型不在预设列表中，Then 用户可以自定义运动名称和指标
@@ -129,6 +136,7 @@ feature: "Train Recorder"
 **So that** 我能了解身体组成的变化与训练效果的关联
 
 **Acceptance Criteria:**
+
 - Given 用户点击「记录身体数据」，When 进入录入页面，Then 显示日期（默认今天）、体重、胸围、腰围、臂围、大腿围输入框
 - Given 用户有 ≥ 2 次体重记录，When 查看体重趋势图，Then 显示以日期为 X 轴、体重为 Y 轴的折线图
 - Given 用户录入身体数据，When 只填写了体重未填围度，Then 只保存体重，未填写的围度不记录
@@ -144,6 +152,7 @@ feature: "Train Recorder"
 **So that** 我可以快速构建计划，同时不被预设列表限制
 
 **Acceptance Criteria:**
+
 - Given 用户创建训练计划选择动作，When 打开动作库，Then 显示分类列表（核心力量举、上肢推、上肢拉、下肢、核心、肩部、自定义）
 - Given 用户选择「深蹲」，When 添加到训练日，Then 使用深蹲的默认加重增量（5kg）和默认休息时间（180 秒）
 - Given 用户需要的动作不在内置库中，When 点击「自定义动作」，Then 可以输入名称、选择分类、设置加重增量和默认休息时间
@@ -161,6 +170,7 @@ feature: "Train Recorder"
 **So that** 意外中断不会浪费我已经记录的训练数据
 
 **Acceptance Criteria:**
+
 - Given 用户完成了 3 个动作中的 2 个，When 用户点击返回或退出按钮，Then 弹出确认对话框「已完成 2/3 动作，确定结束训练？」
 - Given 用户确认退出，When 保存数据，Then 已完成的 2 个动作数据正常保存，第 3 个动作标记为「未完成」
 - Given 用户中途退出的训练，When 在日历上查看该日，Then 显示「已完成（部分）」状态（status: completed_partial）
@@ -176,6 +186,7 @@ feature: "Train Recorder"
 **So that** 我可以在组间查看其他信息（如消息、音乐），不会错过下一组的时间
 
 **Acceptance Criteria:**
+
 - Given 用户在组间倒计时中切换到其他 App，When 倒计时剩余 90 秒，Then 计时器在后台继续倒计时
 - Given 后台倒计时结束，When 用户在其他 App 或锁屏状态，Then 系统通知栏显示「休息结束，开始下一组！」
 - Given 用户点击通知返回 App，When 训练页面恢复，Then 显示「开始下一组」按钮，倒计时显示 00:00
@@ -192,6 +203,7 @@ feature: "Train Recorder"
 **So that** 历史数据准确反映实际训练情况，不影响加重建议
 
 **Acceptance Criteria:**
+
 - Given 用户查看训练历史，When 点击某次训练记录，Then 显示该次训练的详细数据，包含「编辑」和「删除」按钮
 - Given 用户点击「编辑」，When 修改某组的重量或次数，Then 保存后加重建议基于修改后的数据重新计算
 - Given 用户点击「删除」，When 确认删除，Then 该次训练记录及所有组数据被删除，加重建议回退到上一次训练的数据
@@ -207,6 +219,7 @@ feature: "Train Recorder"
 **So that** 训练历史完整，加重建议基于连续的数据
 
 **Acceptance Criteria:**
+
 - Given 用户在日历上选择一个过去的日子，When 该日没有训练记录，Then 显示「补录训练」选项
 - Given 用户选择补录训练，When 选择训练类型和动作，Then 进入正常的训练记录流程（但无倒计时）
 - Given 用户补录训练时输入的重量，When 保存成功，Then 该记录按日期插入到历史中，参与加重建议计算
@@ -221,6 +234,7 @@ feature: "Train Recorder"
 **So that** 我可以备份数据或在电脑上进一步分析
 
 **Acceptance Criteria:**
+
 - Given 用户在设置中点击「导出数据」，When 选择导出范围（全部/最近 3 个月/最近半年），Then 生成包含训练记录、身体数据、其他运动记录的导出文件
 - Given 导出完成，When 文件生成成功，Then 提供分享选项（邮件、云盘、本地保存）
 - Given 导出的文件，When 用户在电脑上打开，Then 数据以结构化格式呈现，包含所有训练详情（日期、动作、组数、重量、次数、感受）
@@ -234,6 +248,7 @@ feature: "Train Recorder"
 **So that** 我可以用自己习惯的单位记录和查看数据
 
 **Acceptance Criteria:**
+
 - Given 用户当前使用 kg，When 在设置中切换为 lbs，Then 所有已记录的数据自动转换为 lbs 显示（1kg = 2.2046lbs）
 - Given 用户切换为 lbs 后录入数据，When 保存，Then 数据以原始录入单位存储，显示时按当前设置单位转换
 - Given 用户使用 lbs 设置，When 加重增量为 5lbs，Then 增量选项适应 lbs 单位（如 1/2.5/5/10 lbs）
@@ -248,6 +263,7 @@ feature: "Train Recorder"
 **So that** 我可以根据健身房实际情况（器械被占用）灵活调整训练顺序
 
 **Acceptance Criteria:**
+
 - Given 用户在训练执行页面，When 长按某个未开始的动作卡片，Then 可以拖动调整顺序
 - Given 用户想跳过某个动作，When 向左滑动动作卡片，Then 显示「跳过」选项，确认后该动作标记为「已跳过」
 - Given 用户跳过了某个动作，When 训练结束，Then 跳过的动作不参与加重建议计算
@@ -262,6 +278,7 @@ feature: "Train Recorder"
 **So that** 我的辅助动作和主动作可以是同一动作的不同变体
 
 **Acceptance Criteria:**
+
 - Given 用户在计划中添加了「深蹲」，When 再次添加「深蹲」，Then 允许添加，两次出现独立记录加重建议
 - Given 用户想区分两次深蹲，When 添加动作时可以添加备注（如「暂停深蹲」），Then 训练页面显示备注区分
 - Given 同一动作出现两次，When 加重建议计算，Then 两次独立计算，互不影响
@@ -275,6 +292,7 @@ feature: "Train Recorder"
 **So that** 我可以快速上手，不需要摸索
 
 **Acceptance Criteria:**
+
 - Given 用户首次打开 App，When 没有任何训练数据，Then 显示简短的欢迎引导（3-4 步），介绍核心概念（计划→训练→记录→进步）
 - Given 引导结束后，When 进入创建计划流程，Then 提供计划模板推荐（如「推/拉/蹲 3 日循环」），用户可选择模板快速创建或自定义
 - Given 用户选择模板创建计划，When 进入动作配置，Then 动作已预填充常见动作和加重增量，用户只需调整重量即可

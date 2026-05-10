@@ -430,6 +430,25 @@ SELECT * FROM other_sport_metric_value;
 selectAllTimerStates:
 SELECT * FROM timer_state;
 
+selectTimerStateBySessionId:
+SELECT * FROM timer_state WHERE workout_session_id = ?;
+
+selectRunningTimerState:
+SELECT * FROM timer_state WHERE is_running = 1 LIMIT 1;
+
+insertTimerState:
+INSERT INTO timer_state(id, workout_session_id, start_timestamp, total_duration_seconds, is_running, updated_at)
+VALUES (?, ?, ?, ?, ?, ?);
+
+updateTimerStateRunning:
+UPDATE timer_state SET is_running = ?, updated_at = ? WHERE id = ?;
+
+deleteTimerStateById:
+DELETE FROM timer_state WHERE id = ?;
+
+deleteTimerStateBySessionId:
+DELETE FROM timer_state WHERE workout_session_id = ?;
+
 selectAllTrainingPlans:
 SELECT * FROM training_plan;
 

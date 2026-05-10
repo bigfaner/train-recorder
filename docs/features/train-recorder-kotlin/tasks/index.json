@@ -319,7 +319,7 @@
         "3.gate",
         "3.4"
       ],
-      "status": "pending",
+      "status": "completed",
       "file": "4.4-history-stats-screens.md",
       "record": "records/4.4-history-stats-screens.md",
       "scope": "frontend"

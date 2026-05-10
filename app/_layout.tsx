@@ -48,6 +48,7 @@ export default function RootLayout() {
             name="sport-editor"
             options={{ title: "Sport Editor", headerShown: false }}
           />
+          <Stack.Screen name="seed" options={{ headerShown: false }} />
         </Stack>
       </SafeAreaProvider>
     </GestureHandlerRootView>

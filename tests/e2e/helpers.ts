@@ -84,6 +84,15 @@ export async function withRetry<T>(
   throw new Error("unreachable");
 }
 
+// -- Seed Data ---------------------------------------------------------------
+export async function seedData(page: Page): Promise<void> {
+  await page.goto(`${baseUrl()}/seed`);
+  // Wait for seed to complete — the page shows "Seed complete" or "Already seeded"
+  await page.waitForSelector('[data-testid="seed-status"]', { timeout: 10000 });
+  // Brief wait for redirect to home
+  await page.waitForTimeout(800);
+}
+
 // -- File helpers ------------------------------------------------------------
 export const PROJECT_ROOT = resolve(__dirname, "..", "..");
 

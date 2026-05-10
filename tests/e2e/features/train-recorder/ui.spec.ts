@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { screenshot, baseUrl } from "../../helpers.js";
+import { screenshot, baseUrl, seedData } from "../../helpers.js";
 
 test.describe("Train Recorder UI E2E Tests", () => {
   // ── Plan Management (US-1) ────────────────────────────────────────
@@ -198,6 +198,9 @@ test.describe("Train Recorder UI E2E Tests", () => {
   // ── History & Progress (US-4) ─────────────────────────────────────
 
   test.describe("History & Progress", () => {
+    test.beforeEach(async ({ page }) => {
+      await seedData(page);
+    });
     // Traceability: TC-UI-016 → US-4 AC-1
     test("TC-UI-016: Progress curve line chart renders", async ({ page }) => {
       await page.goto(`${baseUrl()}/(tabs)/history`);
@@ -337,6 +340,9 @@ test.describe("Train Recorder UI E2E Tests", () => {
   // ── Calendar (US-6) ───────────────────────────────────────────────
 
   test.describe("Calendar", () => {
+    test.beforeEach(async ({ page }) => {
+      await seedData(page);
+    });
     // Traceability: TC-UI-028 → US-6 AC-1
     test("TC-UI-028: Calendar training type labels on training days", async ({
       page,
@@ -428,6 +434,9 @@ test.describe("Train Recorder UI E2E Tests", () => {
   // ── Other Sports (US-7) ───────────────────────────────────────────
 
   test.describe("Other Sports", () => {
+    test.beforeEach(async ({ page }) => {
+      await seedData(page);
+    });
     // Traceability: TC-UI-035 → US-7 AC-1
     test("TC-UI-035: Other sport type selection from rest day", async ({
       page,
@@ -653,6 +662,9 @@ test.describe("Train Recorder UI E2E Tests", () => {
   // ── Mid-workout Exit (US-10) ──────────────────────────────────────
 
   test.describe("Mid-workout Exit", () => {
+    test.beforeEach(async ({ page }) => {
+      await seedData(page);
+    });
     // Traceability: TC-UI-053 → US-10 AC-1
     test("TC-UI-053: Mid-workout exit confirmation dialog", async ({
       page,
@@ -749,6 +761,9 @@ test.describe("Train Recorder UI E2E Tests", () => {
   // ── History Editing (US-12) ───────────────────────────────────────
 
   test.describe("History Editing", () => {
+    test.beforeEach(async ({ page }) => {
+      await seedData(page);
+    });
     // Traceability: TC-UI-062 → US-12 AC-1
     test("TC-UI-062: Workout detail page with edit and delete buttons", async ({
       page,
@@ -836,6 +851,9 @@ test.describe("Train Recorder UI E2E Tests", () => {
   // ── Retroactive Logging (US-13) ───────────────────────────────────
 
   test.describe("Retroactive Logging", () => {
+    test.beforeEach(async ({ page }) => {
+      await seedData(page);
+    });
     // Traceability: TC-UI-067 → US-13 AC-1
     test("TC-UI-067: Retroactive logging from past date", async ({ page }) => {
       await page.goto(`${baseUrl()}/`);
@@ -1005,6 +1023,9 @@ test.describe("Train Recorder UI E2E Tests", () => {
   // ── Same Exercise Multiple Times (US-17) ──────────────────────────
 
   test.describe("Same Exercise Multiple Times", () => {
+    test.beforeEach(async ({ page }) => {
+      await seedData(page);
+    });
     // Traceability: TC-UI-081 → US-17 AC-1
     test("TC-UI-081: Add same exercise twice to training day", async ({
       page,
@@ -1341,6 +1362,9 @@ test.describe("Train Recorder UI E2E Tests", () => {
   // ── Integration Tests ─────────────────────────────────────────────
 
   test.describe("Integration", () => {
+    test.beforeEach(async ({ page }) => {
+      await seedData(page);
+    });
     // Traceability: TC-UI-110 → PRD 5.11.2 Step 2 + PRD 5.2 Step 1
     test("TC-UI-110: Unit switch propagates across all pages", async ({
       page,

@@ -1,5 +1,5 @@
 import { test } from "@playwright/test";
-import { baseUrl } from "../../helpers.js";
+import { baseUrl, seedData } from "../../helpers.js";
 
 /**
  * API E2E Tests — Service Layer
@@ -14,6 +14,10 @@ import { baseUrl } from "../../helpers.js";
  */
 
 test.describe("API E2E Tests — Service Layer", () => {
+  test.beforeEach(async ({ page }) => {
+    await seedData(page);
+  });
+
   // ── Progressive Overload (US-3) ───────────────────────────────────
 
   test.describe("Progressive Overload", () => {
